@@ -1819,6 +1819,125 @@ bdi.n {
   box-shadow: 0 3px 0 #d99a00;
 }
 
+/* "turn the tablet upright" note (components/RotateHint.jsx): landscape only, inline on the start screen, a compact
+   pill in the booklet's top bar; never an overlay, so it cannot cover a button */
+.rot-hint {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--info);
+  border: 3px solid var(--info-line);
+  border-radius: var(--r-md);
+  padding: 8px 12px 8px 18px;
+  animation: rise 400ms var(--ease-out) both;
+}
+.rot-start {
+  align-self: flex-start;
+  max-width: 760px;
+}
+/* in the top bar: as short as the 56px button allows, nudged down so the top-centre preview tab never touches it */
+.rot-bar {
+  min-width: 0;
+  padding: 0;
+  padding-inline-start: 10px;
+  margin-top: 8px;
+  gap: 10px;
+  border-radius: 18px;
+  overflow: hidden;
+}
+.rot-txt {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  font: 400 20px/1.4 var(--f-text);
+  color: var(--ink-soft);
+}
+.rot-txt strong {
+  font: 600 22px/1.35 var(--f-display);
+  color: var(--ink);
+}
+.rot-bar .rot-txt {
+  font-size: 16px;
+  line-height: 1.3;
+}
+.rot-bar .rot-txt strong {
+  font-size: 18px;
+  line-height: 1.25;
+}
+.rot-close {
+  flex: none;
+  min-height: 56px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 3px 0 var(--info-line);
+  font: 600 19px/1.2 var(--f-text);
+  color: var(--ink);
+  transition: transform 160ms var(--ease-out);
+}
+.rot-close:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--info-line);
+}
+.rot-bar .rot-close {
+  min-height: 56px;
+  font-size: 17px;
+  padding: 0 16px;
+  border-radius: 0;
+  box-shadow: none;
+  border-inline-start: 3px solid var(--info-line);
+}
+.rot-bar .rot-close:active {
+  transform: none;
+  background: #f3f9ff;
+}
+.rot-art {
+  flex: none;
+  overflow: visible;
+}
+.rot-art .rot-arrow {
+  fill: none;
+  stroke: #4f9cf0;
+  stroke-width: 3.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.rot-art .rot-tab rect {
+  fill: #fff;
+  stroke: #4a4466;
+  stroke-width: 3.4;
+}
+.rot-art .rot-tab circle {
+  fill: #4a4466;
+}
+.rot-art .rot-tab {
+  transform-box: view-box;
+  transform-origin: 32px 33px;
+  animation: rot-turn 3.2s var(--ease-out) 600ms infinite;
+}
+/* lying down → stand up → rest → lie down again */
+@keyframes rot-turn {
+  0%,
+  12% {
+    transform: rotate(0deg);
+  }
+  38%,
+  82% {
+    transform: rotate(90deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rot-art .rot-tab {
+    animation: none;
+  }
+}
+
 /* ---- the exam: a paper booklet on the app background -------------------------------------------------------------------- */
 .exam {
   height: 100dvh;

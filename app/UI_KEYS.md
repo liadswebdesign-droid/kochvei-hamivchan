@@ -8,7 +8,7 @@ and the nikud pipeline vocalizes it into `content/build/ui.json`.
   exactly as written (Latin, curly braces). A number placeholder after a one-letter prefix takes the real maqaf: `מ־{bound}`.
 - Addressing the child: plural in instructions ("קראו", "פתרו"), gender-neutral or plural in companion lines.
 - `npm run build` fails if `content/build/ui.json` lacks any key in this list (scripts/content.mjs).
-- Total: 321 keys. Regenerate this file with `npm run ui-keys`.
+- Total: 324 keys. Regenerate this file with `npm run ui-keys`.
 
 ## App
 
@@ -201,6 +201,9 @@ and the nikud pipeline vocalizes it into `content/build/ui.json`.
 | `sim.start.resume` | יש מבחן שנעצר באמצע |
 | `sim.start.resumeBtn` | להמשיך |
 | `sim.start.discard` | לוותר עליו |
+| `sim.rotate.title` | סובבו את הטאבלט |
+| `sim.rotate.text` | ככה הדף נראה כמו החוברת במבחן |
+| `sim.rotate.close` | אפשר גם ככה |
 | `sim.cover.title` | מבחן סינון כיתה ב׳ |
 | `sim.cover.name` | מבחן דמה {n} |
 | `sim.cover.endless` | מבחן דמה אקראי |

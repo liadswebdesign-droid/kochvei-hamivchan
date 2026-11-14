@@ -7,6 +7,7 @@ import { ENDLESS, simId } from '../lib/sim.js';
 import { Btn } from '../components/Bits.jsx';
 import { SandClock } from '../components/Booklet.jsx';
 import { UiIcon } from '../components/Icons.jsx';
+import { RotateHint } from '../components/RotateHint.jsx';
 
 export function MockStart({ profile, onBack, onStart }) {
   const pid = profile.id;
@@ -26,6 +27,7 @@ export function MockStart({ profile, onBack, onStart }) {
 
       <div class="ms-body">
         <p class="ms-intro">{t('sim.start.intro')}</p>
+        <RotateHint where="start" />
 
         {run && (
           <div class="ms-resume">

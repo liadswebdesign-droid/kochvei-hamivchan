@@ -16,6 +16,7 @@ import { NumPad } from '../components/NumPad.jsx';
 import { UiIcon } from '../components/Icons.jsx';
 import { PassageView } from '../components/PassageView.jsx';
 import { BkItem, SandClock, Sheet, Say, StopDog } from '../components/Booklet.jsx';
+import { RotateHint, resetRotateHint } from '../components/RotateHint.jsx';
 
 const TITLE = { A: 'sim.taskA.title', B: 'sim.taskB.title', C: 'sim.taskC.title', D: 'sim.taskD.title' };
 const INSTR = { A: 'sim.taskA.instr', B: 'sim.taskB.instr', C: 'sim.taskC.instr' };
@@ -351,6 +352,7 @@ export function MockExam({ profile, content, simId: id, mode, resume, onQuit, on
     clearRun(pid);
     // the 'mock' sticker (a gold star once the album is full) + the day counts for the streak; shown on the results
     const stickers = onMockComplete(profile);
+    resetRotateHint();
     onFinish({ sim, scored, entry, ms, mode, stickers });
   }
 
@@ -369,6 +371,7 @@ export function MockExam({ profile, content, simId: id, mode, resume, onQuit, on
           <UiIcon id="close" />
         </button>
         <span class="etop-title">{sim.endless ? t('sim.cover.endless') : t('sim.cover.name', { n: sim.n })}</span>
+        <RotateHint where="bar" />
         <span class="etop-spacer" />
         {mode === 'timed' && page >= 1 && <ClockBar t0={t0} />}
       </header>

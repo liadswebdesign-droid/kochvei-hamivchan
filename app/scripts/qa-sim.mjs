@@ -167,6 +167,9 @@ async function run(W, H) {
   await click('.isl-mock');
   await wait(500);
   await shot('02-sim-start', W, H);
+  const land = W > H;
+  const hintOn = () => js(`return !!document.querySelector('.rot-hint');`);
+  if ((await hintOn()) !== land) problems.push({ shot: '02-sim-start', msg: 'rotate note should show exactly in landscape' });
   // resume: start #2 with no clock, answer one question, quit, come back and continue where she stopped
   await js(`window.__khStopMs = 120000;`);
   await click('.ms-mode', 1);
@@ -195,8 +198,15 @@ async function run(W, H) {
   await click('.ms-resume .btn-ghost'); // give it up
   await wait(300);
   await click('.ms-mode', 0);
+  // the rotate note: dismissed on the start screen, it stays away inside that mock
+  if (land) {
+    await click('.rot-close');
+    await wait(200);
+    if (await hintOn()) problems.push({ shot: 'rotate-note', msg: 'note still shown after dismissing it' });
+  }
   await click('.ms-card', 0);
   await wait(900);
+  if (await hintOn()) problems.push({ shot: '03-cover', msg: 'rotate note came back in the mock after it was dismissed' });
   await shot('03-cover', W, H);
   await click('.bk-cover .btn');
   await wait(900);
@@ -300,6 +310,8 @@ async function run(W, H) {
   }
   await wait(500);
   await shot('21-sim-start-after', W, H);
+  // a finished mock: the next one may suggest turning the tablet again
+  if ((await hintOn()) !== land) problems.push({ shot: '21-sim-start-after', msg: 'rotate note should be back (landscape only) after finishing a mock' });
   await click('.ms-resume .btn-ghost').catch(() => {});
 
   // ---- parent screen
@@ -460,7 +472,14 @@ const PAGE_CHECK = `
     passage.floorFits = body.scrollHeight <= body.clientHeight;
     a.style.fontSize = keep;
   }
-  return { fails, scroll, scrolled, passage, items: items.map((i) => i.dataset.item).filter(Boolean) };
+  const hint = document.querySelector('.rot-hint');
+  if (hint && innerHeight > innerWidth) fails.push({ why: 'rotate note shown in portrait' });
+  if (hint) {
+    const hb = r(hint);
+    for (const [n, bb] of [['page', r(sheet)], ...blockers.filter(([n]) => n !== 'preview banner' && n !== 'footer')]) if (hit(hb, bb)) fails.push({ why: 'rotate note overlaps the ' + n });
+    if (!inside(hb, r(document.querySelector('.etop')))) fails.push({ why: 'rotate note is not inside the top bar' });
+  }
+  return { fails, scroll, scrolled, passage, hint: !!hint, items: items.map((i) => i.dataset.item).filter(Boolean) };
 `;
 
 async function freshProfile() {
@@ -505,6 +524,7 @@ async function auditBooklets(W, H) {
       const res = await js(PAGE_CHECK);
       const where = `${label} ${orient} page ${p.pageNo ?? 'cover'} (${p.type}${p.task ? ':' + p.task : ''}${p.passage ? ' ' + p.passage : ''})`;
       if (res.error) { audit.fails.push({ where, why: res.error }); continue; }
+      if (c === 0 && i === 0 && orient === 'landscape' && !res.hint) audit.fails.push({ where, why: 'no "turn the tablet" note in landscape' });
       for (const f of res.fails) audit.fails.push({ where, ...f });
       if (sweep) audit.checked[orient] = (audit.checked[orient] || 0) + res.items.length;
       if (res.scroll) { audit.scrollPages.push({ where, items: res.items, ...res.scrolled }); rec[orient].scroll.push(res.items.join()); }
