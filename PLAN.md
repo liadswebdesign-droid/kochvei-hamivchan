@@ -99,12 +99,54 @@ Every string a girl sees is stored **with full nikud in כתיב מלא**, match
 | T5 | Companions and sticker art (≈6 characters, ≈30 stickers), sounds, celebrations, mini-games | Codex images (one job at a time) + Claude·sonnet | T1 |
 | T6 | Test-simulation mode (booklet look, עצרו page, results) + parent PIN screen | Claude·sonnet | T1, T3, T4 |
 | T7 | Run the nikud pipeline over all content, adjudicate, build LiaD's review page, apply fixes | Claude·opus + Codex | T2–T4 |
-| T8 | Tablet-viewport QA, Codex code review, deploy, install guide for LiaD (one-pager in Hebrew) | Claude·sonnet + Codex | all |
+| T9 | **Full security check** (section 6). Fix everything it finds before T8 ships | Claude Security scan + Claude·opus checklist + Codex adversarial review | T1–T7 |
+| T8 | Tablet-viewport QA, Codex code review, final deploy, install guide for LiaD (one-pager in Hebrew) | Claude·sonnet + Codex | all, incl. T9 |
 
 **Schedule (test by ~30 Nov):** T1, T2 and T3 start together → T4 and T5 → T6 and T7 → T8. The aim is a playable
 first version (reading + math practice) in the girls' hands within about 4 days, then content keeps flowing in through
 auto-updates.
 
-## 6. Open items for LiaD
+## 6. Security check (T9)
+
+The app has no server and no login, so the risks are what the public repo exposes, what the deploy pipeline
+can be tricked into doing, what the page can load or send, and the girls' privacy. Three independent passes run over
+the same code, and the findings are merged and fixed:
+
+1. **Claude Security scan:** the `claude-security` plugin scans the whole repo (app, tools, workflow), then each finding is verified.
+2. **Claude·opus checklist pass**, with evidence for every line:
+   - **Secrets and personal data in the repo, including all git history:** gitleaks or a trufflehog-style scan over every
+     commit. No tokens, no keys, no `.env` files, no PDFs, no `web-samples/`, no real names (the girls', LiaD's, the
+     school's), no email addresses. If anything turns up, rewrite history and rotate the secret.
+   - **Dependencies:** `npm audit` (prod and dev), the lockfile committed, no unused packages, and every dependency checked as a real,
+     well-known package (typosquat check).
+   - **GitHub Actions:** least-privilege `permissions:` (contents: read, pages: write, id-token: write only),
+     third-party actions pinned to a commit SHA, no `pull_request_target`, no secrets echoed, and no untrusted input
+     interpolated into `run:` steps.
+   - **Repo settings (via `gh`):** secret scanning and push protection on, Dependabot alerts on, main branch protected
+     against force-push, Pages on HTTPS only.
+   - **The page itself:**
+     - A strict Content-Security-Policy meta tag (`default-src 'self'`, no inline script, no third-party origins).
+     - Zero third-party network requests, checked in the network log: fonts self-hosted, no analytics, no CDN.
+     - No `dangerouslySetInnerHTML` or `innerHTML` with content strings, and no `eval` / `new Function` in the app.
+     - No external links a child can follow out of the app.
+   - **Service worker:** scope limited to the app path, it caches only same-origin GET responses, and its update flow can't
+     serve a stale or poisoned build forever (versioned cache, cleanup of old caches).
+   - **Local data:**
+     - Only first names, progress and the PIN are stored.
+     - The parent PIN is documented as a "keep kids out" gate, not real security.
+     - Nothing ever leaves the device.
+     - Clearing the site data wipes everything.
+   - **Build tools** (`tools/`): `check` expressions in the validator are evaluated only after a strict digits-and-operators
+     whitelist. Shell calls to Codex/Claude never interpolate content into a shell string (args arrays only). The Dicta
+     calls send generated text only.
+   - **Child safety:** no ads, no chat, no user-generated content shared anywhere, no camera, mic or location, no
+     notifications, and a fullscreen PWA with no browser UI to wander off into.
+3. **Codex adversarial review:** a read-only GPT pass that is told to *break* the app and the pipeline, given the code
+   but not our conclusions.
+
+**Done when:** every finding is fixed or explicitly accepted with a reason, a re-scan is clean, and the summary for
+LiaD (in Hebrew) lists what was checked and what was found.
+
+## 7. Open items for LiaD
 - Final read of the nikud review page (T7).
 - Exact test date, if the school has announced it (it sets the simulation-timer default and the countdown on the map).
