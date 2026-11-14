@@ -1,4 +1,4 @@
-// Stage 6: LiaD's review page — one standalone Hebrew RTL HTML file.
+// Stage 6: the parent's review page — one standalone Hebrew RTL HTML file.
 //  - every adjudicated word, in its full sentence, with the three vocalizer versions and the decision + reason
 //  - a random (seeded, so stable between runs) 10% sample of passages rendered in full
 //  - a checkbox per item (localStorage), a "problem" flag with a note, and a JSON export of the flagged items

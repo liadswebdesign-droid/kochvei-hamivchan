@@ -209,6 +209,7 @@
   "parent.pin.forgot": "שכחתי",
   "parent.pin.gate": "כדי לאפס את הקוד, פתרו: כמה זה {a} × {b}?",
   "parent.pin.gateWrong": "לא מדויק, נסו שוב",
+  "parent.pin.locked": "יותר מדי ניסיונות. אפשר לנסות שוב בעוד {time}",
   "parent.pin.digits": "הקוד",
   "parent.nodata": "עדיין אין נתונים",
   "parent.acc.title": "אחוזי הצלחה בניסיון הראשון",

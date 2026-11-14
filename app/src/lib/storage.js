@@ -39,6 +39,29 @@ export function load(key, fallback) {
     return fallback;
   }
 }
+// Shape guards. Unparseable JSON already falls back above; these catch VALID JSON of the wrong shape (a hand-edited or
+// half-migrated key), which would otherwise crash the app on every start.
+export const isPlainObject = (v) => v != null && typeof v === 'object' && !Array.isArray(v);
+// A stored list: not a list → []; entries that are not objects are dropped.
+export function loadList(key) {
+  const v = load(key, null);
+  return Array.isArray(v) ? v.filter(isPlainObject) : [];
+}
+// A stored object: not an object → null.
+export function loadObject(key) {
+  const v = load(key, null);
+  return isPlainObject(v) ? v : null;
+}
+// `defaults` overlaid with the stored fields whose kind (object / array / number / string / boolean) matches the
+// default's; a field the default leaves null, or does not know, takes any stored value.
+const kindOf = (v) => (v === null ? 'null' : Array.isArray(v) ? 'array' : typeof v);
+export function withDefaults(defaults, raw) {
+  const out = { ...defaults };
+  if (!isPlainObject(raw)) return out;
+  for (const [k, v] of Object.entries(raw)) if (!(k in defaults) || defaults[k] === null || kindOf(v) === kindOf(defaults[k])) out[k] = v;
+  return out;
+}
+
 export function save(key, value) {
   rawSet(key, JSON.stringify(value));
 }
@@ -49,7 +72,10 @@ export function remove(key) {
 // ---- profiles --------------------------------------------------------------
 // kh:profiles = [{ id, name, companion, created }]   kh:active = id
 // Old companion ids (dragon, rocket) map to the art companions on read (T5).
-export const getProfiles = () => load('profiles', []).map((p) => ({ ...p, companion: companionId(p.companion) }));
+export const getProfiles = () =>
+  loadList('profiles')
+    .filter((p) => typeof p.id === 'string')
+    .map((p) => ({ ...p, name: typeof p.name === 'string' ? p.name : '', companion: companionId(p.companion) }));
 export const getActiveId = () => load('active', null);
 export const setActiveId = (id) => save('active', id);
 
@@ -69,21 +95,21 @@ export function createProfile(name, companion) {
 const pk = (pid, k) => `p:${pid}:${k}`;
 
 export const emptyProgress = () => ({ stars: 0, skills: {} });
-export const getProgress = (pid) => ({ ...emptyProgress(), ...load(pk(pid, 'progress'), {}) });
+export const getProgress = (pid) => withDefaults(emptyProgress(), load(pk(pid, 'progress'), null));
 export const saveProgress = (pid, p) => save(pk(pid, 'progress'), p);
-export const skillState = (progress, skill) => progress.skills[skill] || { level: 1, best: 0, sessions: 0 };
+export const skillState = (progress, skill) => withDefaults({ level: 1, best: 0, sessions: 0 }, progress.skills[skill]);
 
-export const getReview = (pid) => load(pk(pid, 'review'), []);
+export const getReview = (pid) => loadList(pk(pid, 'review'));
 export const saveReview = (pid, q) => save(pk(pid, 'review'), q);
 
 const LOG_MAX = 5000;
 export function logAttempt(pid, entry) {
-  const log = load(pk(pid, 'log'), []);
+  const log = getLog(pid);
   log.push({ t: Date.now(), ...entry });
   if (log.length > LOG_MAX) log.splice(0, log.length - LOG_MAX);
   save(pk(pid, 'log'), log);
 }
-export const getLog = (pid) => load(pk(pid, 'log'), []);
+export const getLog = (pid) => loadList(pk(pid, 'log'));
 
 // ---- per-profile settings: the ONE settings store (sounds read it, the parent screen writes it) ---------------------
 // kh:p:<id>:settings = { sound: bool, timeMode: 'timed' | 'free', dailyGoal: n }   Missing keys fall back to defaults.
@@ -97,14 +123,14 @@ export const defaultSettings = () => ({ sound: true, timeMode: 'timed', dailyGoa
 function migrateLegacySettings() {
   const legacy = load('settings', null);
   if (legacy == null) return;
-  if (typeof legacy === 'object') {
-    for (const p of load('profiles', [])) if (p && p.id && load(pk(p.id, 'settings'), null) == null) save(pk(p.id, 'settings'), { ...legacy });
+  if (isPlainObject(legacy)) {
+    for (const p of loadList('profiles')) if (p.id && load(pk(p.id, 'settings'), null) == null) save(pk(p.id, 'settings'), { ...legacy });
   }
   remove('settings');
 }
 export function getSettings(pid) {
   migrateLegacySettings();
-  return { ...defaultSettings(), ...load(pk(pid, 'settings'), {}) };
+  return withDefaults(defaultSettings(), load(pk(pid, 'settings'), null));
 }
 export function saveSettings(pid, patch) {
   const s = { ...getSettings(pid), ...patch };
@@ -114,5 +140,5 @@ export function saveSettings(pid, patch) {
 export const isSoundOn = (pid) => getSettings(pid).sound !== false;
 
 // ---- rewards blob (T5, shape owned by lib/rewards.js) ---------------------------------------------------------------
-export const getRewardsRaw = (pid) => load(pk(pid, 'rewards'), null);
+export const getRewardsRaw = (pid) => loadObject(pk(pid, 'rewards'));
 export const saveRewardsRaw = (pid, r) => save(pk(pid, 'rewards'), r);

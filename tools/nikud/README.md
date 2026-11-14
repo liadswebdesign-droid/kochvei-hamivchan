@@ -2,7 +2,7 @@
 
 Turns `content/src/**` (Hebrew in ktiv male, **no nikud**) into `content/build/**` (same files, same keys, every
 Hebrew string fully vocalized, NFC). Three independent vocalizers, a word-by-word vote, house rules, an adjudication
-file, a mechanical lint, and a review page for LiaD.
+file, a mechanical lint, and a review page for the parent.
 
 ```
 node tools/nikud/run.mjs [--only <glob>] [--vocalizers dicta,codex,claude] [--dry]
@@ -143,7 +143,7 @@ is retried once, and a word that is still wrong loses that vocalizer's vote. Eve
   modified 27 November 201x") include the boilerplate clause: do not misuse the services or "try to access them using
   a method other than the interface and the instructions that we provide". The endpoint is the one the public UI
   calls and is widely used by open-source projects (Sefaria, Otzaria, Home-Assistant nakdan, nakdimon research). For
-  the full run (~25 requests) this is low volume; if LiaD wants certainty, email Dicta (dicta.org.il → Contact) for
+  the full run (~25 requests) this is low volume; if the parent wants certainty, email Dicta (dicta.org.il → Contact) for
   permission.
 - Known systematic behaviour: leaves a one-letter prefix before a digit bare (`ב־2`), prefers `מֶה` before some
   letters, and sometimes picks the indefinite reading (`בְּשׁוּרָה`). These surface as disagreements.

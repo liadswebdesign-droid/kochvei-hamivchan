@@ -4,11 +4,11 @@ Every Hebrew string the app shows comes from `ui.json` through these keys. The v
 placeholders** (from `app/dev-fixtures/ui.json`); the content team writes the final text into `content/src/ui.json`
 and the nikud pipeline vocalizes it into `content/build/ui.json`.
 
-- `{name}`, `{n}`, `{total}`, `{bound}`, `{example}`, `{a}`, `{b}`, `{c}`, `{lines}`, `{score}`, `{max}`, `{min}`, `{pos}`, `{goal}` are filled in by the app. Keep them
+- `{name}`, `{n}`, `{total}`, `{bound}`, `{example}`, `{a}`, `{b}`, `{c}`, `{lines}`, `{score}`, `{max}`, `{min}`, `{pos}`, `{goal}`, `{time}` are filled in by the app. Keep them
   exactly as written (Latin, curly braces). A number placeholder after a one-letter prefix takes the real maqaf: `מ־{bound}`.
 - Addressing the child: plural in instructions ("קראו", "פתרו"), gender-neutral or plural in companion lines.
 - `npm run build` fails if `content/build/ui.json` lacks any key in this list (scripts/content.mjs).
-- Total: 324 keys. Regenerate this file with `npm run ui-keys`.
+- Total: 325 keys. Regenerate this file with `npm run ui-keys`.
 
 ## App
 
@@ -297,6 +297,7 @@ and the nikud pipeline vocalizes it into `content/build/ui.json`.
 | `parent.pin.forgot` | שכחתי |
 | `parent.pin.gate` | כדי לאפס את הקוד, פתרו: כמה זה {a} × {b}? |
 | `parent.pin.gateWrong` | לא מדויק, נסו שוב |
+| `parent.pin.locked` | יותר מדי ניסיונות. אפשר לנסות שוב בעוד {time} |
 | `parent.pin.digits` | הקוד |
 | `parent.nodata` | עדיין אין נתונים |
 | `parent.acc.title` | אחוזי הצלחה בניסיון הראשון |

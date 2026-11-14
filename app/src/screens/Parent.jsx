@@ -5,7 +5,7 @@ import { t, loadPassage } from '../lib/content.js';
 import { getLog, getSettings, saveSettings } from '../lib/storage.js';
 import { getSims } from '../lib/simStore.js';
 import {
-  hasPin, setPin, checkPin, makeGate, resetProfileData, deleteProfile,
+  hasPin, setPin, checkPin, makeGate, checkGate, lockedFor, resetProfileData, deleteProfile,
 } from '../lib/parentData.js';
 import { accuracy, minutesPerDay, sessionsOn, recentMistakes, withTrend, describeItem, passageOf, bucketOf } from '../lib/stats.js';
 import { Companion, Btn, Rich } from '../components/Bits.jsx';
@@ -65,14 +65,28 @@ function PinPad({ title, error, onSubmit, maxLen = 4, explicit, extra, resetKey 
   );
 }
 
+// m:ss, for the lockout countdown.
+const fmtWait = (ms) => {
+  const s = Math.ceil(ms / 1000);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+};
+
 function PinGate({ onOpen, onClose }) {
   const [stage, setStage] = useState(hasPin() ? 'enter' : 'set');
   const [first, setFirst] = useState('');
   const [error, setError] = useState('');
   const [tick, setTick] = useState(0);
+  const [wait, setWait] = useState(lockedFor()); // lockout after wrong answers (lib/parentData.js), survives a reload
   const gate = useRef(null);
+  useEffect(() => {
+    if (!wait) return;
+    const id = setInterval(() => setWait(lockedFor()), 1000);
+    return () => clearInterval(id);
+  }, [wait > 0]);
   const fail = (msg) => {
-    setError(msg);
+    const w = lockedFor();
+    setWait(w);
+    setError(w ? '' : msg);
     setTick((x) => x + 1);
   };
   const to = (s) => {
@@ -100,6 +114,12 @@ function PinGate({ onOpen, onClose }) {
         }}
       />
     );
+  } else if (wait > 0) {
+    pad = (
+      <div class="pin-card">
+        <p class="pin-title">{t('parent.pin.locked', { time: fmtWait(wait) })}</p>
+      </div>
+    );
   } else if (stage === 'gate') {
     if (!gate.current) gate.current = makeGate();
     pad = (
@@ -110,10 +130,14 @@ function PinGate({ onOpen, onClose }) {
         maxLen={3}
         resetKey={stage + tick}
         onSubmit={(v) => {
-          if (Number(v) === gate.current.answer) {
+          // The old PIN stays valid until the new one is confirmed (setPin in the confirm stage).
+          if (checkGate(gate.current, v)) {
             gate.current = null;
             to('set');
-          } else fail(t('parent.pin.gateWrong'));
+          } else {
+            gate.current = makeGate(); // a new question after every wrong answer
+            fail(t('parent.pin.gateWrong'));
+          }
         }}
       />
     );

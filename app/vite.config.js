@@ -23,11 +23,33 @@ function noFixturesInBuild() {
   };
 }
 
+// Content-Security-Policy for the built app: everything is self-hosted (fonts, art, content JSON) and nothing is
+// inline, so 'self' covers it all. Build only: the dev server injects <style> tags and the HMR client, which this
+// policy would block. Inline style attributes set from JS (Preact's style={…}) go through the CSSOM and are allowed.
+const CSP = [
+  "default-src 'self'", "script-src 'self'", "style-src 'self'", "img-src 'self'", "font-src 'self'",
+  "connect-src 'self'", "manifest-src 'self'", "worker-src 'self'", "media-src 'self'", "object-src 'none'",
+  "base-uri 'self'", "form-action 'none'",
+].join('; ');
+// Placed right after <meta charset>, ahead of every script and stylesheet (a CSP meta covers only what follows it).
+function cspMeta() {
+  const CHARSET = '<meta charset="utf-8" />';
+  return {
+    name: 'csp-meta',
+    apply: 'build',
+    transformIndexHtml(html) {
+      if (!html.includes(CHARSET)) throw new Error(`csp-meta: ${CHARSET} not found in index.html`);
+      return html.replace(CHARSET, `${CHARSET}\n    <meta http-equiv="Content-Security-Policy" content="${CSP}" />`);
+    },
+  };
+}
+
 export default defineConfig(({ command, isPreview }) => ({
   base: command === 'build' || isPreview ? PAGES_BASE : '/',
   plugins: [
     preact(),
     noFixturesInBuild(),
+    cspMeta(),
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: false, // registered in src/main.jsx
@@ -56,6 +78,10 @@ export default defineConfig(({ command, isPreview }) => ({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,
+        // A new deploy takes over at once (no waiting for every tab to close); src/lib/swUpdate.js then reloads the
+        // page onto it at a safe moment. Without these a fullscreen PWA kept the old build for days.
+        skipWaiting: true,
+        clientsClaim: true,
       },
     }),
   ],

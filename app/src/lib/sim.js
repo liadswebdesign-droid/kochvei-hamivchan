@@ -154,7 +154,7 @@ export function planEndless(content, seed) {
 
 // A pinned plan is still usable when every id it names exists.
 export function defValid(def, content) {
-  if (!def || def.v !== 1) return false;
+  if (!def || def.v !== 1 || ![def.passageIds, def.C, def.D].every(Array.isArray)) return false;
   const has = (list, id) => list.some((x) => x.id === id);
   return (
     def.passageIds.every((id) => has(content.passages, id)) &&

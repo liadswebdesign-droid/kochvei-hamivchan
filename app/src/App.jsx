@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
 import { loadCore, t } from './lib/content.js';
 import { getProfiles, getActiveId, setActiveId } from './lib/storage.js';
+import { setSafeToReload } from './lib/swUpdate.js';
 import { ProfileCreate, ProfileSwitcher } from './screens/Profiles.jsx';
 import { MapScreen } from './screens/MapScreen.jsx';
 import { Practice } from './screens/Practice.jsx';
@@ -25,6 +26,10 @@ export function App() {
   }, []);
 
   const profile = profiles.find((p) => p.id === activeId);
+  // A new build (service-worker update) is reloaded only from the map or the load-error screen, never mid-question.
+  const safeToReload = !!error || (!!content && !!profile && screen.name === 'map');
+  useEffect(() => setSafeToReload(safeToReload), [safeToReload]);
+
   const refresh = () => {
     setProfiles(getProfiles());
     setActive(getActiveId());

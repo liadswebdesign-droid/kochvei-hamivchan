@@ -2,7 +2,7 @@
 //   kh:sim-defs         = { 1: def, …, 6: def }   pinned plans, so #1–#6 stay the same when new content arrives
 //   kh:p:<id>:sims      = [{ sim, t, mode, score, max, tasks:{reading:[s,m],A,B,C,D}, ms, minutes, over }]
 //   kh:p:<id>:simrun    = the run in progress (so a tablet restart mid-test can resume)
-import { load, save, remove } from './storage.js';
+import { save, remove, loadList, loadObject } from './storage.js';
 import { planFixed, defValid, FIXED_SIM_COUNT } from './sim.js';
 
 const pk = (pid, k) => `p:${pid}:${k}`;
@@ -11,7 +11,7 @@ const pk = (pid, k) => `p:${pid}:${k}`;
 // ("short": a passage had to be reused) is replaced as soon as enough content exists to do it properly.
 export function currentDefs(content) {
   const fresh = planFixed(content);
-  const pinned = load('sim-defs', {});
+  const pinned = loadObject('sim-defs') || {};
   const keep = fresh.every((f, i) => {
     const p = pinned[i + 1];
     return p && defValid(p, content) && !(p.short && !f.short);
@@ -22,7 +22,7 @@ export function currentDefs(content) {
 }
 export const defFor = (n, content) => currentDefs(content)[n - 1];
 
-export const getSims = (pid) => load(pk(pid, 'sims'), []);
+export const getSims = (pid) => loadList(pk(pid, 'sims'));
 export function addSim(pid, entry) {
   const list = getSims(pid);
   list.push(entry);
@@ -43,7 +43,11 @@ export function bestOverall(pid) {
   return top;
 }
 
-export const getRun = (pid) => load(pk(pid, 'simrun'), null);
+// A run without a simulation id cannot be resumed (MockStart would offer it): read as no run.
+export function getRun(pid) {
+  const run = loadObject(pk(pid, 'simrun'));
+  return run && typeof run.simId === 'string' ? run : null;
+}
 export const saveRun = (pid, run) => save(pk(pid, 'simrun'), run);
 export const clearRun = (pid) => remove(pk(pid, 'simrun'));
 

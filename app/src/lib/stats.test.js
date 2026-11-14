@@ -108,11 +108,12 @@ describe('parent data (memory storage)', () => {
     expect(checkPin('4821')).toBe(false);
     expect(checkPin('1111')).toBe(true);
   });
-  it('the forgot gate is always a 6-9 times table with two different factors', () => {
+  it('the forgot gate is two-digit × two-digit (13-29, no 20) with a three-digit answer', () => {
     for (let i = 0; i < 200; i++) {
       const g = makeGate();
-      expect(g.a >= 6 && g.a <= 9 && g.b >= 6 && g.b <= 9 && g.a !== g.b).toBe(true);
+      expect(g.a >= 13 && g.a <= 29 && g.b >= 13 && g.b <= 29 && g.a !== 20 && g.b !== 20).toBe(true);
       expect(g.answer).toBe(g.a * g.b);
+      expect(g.answer >= 100 && g.answer <= 999).toBe(true);
     }
   });
   it('settings are one store per profile, with defaults, and merge', () => {

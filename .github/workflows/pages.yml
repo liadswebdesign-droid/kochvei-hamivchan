@@ -1,22 +1,16 @@
 name: Build and deploy to GitHub Pages
 
-# Push to main: strict build. It FAILS while content/build/ is incomplete, so dev fixtures can never ship by accident.
-# Manual run with preview=true: explicit preview build (fixtures / unvocalized drafts, with an on-screen
-# "preview" banner) for testing on the tablets before the nikud pipeline has produced content/build/.
+# Push to main (or a manual run): strict build. It FAILS while content/build/ is incomplete or public/content holds
+# dev fixtures, so fixtures can never reach the girls' tablets. Previews (`npm run build:preview`) stay local: a
+# deploy here replaces the one site the tablets run.
 on:
   push:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      preview:
-        description: 'Preview build: allow dev fixtures / unvocalized drafts (shows a preview banner)'
-        type: boolean
-        default: false
 
+# Least privilege: the build job (which runs npm code) can only read; only the deploy job can publish.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -25,12 +19,18 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
     defaults:
       run:
         working-directory: app
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      # Actions are pinned to full commit SHAs (tag in the comment); bump them deliberately.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: npm
@@ -38,22 +38,21 @@ jobs:
       - run: npm ci
       - run: npm test
       - name: Build (strict)
-        if: ${{ !inputs.preview }}
         run: npm run build
-      - name: Build (preview, fixtures allowed)
-        if: ${{ inputs.preview }}
-        run: npm run build:preview
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: app/dist
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

@@ -15,7 +15,7 @@
 // The mock exam (T6) calls
 // onMockComplete(profile) — or awardSticker(profile, 'mock') directly — and shows <StickerReward> with the result.
 import { STICKER_COUNT, STREAK_MILESTONES, STICKER_EVERY_SESSIONS } from '../config.js';
-import { getRewardsRaw, saveRewardsRaw } from './storage.js';
+import { getRewardsRaw, saveRewardsRaw, withDefaults } from './storage.js';
 
 export const REASONS = ['three-stars', 'five-sessions', 'streak', 'mock'];
 
@@ -88,7 +88,7 @@ export function activityRewards(r, now) {
 
 // ---- storage-backed API -------------------------------------------------------------------------------------------
 const pidOf = (profile) => (typeof profile === 'string' ? profile : profile.id);
-export const getRewards = (profile) => ({ ...emptyRewards(), ...(getRewardsRaw(pidOf(profile)) || {}) });
+export const getRewards = (profile) => withDefaults(emptyRewards(), getRewardsRaw(pidOf(profile)));
 const put = (profile, r) => saveRewardsRaw(pidOf(profile), r);
 
 function update(profile, fn) {
