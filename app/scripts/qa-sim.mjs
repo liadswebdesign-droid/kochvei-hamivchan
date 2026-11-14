@@ -70,14 +70,23 @@ async function shot(name, W, H, { full = false } = {}) {
     const sheet = document.querySelector('.sheet');
     const sheetFit = sheet ? { sheetBottom: Math.round(sheet.getBoundingClientRect().bottom), vh: innerHeight } : null;
     const circles = document.querySelectorAll('.pencil-circle').length;
-    return { overflowX: docW > vw + 1, docW, vw, offenders, navOrder, optOrder, maths, circles, sheetFit };
+    // the yellow preview banner must not cover anything a child can tap
+    const bannerCovers = (() => {
+      const bn = document.querySelector('.preview-banner');
+      if (!bn) return [];
+      const b = bn.getBoundingClientRect();
+      return [...document.querySelectorAll('button, a[href], input, select, textarea, [role=button], [role=radio], [role=tab], [tabindex]:not([tabindex="-1"])')]
+        .filter((el) => { const r = el.getBoundingClientRect(); return r.width && r.height && getComputedStyle(el).visibility !== 'hidden' && r.left < b.right && r.right > b.left && r.top < b.bottom && r.bottom > b.top; })
+        .slice(0, 5).map((el) => (el.className && el.className.baseVal !== undefined ? el.className.baseVal : el.className) || el.tagName);
+    })();
+    return { overflowX: docW > vw + 1, docW, vw, offenders, navOrder, optOrder, maths, circles, sheetFit, bannerCovers };
   `);
   const file = path.join(OUT, `${name}-${W}x${H}.png`);
   const { data } = await send('Page.captureScreenshot', { format: 'png' });
   fs.writeFileSync(file, Buffer.from(data, 'base64'));
   const row = { shot: path.basename(file), ...checks };
   report.push(row);
-  if (checks.overflowX || checks.navOrder === 'WRONG' || checks.optOrder === 'WRONG' || checks.maths.includes('WRONG') || checks.offenders.length) problems.push(row);
+  if (checks.bannerCovers.length || checks.overflowX || checks.navOrder === 'WRONG' || checks.optOrder === 'WRONG' || checks.maths.includes('WRONG') || checks.offenders.length) problems.push(row);
   console.log(path.basename(file), JSON.stringify(checks));
 }
 const click = (sel, i = 0) => js(`const el = document.querySelectorAll(${JSON.stringify(sel)})[${i}]; if (!el) throw new Error('no ' + ${JSON.stringify(sel)}); el.click();`);
@@ -239,8 +248,11 @@ async function run(W, H) {
   await answerPage((it, i) => i !== 1);
   await shot('13-taskC', W, H);
   await next();
-  await answerPage(() => true);
-  await next();
+  // task C has as many pages as the measured paging gives it (landscape: often one word problem per page)
+  for (let k = 0; k < 6 && (await exam()).task === 'C' && (await exam()).type === 'items'; k++) {
+    await answerPage(() => true);
+    await next();
+  }
   await next(); // example D → D
   await answerPage(() => true);
   await shot('14-taskD-circled', W, H);
@@ -371,17 +383,196 @@ async function run(W, H) {
   await shot('30-parent-after-delete', W, H);
 }
 
+// ---- booklet fit audit ------------------------------------------------------------------------------------------------
+// For EVERY page of EVERY mock (#1–#6 + one endless), in this orientation: every question and every option must be fully
+// inside the page's content box, inside the viewport, not cut by any overflow-clipping ancestor, and clear of the
+// page footer, the nav buttons, the number pad and the preview banner. A page that the app marked `is-scroll` (one
+// question alone taller than a page) is allowed to scroll: then its last option must be reachable by scrolling.
+// Any other page whose content is taller than its box fails (the overflow:auto sheet hides it without a scrollbar,
+// which is exactly how option ד disappeared under "עמוד 3"). Passage pages are measured and reported (lines, font,
+// content height vs box) rather than failed.
+const PAGE_CHECK = `
+  const r = (el) => el.getBoundingClientRect();
+  const sheet = document.querySelector('.exam-stage .sheet');
+  if (!sheet) return { error: 'no sheet' };
+  const body = sheet.querySelector('.sheet-body');
+  const bs = getComputedStyle(body);
+  const br = r(body);
+  const clip = { left: br.left + body.clientLeft, top: br.top + body.clientTop, right: br.left + body.clientLeft + body.clientWidth, bottom: br.top + body.clientTop + body.clientHeight };
+  const content = { left: clip.left + parseFloat(bs.paddingLeft), right: clip.right - parseFloat(bs.paddingRight), top: clip.top + parseFloat(bs.paddingTop) - body.scrollTop, bottom: clip.bottom - parseFloat(bs.paddingBottom) };
+  const T = 0.5;
+  const inside = (a, b) => a.left >= b.left - T && a.right <= b.right + T && a.top >= b.top - T && a.bottom <= b.bottom + T;
+  const hit = (a, b) => a.left < b.right - T && a.right > b.left + T && a.top < b.bottom - T && a.bottom > b.top + T;
+  const vp = { left: 0, top: 0, right: innerWidth, bottom: innerHeight };
+  const foot = sheet.querySelector('.sheet-foot');
+  const blockers = [
+    ...(foot ? [['footer', foot]] : []),
+    ...[...document.querySelectorAll('.enav .btn')].map((b) => ['nav button', b]),
+    ...[...document.querySelectorAll('.enav .numpad .key')].map((b) => ['number pad', b]),
+    ...[...document.querySelectorAll('.etop .corner-btn')].map((b) => ['close button', b]),
+    ...[...document.querySelectorAll('.preview-banner')].map((b) => ['preview banner', b]),
+  ].map(([n, el]) => [n, r(el)]);
+  const clippers = (el) => { const out = []; for (let a = el.parentElement; a; a = a.parentElement) { const s = getComputedStyle(a); if (s.overflowX !== 'visible' || s.overflowY !== 'visible') out.push(a); } return out; };
+  const clipBox = (a) => { const b = r(a); return { left: b.left + a.clientLeft, top: b.top + a.clientTop, right: b.left + a.clientLeft + a.clientWidth, bottom: b.top + a.clientTop + a.clientHeight }; };
+  const scroll = sheet.classList.contains('is-scroll');
+  const fails = [];
+  const checkEl = (el, what, id) => {
+    const b = r(el);
+    if (!b.width || !b.height) return fails.push({ id, what, why: 'zero size' });
+    if (!inside(b, content)) fails.push({ id, what, why: 'outside the page content box', box: [b.top, b.bottom].map(Math.round), page: [content.top, content.bottom].map(Math.round) });
+    if (!inside(b, vp)) fails.push({ id, what, why: 'outside the viewport' });
+    for (const a of clippers(el)) if (!inside(b, clipBox(a))) { fails.push({ id, what, why: 'clipped by overflow ancestor .' + String(a.className).trim().split(/\\s+/)[0] }); break; }
+    for (const [n, bb] of blockers) if (hit(b, bb)) fails.push({ id, what, why: 'overlaps the ' + n });
+  };
+  const items = [...body.querySelectorAll('.bk-item')];
+  let scrolled = null;
+  if (scroll) {
+    // allowed to scroll: bring the bottom into view, then the last item must be fully reachable
+    body.scrollTop = body.scrollHeight;
+    await new Promise((res) => requestAnimationFrame(() => requestAnimationFrame(res)));
+    scrolled = { scrollHeight: body.scrollHeight, clientHeight: body.clientHeight, items: items.length, overflowY: bs.overflowY };
+    const last = items[items.length - 1];
+    const opts = last ? [...last.querySelectorAll('.bk-opt')] : [];
+    const lastOpt = opts[opts.length - 1] || last;
+    if (lastOpt) { const b = r(lastOpt); if (!inside(b, clip)) fails.push({ id: last.dataset.item, what: 'last option after scrolling', why: 'not reachable by scrolling' }); }
+    if (items.length !== 1) fails.push({ why: 'scroll fallback on a page with ' + items.length + ' questions' });
+    if (bs.overflowY !== 'auto' && bs.overflowY !== 'scroll') fails.push({ why: 'scroll page does not scroll' });
+    body.scrollTop = 0;
+  } else {
+    for (const it of items) {
+      const id = it.dataset.item || 'example';
+      checkEl(it, 'question', id);
+      [...it.querySelectorAll('.bk-opt')].forEach((o, k) => checkEl(o, 'option ' + (k + 1), id));
+    }
+  }
+  const isPassage = !!body.querySelector('.passage:not(.bk-mini)');
+  const over = body.scrollHeight - body.clientHeight;
+  if (!scroll && !isPassage && over > 0) fails.push({ why: 'page content is ' + over + 'px taller than the page box (hidden below the footer)' });
+  if (foot) { const f = r(foot); if (!inside(f, vp)) fails.push({ why: 'footer outside the viewport' }); const nav = document.querySelector('.enav'); if (nav && f.bottom > r(nav).top + T) fails.push({ why: 'page overlaps the nav bar' }); }
+  let passage = null;
+  if (isPassage) {
+    const a = body.querySelector('.passage');
+    passage = { lines: a.querySelectorAll('.pline').length, fontPx: parseFloat(getComputedStyle(a).fontSize), passageH: Math.round(r(a).height), boxH: body.clientHeight, contentH: body.scrollHeight, fits: over <= 0, hscroll: a.classList.contains('pfit-scroll') };
+    // the same page at the auto-fit floor (19px, PassageView MIN_PX): would shrinking the font make it fit?
+    const keep = a.style.fontSize;
+    a.style.fontSize = '19px';
+    passage.floorContentH = body.scrollHeight;
+    passage.floorFits = body.scrollHeight <= body.clientHeight;
+    a.style.fontSize = keep;
+  }
+  return { fails, scroll, scrolled, passage, items: items.map((i) => i.dataset.item).filter(Boolean) };
+`;
+
+async function freshProfile() {
+  await send('Page.navigate', { url: BASE });
+  await wait(1200);
+  await js(`localStorage.clear(); location.reload();`).catch(() => {});
+  await wait(1500);
+  await js(`const i = document.querySelector('.name-input'); i.value = 'בודקת'; i.dispatchEvent(new Event('input', { bubbles: true }));`);
+  await click('.create-card .btn-primary');
+  await click('.comp-card', 5);
+  await click('.row-btns .btn-primary');
+  await wait(600);
+}
+const audit = { mocks: {}, fails: [], scrollPages: [], passages: [], checked: {} };
+async function auditBooklets(W, H) {
+  const orient = W > H ? 'landscape' : 'portrait';
+  await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: true, screenOrientation: W > H ? { type: 'landscapePrimary', angle: 90 } : { type: 'portraitPrimary', angle: 0 } });
+  await send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+  await freshProfile();
+  await js(`window.__khStopMs = 600000;`);
+  await click('.isl-mock');
+  await wait(500);
+  const cards = await js(`return document.querySelectorAll('.ms-card').length;`);
+  // the six mocks + one endless, then a "sweep" booklet (the endless card, dev hook) holding ALL passages and ALL word
+  // problems, so every question of the real content is paged and checked, not just the ones the mocks happen to pick
+  for (let c = 0; c <= cards; c++) {
+    const sweep = c === cards;
+    await js(sweep ? `window.__khSimOverride = (ct) => ({ passageIds: ct.passages.map((p) => p.id), C: ct.wordProblems.map((w) => w.id) });` : `window.__khSimOverride = null;`);
+    await click('.ms-mode', 1);
+    await click('.ms-card', sweep ? cards - 1 : c);
+    for (let k = 0; k < 40 && !(await js(`return !!(window.__khExam && document.querySelector('.exam-stage .sheet'));`)); k++) await wait(100);
+    const info = await js(`const e = window.__khExam; return { n: e.sim.n, pages: e.pages.map((p) => ({ type: p.type, task: p.task || null, pageNo: p.pageNo, items: (p.items || []).map((i) => i.id), scroll: !!p.scroll, passage: p.passage && p.passage.id })) };`);
+    const label = sweep ? 'sweep (all passages + word problems)' : 'mock ' + info.n;
+    const rec = (audit.mocks[label] = audit.mocks[label] || {});
+    rec[orient] = { pages: info.pages.length, numbered: info.pages.filter((p) => p.pageNo).length, readingPages: info.pages.filter((p) => p.type === 'items' && p.task === 'reading').map((p) => p.items.length).join('+'), cPages: info.pages.filter((p) => p.type === 'items' && p.task === 'C').map((p) => p.items.length).join('+'), scroll: [] };
+    for (let i = 0; i < info.pages.length; i++) {
+      const p = info.pages[i];
+      if (sweep && p.type !== 'items' && p.type !== 'passage') continue;
+      if (p.type === 'stop') await js(`window.__khExam.setStopOk(true);`);
+      await js(`window.__khExam.setPage(${i});`);
+      await wait(420); // the page-turn animation is 340 ms
+      const res = await js(PAGE_CHECK);
+      const where = `${label} ${orient} page ${p.pageNo ?? 'cover'} (${p.type}${p.task ? ':' + p.task : ''}${p.passage ? ' ' + p.passage : ''})`;
+      if (res.error) { audit.fails.push({ where, why: res.error }); continue; }
+      for (const f of res.fails) audit.fails.push({ where, ...f });
+      if (sweep) audit.checked[orient] = (audit.checked[orient] || 0) + res.items.length;
+      if (res.scroll) { audit.scrollPages.push({ where, items: res.items, ...res.scrolled }); rec[orient].scroll.push(res.items.join()); }
+      if (res.passage && sweep) audit.passages.push({ where, mock: info.n, orient, id: p.passage, ...res.passage });
+      const safe = (s) => s.replace(/[^a-z0-9-]+/gi, '_');
+      if (res.fails.length || res.scroll || (res.passage && !sweep && process.env.KH_QA_SHOTS !== '0') || (!sweep && info.n === 1 && p.type === 'items' && p.task === 'reading')) {
+        const { data } = await send('Page.captureScreenshot', { format: 'png' });
+        fs.writeFileSync(path.join(OUT, safe(`audit-m${info.n}-p${p.pageNo}-${p.type}${p.passage ? '-' + p.passage : ''}${res.fails.length ? '-FAIL' : ''}`) + `-${W}x${H}.png`), Buffer.from(data, 'base64'));
+      }
+      if (res.fails.length) console.log('✖', where, JSON.stringify(res.fails.slice(0, 4)));
+    }
+    console.log(`audited ${label} ${orient}: ${info.pages.length} pages, reading ${rec[orient].readingPages}, C ${rec[orient].cPages}, scroll ${rec[orient].scroll.length}`);
+    // rotation keeps her place: on the page holding the 2nd question of the first passage, circle it, rotate, rotate back
+    if (c === 0 && !sweep) {
+      const target = info.pages.find((p) => p.type === 'items' && p.task === 'reading' && p.items.length > 1) || info.pages.find((p) => p.type === 'items' && p.task === 'reading');
+      const q = target.items[target.items.length - 1];
+      await js(`window.__khExam.setPage(${info.pages.indexOf(target)});`);
+      await wait(450);
+      await js(`document.querySelector('[data-item="${q}"] .bk-opt:nth-child(3)').click();`);
+      await wait(200);
+      const at = async () => js(`const e = window.__khExam; return { onPage: e.pages[e.page].items ? e.pages[e.page].items.map((i) => i.id) : [], answers: Object.keys(e.answers).length, circled: !!document.querySelector('[data-item="${q}"] .pencil-circle'), visible: (() => { const el = document.querySelector('[data-item="${q}"]'); if (!el) return false; const b = el.getBoundingClientRect(); const s = document.querySelector('.sheet-body').getBoundingClientRect(); return b.top >= s.top - 1 && b.bottom <= s.bottom + 1; })() };`);
+      for (const [w2, h2] of [[H, W], [W, H]]) {
+        await send('Emulation.setDeviceMetricsOverride', { width: w2, height: h2, deviceScaleFactor: 1, mobile: true, screenOrientation: w2 > h2 ? { type: 'landscapePrimary', angle: 90 } : { type: 'portraitPrimary', angle: 0 } });
+        await wait(900);
+        const s = await at();
+        console.log(`rotate to ${w2}x${h2}:`, JSON.stringify(s));
+        if (!s.onPage.includes(q) || s.answers !== 1 || !s.circled || !s.visible) audit.fails.push({ where: `${label} rotate ${orient} → ${w2}x${h2}`, why: 'lost her place or answer after rotating', id: q, state: s });
+      }
+    }
+    // leave the mock (and give the run up so the next card starts clean)
+    await click('.etop .corner-btn');
+    await clickText('.confirm-card .btn', 'כן');
+    await wait(500);
+    await click('.ms-resume .btn-ghost').catch(() => {});
+    await wait(300);
+  }
+}
+
+const AUDIT_ONLY = process.env.KH_QA_AUDIT_ONLY === '1';
 try {
-  if (ORIENT !== 'port') await run(1280, 800);
-  if (ORIENT !== 'land') await run(800, 1280);
+  if (ORIENT !== 'port') await auditBooklets(1280, 800);
+  if (ORIENT !== 'land') await auditBooklets(800, 1280);
+  if (!AUDIT_ONLY && ORIENT !== 'port') await run(1280, 800);
+  if (!AUDIT_ONLY && ORIENT !== 'land') await run(800, 1280);
 } catch (e) {
   console.error('QA script error:', e.message);
   process.exitCode = 1;
 } finally {
-  fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify({ problems, report }, null, 1));
+  fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify({ problems, report, audit }, null, 1));
+  console.log('\nbooklet audit (pages per mock; reading / task C questions per page; scroll-fallback pages):');
+  for (const [m, o] of Object.entries(audit.mocks)) for (const [k, v] of Object.entries(o)) console.log(`  ${m} ${k}: ${v.pages} pages, reading ${v.readingPages}, C ${v.cPages}, scroll fallback: ${v.scroll.length ? v.scroll.join(' | ') : 'none'}`);
+  console.log('  questions checked per orientation: ' + JSON.stringify(audit.checked));
+  const longest = audit.passages.slice().sort((a, b) => b.lines - a.lines)[0];
+  for (const o of ['landscape', 'portrait']) {
+    const ps = audit.passages.filter((p) => p.orient === o);
+    if (!ps.length) continue;
+    const bad = ps.filter((p) => !p.fits);
+    console.log(`  passages ${o}: ${ps.length - bad.length}/${ps.length} fit their page` + (bad.length ? `; overflowing: ${bad.map((p) => `${p.id} (${p.lines} lines @${p.fontPx}px: content ${p.contentH}px in a ${p.boxH}px box; @19px floor ${p.floorContentH}px)`).join(', ')}` : ''));
+  }
+  if (longest) console.log('  longest passage:', longest.id, longest.lines, 'lines');
+  if (audit.fails.length) {
+    console.log('\n✖ BOOKLET FIT FAILURES (' + audit.fails.length + '):');
+    for (const f of audit.fails) console.log('  ' + f.where + (f.id ? ' — question ' + f.id : '') + (f.what ? ' — ' + f.what : '') + ': ' + f.why);
+    process.exitCode = 1;
+  } else console.log('✓ booklet fit: every question and option of every page of every mock is fully on its page, in both orientations');
   console.log(problems.length ? 'PROBLEMS: ' + JSON.stringify(problems.map((p) => p.shot)) : 'no layout problems flagged');
   console.log(consoleErrors.length ? 'console errors: ' + JSON.stringify(consoleErrors.slice(0, 10)) : 'no console errors');
-  if (consoleErrors.length) process.exitCode = 1;
+  if (consoleErrors.length || problems.length) process.exitCode = 1;
   ws.close();
   chrome.kill();
   try { fs.rmSync(profileDir, { recursive: true, force: true }); } catch {}
