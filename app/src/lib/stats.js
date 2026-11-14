@@ -17,9 +17,12 @@ export function bucketOf(e, readingTypes = {}) {
 }
 
 // First-try accuracy per bucket: [{ key, correct, total, pct }] in a stable display order.
+// Mini-game taps (log lines tagged `game`, T5) count as practice time (minutesPerDay, sessionsOn) but not here: a timed
+// game is play, not a measure of the skill, and its ids (game:detective:…) name no question.
 export function accuracy(log, readingTypes) {
   const acc = {};
   for (const e of log) {
+    if (e.game) continue;
     const k = bucketOf(e, readingTypes);
     const a = (acc[k] ||= { key: k, correct: 0, total: 0 });
     a.total += 1;
@@ -86,7 +89,7 @@ export function recentMistakes(log, n = 20) {
   const out = [];
   for (let i = log.length - 1; i >= 0 && out.length < n; i--) {
     const e = log[i];
-    if (e.correct || seen.has(e.id)) continue;
+    if (e.game || e.correct || seen.has(e.id)) continue; // games: see accuracy()
     seen.add(e.id);
     out.push(e);
   }

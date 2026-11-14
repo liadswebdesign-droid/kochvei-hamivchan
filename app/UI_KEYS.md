@@ -8,7 +8,7 @@ and the nikud pipeline vocalizes it into `content/build/ui.json`.
   exactly as written (Latin, curly braces). A number placeholder after a one-letter prefix takes the real maqaf: `מ־{bound}`.
 - Addressing the child: plural in instructions ("קראו", "פתרו"), gender-neutral or plural in companion lines.
 - `npm run build` fails if `content/build/ui.json` lacks any key in this list (scripts/content.mjs).
-- Total: 267 keys. Regenerate this file with `npm run ui-keys`.
+- Total: 321 keys. Regenerate this file with `npm run ui-keys`.
 
 ## App
 
@@ -44,12 +44,14 @@ and the nikud pipeline vocalizes it into `content/build/ui.json`.
 
 | Key | Placeholder (unvocalized) |
 |---|---|
-| `companion.unicorn` | חד קרן |
-| `companion.fox` | שועל |
-| `companion.owl` | ינשוף |
-| `companion.dragon` | דרקון |
-| `companion.rocket` | חללית |
-| `companion.dolphin` | דולפין |
+| `companion.fox` | שועלי |
+| `companion.bunny` | ארנבי |
+| `companion.unicorn` | קשתית |
+| `companion.owl` | ינשופי |
+| `companion.panda` | פנדי |
+| `companion.kitten-astronaut` | מיצי החללית |
+| `companion.baby-dragon` | דרקוני |
+| `companion.dolphin` | דולפי |
 
 ## World map
 
@@ -66,6 +68,9 @@ and the nikud pipeline vocalizes it into `content/build/ui.json`.
 | `map.parent` | אזור הורים |
 | `map.mock.best` | {score} מתוך {max} |
 | `map.mock.none` | מבחן ראשון מחכה |
+| `map.album` | אלבום |
+| `map.games` | משחקים |
+| `map.streak` | {n} ימים ברצף |
 
 ## Island names
 
@@ -351,4 +356,73 @@ and the nikud pipeline vocalizes it into `content/build/ui.json`.
 | `parent.set.delete` | מחיקת הפרופיל של {name} |
 | `parent.set.deleteConfirm` | למחוק את הפרופיל של {name} ואת כל הנתונים שלו? אי אפשר לשחזר. |
 | `parent.set.deleteYes` | כן, למחוק |
+
+## Sticker album (T5)
+
+| Key | Placeholder (unvocalized) |
+|---|---|
+| `album.title` | האלבום שלי |
+| `album.count` | {n} מתוך {total} |
+| `album.locked` | מדבקה שעוד מחכה לכם |
+| `album.streak` | {n} ימים ברצף |
+| `album.streak.one` | יום ראשון ברצף |
+| `album.how` | איך מקבלים מדבקה? |
+| `album.rule.threeStars` | הסבב הראשון של היום עם שלושה כוכבים |
+| `album.rule.fiveSessions` | כל חמישה סבבים |
+| `album.rule.streak` | כל יומיים ברצף, עד 10 ימים |
+| `album.rule.mock` | כל מבחן דמה עד הסוף |
+| `album.rule.gold` | האלבום מלא? כל פרס הוא כוכב זהב |
+| `album.gold` | {n} כוכבי זהב |
+| `album.gold.one` | כוכב זהב אחד |
+
+## Sticker reward (T5)
+
+| Key | Placeholder (unvocalized) |
+|---|---|
+| `sticker.new` | מדבקה חדשה! |
+| `sticker.gold` | כוכב זהב! |
+| `sticker.reason.three-stars` | סבב עם שלושה כוכבים! |
+| `sticker.reason.five-sessions` | עוד חמישה סבבים! |
+| `sticker.reason.streak` | {n} ימים ברצף! |
+| `sticker.reason.mock` | סיימתם מבחן דמה! |
+| `sticker.toAlbum` | לאלבום |
+| `sticker.ok` | יופי! |
+
+## Mini-games corner (T5)
+
+| Key | Placeholder (unvocalized) |
+|---|---|
+| `games.title` | משחקים |
+| `games.best` | השיא: {n} |
+| `games.new` | עוד לא שיחקתם |
+| `games.race.title` | מרוץ חשבון |
+| `games.race.how` | פתרו כמה שיותר תרגילים לפני שהזמן נגמר |
+| `games.catch.title` | תפסו את המספר |
+| `games.catch.how` | געו בבועה עם מספר שמתאים לתרגיל |
+| `games.detective.title` | בלש השורות |
+| `games.detective.how` | מצאו באיזו שורה כתובה המילה, וגעו בשורה |
+| `games.builder.title` | חידות בציורים — בונים |
+| `games.builder.how` | גררו ציורים לשורה עד שהחשבון יוצא נכון |
+
+## Inside a mini-game (T5)
+
+| Key | Placeholder (unvocalized) |
+|---|---|
+| `game.start` | יוצאים! |
+| `game.time` | זמן |
+| `game.quit` | יציאה למשחקים |
+| `game.over` | הזמן נגמר! |
+| `game.final` | {n} נקודות |
+| `game.final.one` | נקודה אחת |
+| `game.record` | שיא חדש! |
+| `game.bestWas` | השיא שלכם: {n} |
+| `game.again` | עוד פעם |
+| `game.toGames` | למשחקים |
+| `game.race.lap` | הקפה {n} |
+| `game.detective.ask` | באיזו שורה כתוב |
+| `game.detective.line` | שורה {n} |
+| `game.builder.target` | צריך להגיע ל־{n} |
+| `game.builder.got` | יצא {n}. נסו לשנות |
+| `game.builder.clear` | ניקוי השורה |
+| `game.builder.tray` | ציורים |
 

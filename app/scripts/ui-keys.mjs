@@ -14,6 +14,7 @@ const TITLES = {
   map: 'World map', island: 'Island names', instr: 'Instructions', mc: 'Answer labels', numpad: 'Number pad (screen-reader labels)',
   practice: 'Practice screen', feedback: 'Feedback after an answer', hint: 'Hints for generated math items', results: 'Results screen',
   sim: 'Test simulation (booklet, examples, stop page, results and mistakes review)', parent: 'Parent screen (plain unvocalized Hebrew is fine: an adult reads it)',
+  album: 'Sticker album (T5)', sticker: 'Sticker reward (T5)', games: 'Mini-games corner (T5)', game: 'Inside a mini-game (T5)',
 };
 let md = `# UI text keys
 

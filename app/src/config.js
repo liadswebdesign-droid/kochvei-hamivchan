@@ -9,15 +9,34 @@ export const MAX_REVIEW_PER_SESSION = 3;
 // Test simulation: how long the companion-as-teacher keeps the "stop" page closed before saying "you may continue".
 export const STOP_PAUSE_MS = 10000;
 
-// Companions. T5 replaces `emoji` with art: give an entry `img: 'companions/owl.svg'` (path under public/) and the
-// <Companion> component renders the image instead of the emoji. Names come from ui.json key `companion.<id>`.
+// ---- T5: companions (art in public/art/companions, made by tools/art/convert.py) ------------------------------------
+// `img` = idle pose, `cheer` = success pose (both 512px, full figure), `face` = 160px head crop for small chips.
+// Names come from ui.json key `companion.<id>`.
+const art = (id) => ({ id, img: `art/companions/${id}-idle.webp`, cheer: `art/companions/${id}-cheer.webp`, face: `art/companions/${id}-face.webp` });
 export const companions = [
-  { id: 'unicorn', emoji: '🦄', color: '#f6c6e6' },
-  { id: 'fox', emoji: '🦊', color: '#ffd2a8' },
-  { id: 'owl', emoji: '🦉', color: '#d9c9f2' },
-  { id: 'dragon', emoji: '🐲', color: '#bfe8c8' },
-  { id: 'rocket', emoji: '🚀', color: '#c4defa' },
-  { id: 'dolphin', emoji: '🐬', color: '#bfeaf0' },
+  { ...art('fox'), color: '#ffd9b8' },
+  { ...art('bunny'), color: '#f3dff5' },
+  { ...art('unicorn'), color: '#fbd3ea' },
+  { ...art('owl'), color: '#e6d8c6' },
+  { ...art('panda'), color: '#d8efd4' },
+  { ...art('kitten-astronaut'), color: '#cfe3fa' },
+  { ...art('baby-dragon'), color: '#cdeccf' },
+  { ...art('dolphin'), color: '#c9edf3' },
+];
+// Profiles saved before the art stored these ids (T1 emoji placeholders).
+export const COMPANION_ALIASES = { dragon: 'baby-dragon', rocket: 'kitten-astronaut' };
+export const companionId = (id) => COMPANION_ALIASES[id] || id;
+
+// ---- T5: sticker album + mini-games ---------------------------------------------------------------------------------
+export const STICKER_COUNT = 24; // public/art/stickers/sticker-01..24.webp
+export const STREAK_MILESTONES = [2, 4, 6, 8, 10];
+export const STICKER_EVERY_SESSIONS = 5;
+// skill = the practice skill a game trains (the attempt log tags every game attempt with `game` and this skill).
+export const games = [
+  { id: 'race', skill: 'exercises', seconds: 75, color: '#7fd18b', deep: '#3f9a52' },
+  { id: 'catch', skill: 'missing', seconds: 75, color: '#6cc3f0', deep: '#2f86c0' },
+  { id: 'detective', skill: 'reading', seconds: 90, color: '#ffb84d', deep: '#d9822b' },
+  { id: 'builder', skill: 'riddles', seconds: 90, color: '#b49af0', deep: '#7a5cc9' },
 ];
 
 // Islands on the map. `skill` keys the per-profile progress. Layout lives in CSS (.isl-<id>).

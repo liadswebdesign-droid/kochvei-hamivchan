@@ -33,13 +33,15 @@ const ws = new WebSocket(target.webSocketDebuggerUrl);
 await new Promise((r) => (ws.onopen = r));
 let msgId = 0;
 const pending = new Map();
+const consoleErrors = [];
 ws.onmessage = (e) => {
   const m = JSON.parse(e.data);
   if (m.id && pending.has(m.id)) {
     const { res, rej } = pending.get(m.id);
     pending.delete(m.id);
     m.error ? rej(new Error(m.error.message)) : res(m.result);
-  }
+  } else if (m.method === 'Runtime.exceptionThrown') consoleErrors.push(m.params.exceptionDetails.exception?.description || m.params.exceptionDetails.text);
+  else if (m.method === 'Runtime.consoleAPICalled' && m.params.type === 'error') consoleErrors.push(m.params.args.map((a) => a.value || a.description).join(' '));
 };
 const send = (method, params = {}) =>
   new Promise((res, rej) => {
@@ -53,6 +55,7 @@ async function js(expr) {
   if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description || r.exceptionDetails.text);
   return r.result.value;
 }
+await send('Runtime.enable');
 const report = [];
 async function shot(name, W, H) {
   await wait(900);
@@ -254,6 +257,8 @@ try {
   process.exitCode = 1;
 } finally {
   fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(report, null, 1));
+  console.log(consoleErrors.length ? 'console errors: ' + JSON.stringify(consoleErrors.slice(0, 10)) : 'no console errors');
+  if (consoleErrors.length) process.exitCode = 1;
   ws.close();
   chrome.kill();
   try { fs.rmSync(profileDir, { recursive: true, force: true }); } catch {}

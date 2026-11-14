@@ -1,6 +1,7 @@
 // Pieces of the paper test booklet: the page, the pencil circle, the sand clock, the stop-sign dog and one test item.
-import { t } from '../lib/content.js';
-import { Companion, MathLine, DigitEquation, RiddleRows, StemText } from './Bits.jsx';
+import { t, tx } from '../lib/content.js';
+import { stripBold } from '../lib/rich.js';
+import { Companion, MathLine, DigitEquation, RiddleRows, StemText, Rich } from './Bits.jsx';
 import { RiddleIcon } from './Icons.jsx';
 
 // ---- pencil circle ---------------------------------------------------------------------------------------------
@@ -117,7 +118,7 @@ export function Say({ companion, children, mood }) {
   return (
     <div class="say">
       <Companion id={companion} size={76} mood={mood} />
-      <p class="say-bubble">{children}</p>
+      <p class="say-bubble">{typeof children === 'string' ? <Rich text={children} /> : children}</p>
     </div>
   );
 }
@@ -135,7 +136,7 @@ export function BkChoices({ options, selected, onSelect, layout = 'list', render
               <span class="bk-letter-ch">{t('mc.label.' + (i + 1))}</span>
               {on && <PencilCircle variant={i} delay={delay} key={'c' + i} />}
             </span>
-            <span class="bk-opt-text">{render ? render(opt, i) : opt}</span>
+            <span class="bk-opt-text">{render ? render(opt, i) : <Rich text={opt} />}</span>
           </button>
         );
       })}
@@ -161,7 +162,7 @@ export function BkItem({ item, answer, onAnswer, active, onActivate, readOnly, d
     );
   }
   const numericOpts = item.options.every(isNumeric);
-  const layout = numericOpts ? 'row' : item.options.every((o) => String(o).replace(/[\u0591-\u05C7]/g, '').length <= 30) ? 'grid' : 'list';
+  const layout = numericOpts ? 'row' : item.options.every((o) => stripBold(o).replace(/[\u0591-\u05C7]/g, '').length <= 30) ? 'grid' : 'list';
   return (
     <div class="bk-item bk-mc" role="group">
       <div class="bk-qhead">
@@ -170,13 +171,13 @@ export function BkItem({ item, answer, onAnswer, active, onActivate, readOnly, d
           {item.digit ? (
             <>
               <DigitEquation digit={item.digit} />
-              <p class="bk-stem">{t('instr.digit.ask.' + item.digit.shape)}</p>
+              <p class="bk-stem"><Rich text={tx('instr.digit.ask.' + item.digit.shape)} /></p>
             </>
           ) : item.riddle ? (
             <>
               <RiddleRows rows={item.riddle.rows} />
               <p class="bk-stem bk-ask">
-                <span>{t('instr.riddles.ask')}</span>
+                <span><Rich text={tx('instr.riddles.ask')} /></span>
                 <RiddleIcon id={item.riddle.ask} size={44} />
                 <span>?</span>
               </p>

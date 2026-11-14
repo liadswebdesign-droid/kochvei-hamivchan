@@ -24,7 +24,7 @@
   --info: #e8f5fd;
   --info-line: #b3dbf2;
 
-  --f-text: 'Noto Sans Hebrew', 'Arial Hebrew', system-ui, sans-serif;
+  --f-text: 'KH Minus', 'Noto Sans Hebrew', 'Arial Hebrew', system-ui, sans-serif; /* KH Minus: U+2212 only (fonts.css) */
   --f-display: 'Fredoka', 'Noto Sans Hebrew', 'Arial Rounded MT Bold', system-ui, sans-serif;
 
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -55,6 +55,10 @@ body {
   touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
+}
+/* `**bold**` in content (lib/rich.js). 800 in Noto Sans Hebrew; Fredoka text tops out at its 700 face. */
+strong.em {
+  font-weight: 800;
 }
 input {
   user-select: text;

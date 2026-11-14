@@ -1,14 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { t } from '../lib/content.js';
+import { t, tx } from '../lib/content.js';
+import { stripBold } from '../lib/rich.js';
 import { islands } from '../config.js';
 import { getProgress, saveProgress, skillState, logAttempt } from '../lib/storage.js';
 import { buildSession, recordForReview, sessionStars } from '../lib/session.js';
 import { checkInequality } from '../gen/index.js';
-import { Companion, MathLine, DigitEquation, RiddleRows, Btn, StemText, BonusStem } from '../components/Bits.jsx';
+import { Companion, MathLine, DigitEquation, RiddleRows, Btn, StemText, BonusStem, Rich } from '../components/Bits.jsx';
 import { Choices } from '../components/Choices.jsx';
 import { NumPad } from '../components/NumPad.jsx';
 import { PassageView } from '../components/PassageView.jsx';
 import { RiddleIcon, StarIcon, UiIcon } from '../components/Icons.jsx';
+import { onPracticeComplete } from '../lib/rewards.js'; // T5
+import { sfx } from '../lib/sound.js'; // T5
 
 const isPortrait = () => window.matchMedia('(orientation: portrait)').matches;
 
@@ -35,17 +38,17 @@ function revealFeedback(scroller, foot) {
 const lineLabel = (refs) => (refs.length > 1 ? `${Math.min(...refs)}–${Math.max(...refs)}` : String(refs[0]));
 
 function instruction(item) {
-  if (item.kind === 'inequality') return t('instr.inequality');
-  if (item.digit) return t('instr.digit');
-  if (item.riddle) return t('instr.riddles');
-  if (item.skill === 'bonus') return t('instr.bonus.' + item.type);
+  if (item.kind === 'inequality') return tx('instr.inequality');
+  if (item.digit) return tx('instr.digit');
+  if (item.riddle) return tx('instr.riddles');
+  if (item.skill === 'bonus') return tx('instr.bonus.' + item.type);
   const isl = islands.find((i) => i.id === item.skill);
-  return item.skill === 'reading' ? null : t(isl.instrKey);
+  return item.skill === 'reading' ? null : tx(isl.instrKey);
 }
 
 function hintText(item) {
   if (item.hintText) return item.hintText;
-  if (item.hint) return t(item.hint.key, item.hint.vars);
+  if (item.hint) return tx(item.hint.key, item.hint.vars);
   return null;
 }
 
@@ -77,7 +80,7 @@ function Prompt({ item, value, phase, attempt }) {
     return (
       <>
         <DigitEquation digit={item.digit} />
-        <p class="ask">{t('instr.digit.ask.' + item.digit.shape)}</p>
+        <p class="ask"><Rich text={tx('instr.digit.ask.' + item.digit.shape)} /></p>
       </>
     );
   }
@@ -86,7 +89,7 @@ function Prompt({ item, value, phase, attempt }) {
       <>
         <RiddleRows rows={item.riddle.rows} />
         <p class="ask">
-          <span>{t('instr.riddles.ask')}</span>
+          <span><Rich text={tx('instr.riddles.ask')} /></span>
           <RiddleIcon id={item.riddle.ask} size={52} />
           <span>?</span>
         </p>
@@ -145,14 +148,18 @@ function Explanation({ item }) {
 function Celebration({ companion, firstTry, item, onNext }) {
   const cheer = useMemo(() => (firstTry ? t('feedback.correct.' + (1 + Math.floor(Math.random() * 4))) : t('feedback.secondTry')), []);
   const btn = useRef(null);
-  useEffect(() => btn.current && btn.current.focus(), []);
+  useEffect(() => {
+    btn.current && btn.current.focus();
+    const id = setTimeout(() => sfx.star(), 420); // T5: as the star pops in
+    return () => clearTimeout(id);
+  }, []);
   return (
     <div class="overlay celebrate" role="dialog" aria-live="polite">
       <div class="confetti" aria-hidden="true">
         {Array.from({ length: 18 }, (_, i) => <span style={{ '--i': i }} />)}
       </div>
       <div class="celebrate-card">
-        <Companion id={companion} size={128} mood="happy" />
+        <Companion id={companion} size={150} mood="happy" />
         <p class="cheer">{cheer}</p>
         {item.kind === 'inequality' && <IneqNote item={item} />}
         <p class="star-earned">
@@ -251,12 +258,14 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
   function check() {
     if (!canCheck) return;
     if (isRight(item, choice, value)) {
+      sfx.correct();
       finishItem(attempt === 1, true);
       if (item.kind === 'mc') setMarks({ ...marks, [item.answer]: 'correct' });
       setPhase('correct');
       return;
     }
     setShake((s) => s + 1);
+    sfx.tryAgain();
     if (attempt === 1) {
       if (item.kind === 'mc') setMarks({ ...marks, [choice]: 'wrong' });
       setChoice(null);
@@ -288,7 +297,8 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
       const readingDone = session.passageId ? [...new Set([...(s.readingDone || []), session.passageId])] : s.readingDone;
       p.skills[skill] = { ...s, sessions: s.sessions + 1, best: Math.max(s.best, rating), level: levelUp ? s.level + 1 : s.level, ...(readingDone ? { readingDone } : {}) };
       saveProgress(pid, p);
-      onFinish({ skill, rating, total: all.length, firstTry: all.length - mistakes, starsEarned: all.filter((r) => r.solved).length, levelUp, level: p.skills[skill].level, reviewAdded: mistakes });
+      const stickers = onPracticeComplete(profile, { rating }); // T5: album + streak
+      onFinish({ skill, rating, total: all.length, firstTry: all.length - mistakes, starsEarned: all.filter((r) => r.solved).length, levelUp, level: p.skills[skill].level, reviewAdded: mistakes, stickers });
       return;
     }
     setIdx(idx + 1);
@@ -328,7 +338,7 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
       <div class="pbody" ref={bodyRef}>
         {passage && (
           <section class="ppassage" ref={passageRef}>
-            <p class="instr">{t('instr.reading')}</p>
+            <p class="instr"><Rich text={tx('instr.reading')} /></p>
             <PassageView passage={passage} highlight={highlight} />
           </section>
         )}
@@ -336,7 +346,7 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
           <div class="pscroll" ref={scrollRef}>
           <div class={`qcard ${shake ? 'shake-' + (shake % 2) : ''}`} key={idx}>
             {item.review && <span class="review-tag">{t('practice.review')}</span>}
-            {instr && <p class="instr">{instr}</p>}
+            {instr && <p class="instr"><Rich text={instr} /></p>}
             <Prompt item={item} value={value} phase={phase} attempt={attempt} />
 
             {item.kind === 'mc' ? (
@@ -346,7 +356,7 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
                 onSelect={(i) => (phase === 'answer' || phase === 'hint') && setChoice(i)}
                 marks={marks}
                 locked={phase === 'correct' || phase === 'explain'}
-                layout={numericOptions ? 'row' : !passage && item.options.every((o) => String(o).length <= 18) ? 'grid' : 'list'}
+                layout={numericOptions ? 'row' : !passage && item.options.every((o) => stripBold(o).length <= 18) ? 'grid' : 'list'}
                 render={numericOptions ? null : (o) => <StemText text={o} />}
               />
             ) : null}

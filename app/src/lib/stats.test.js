@@ -1,7 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { accuracy, bucketOf, minutesPerDay, sessionsOn, recentMistakes, withTrend, describeItem, passageOf } from './stats.js';
-import { hashPin, setPin, checkPin, hasPin, makeGate, getSettings, saveSettings, resetProfileData, deleteProfile } from './parentData.js';
-import { createProfile, getProfiles, getActiveId, logAttempt, getLog, saveProgress, getProgress, saveReview, getReview } from './storage.js';
+import { hashPin, setPin, checkPin, hasPin, makeGate, resetProfileData, deleteProfile } from './parentData.js';
+import {
+  createProfile, getProfiles, getActiveId, logAttempt, getLog, saveProgress, getProgress, saveReview, getReview,
+  getSettings, saveSettings, isSoundOn, save, load,
+} from './storage.js';
+import { awardSticker, getRewards } from './rewards.js';
 import { addSim, getSims, bestScores, getRun, saveRun, clearRun, currentDefs } from './simStore.js';
 import { historyEntry } from './sim.js';
 
@@ -9,6 +13,18 @@ const DAY = 86400000;
 const NOW = new Date(2026, 10, 20, 15, 0, 0).getTime();
 
 describe('accuracy buckets', () => {
+  it('mini-game taps (T5, tagged game) count as time but not as accuracy or mistakes', () => {
+    const now = NOW;
+    const log = [
+      { t: now - 60000, skill: 'reading', id: 'game:detective:inf-05:3', game: 'detective', correct: false, ms: 30000 },
+      { t: now - 50000, skill: 'missing', id: 'g:iq:2:77', game: 'catch', correct: false, ms: 30000 },
+      { t: now - 40000, skill: 'exercises', id: 'g:ex:2:5', correct: false, ms: 30000 },
+    ];
+    expect(accuracy(log, {}).map((a) => a.key)).toEqual(['exercises']);
+    expect(recentMistakes(log, 20).map((e) => e.id)).toEqual(['g:ex:2:5']);
+    expect(sessionsOn(log, [], now)).toBe(1);
+    expect(minutesPerDay(log, [], 14, now).at(-1).minutes).toBe(2); // 90 s of play, games included
+  });
   it('splits reading by question type and missing-number from inequalities', () => {
     const log = [
       { skill: 'reading', id: 'inf-01-q1', correct: true, type: 'detail' },
@@ -99,11 +115,27 @@ describe('parent data (memory storage)', () => {
       expect(g.answer).toBe(g.a * g.b);
     }
   });
-  it('settings have defaults and merge', () => {
-    expect(getSettings()).toMatchObject({ timeMode: 'timed', sound: true, dailyGoal: 3 });
-    saveSettings({ dailyGoal: 5 });
-    saveSettings({ sound: false });
-    expect(getSettings()).toMatchObject({ timeMode: 'timed', sound: false, dailyGoal: 5 });
+  it('settings are one store per profile, with defaults, and merge', () => {
+    const a = createProfile('א', 'fox');
+    const b = createProfile('ב', 'owl');
+    expect(getSettings(a)).toEqual({ timeMode: 'timed', sound: true, dailyGoal: 3 });
+    saveSettings(a, { dailyGoal: 5 });
+    expect(saveSettings(a, { sound: false })).toEqual({ timeMode: 'timed', sound: false, dailyGoal: 5 });
+    expect(getSettings(a)).toEqual({ timeMode: 'timed', sound: false, dailyGoal: 5 });
+    expect(isSoundOn(a)).toBe(false); // the parent toggle is what lib/sound.js reads
+    expect(isSoundOn(b)).toBe(true);
+    expect(getSettings(b).dailyGoal).toBe(3);
+  });
+  it('the old device-wide kh:settings seeds every profile once and is removed', () => {
+    const a = createProfile('א', 'fox');
+    const b = createProfile('ב', 'owl');
+    saveSettings(b, { dailyGoal: 7 }); // b already has its own: kept as is
+    save('settings', { timeMode: 'free', sound: false, dailyGoal: 4 });
+    expect(getSettings(a)).toEqual({ timeMode: 'free', sound: false, dailyGoal: 4 });
+    expect(getSettings(b)).toEqual({ timeMode: 'timed', sound: true, dailyGoal: 7 });
+    expect(load('settings', null)).toBeNull();
+    const c = createProfile('ג', 'owl'); // created after the migration: plain defaults
+    expect(getSettings(c)).toEqual({ timeMode: 'timed', sound: true, dailyGoal: 3 });
   });
   it('reset removes one profile\'s progress, log, review and simulations but keeps the profile; delete removes it all', () => {
     const a = createProfile('א', 'fox');
@@ -114,8 +146,12 @@ describe('parent data (memory storage)', () => {
       saveReview(pid, [{ id: 'x', skill: 'reading' }]);
       addSim(pid, { sim: 'sim-1', t: 1, score: 3, max: 4, mode: 'free', tasks: {}, ms: 0, minutes: 0 });
       saveRun(pid, { simId: 'sim-1' });
+      awardSticker(pid, 'mock');
+      saveSettings(pid, { sound: false });
     }
     resetProfileData(a);
+    expect(getRewards(a).stickers).toEqual({});
+    expect(isSoundOn(a)).toBe(false); // reset keeps the parent's settings
     expect(getLog(a)).toEqual([]);
     expect(getProgress(a).stars).toBe(0);
     expect(getReview(a)).toEqual([]);
@@ -128,6 +164,8 @@ describe('parent data (memory storage)', () => {
     deleteProfile(b); // b is the active one: the other becomes active
     expect(getProfiles().map((p) => p.id)).toEqual([a]);
     expect(getLog(b)).toEqual([]);
+    expect(isSoundOn(b)).toBe(true); // delete removes the settings too
+    expect(getRewards(b).stickers).toEqual({});
     expect(getActiveId()).toBe(a);
     deleteProfile(a);
     expect(getProfiles()).toEqual([]);

@@ -1,11 +1,13 @@
 // After the simulation: a celebration for finishing (whatever the score), the score per part, then the mistakes one by
 // one, with her answer, the right answer and the explanation.
-import { useState } from 'preact/hooks';
-import { t } from '../lib/content.js';
+import { useEffect, useState } from 'preact/hooks';
+import { t, tx } from '../lib/content.js';
 import { TASKS, TIME_LIMIT_MS, answerText, correctText } from '../lib/sim.js';
-import { Companion, Btn, MathLine } from '../components/Bits.jsx';
+import { Companion, Btn, MathLine, Rich, StemText } from '../components/Bits.jsx';
 import { BkItem, Say } from '../components/Booklet.jsx';
 import { UiIcon } from '../components/Icons.jsx';
+import { StickerReward, reducedMotion } from '../components/Celebrate.jsx';
+import { sfx } from '../lib/sound.js';
 
 const TASK_LABEL = { reading: 'sim.res.reading', A: 'sim.taskA.title', B: 'sim.taskB.title', C: 'sim.taskC.title', D: 'sim.taskD.title' };
 const labelOf = (n) => t('mc.label.' + n);
@@ -76,7 +78,7 @@ function CitedLines({ item }) {
       {refs.map((n) => (
         <div class="pline hl" key={n}>
           <span class="pline-n" aria-hidden="true">{n}</span>
-          <span class="pline-text">{lines[n - 1]}</span>
+          <span class="pline-text"><Rich text={lines[n - 1]} /></span>
         </div>
       ))}
     </article>
@@ -88,7 +90,7 @@ function ReviewCard({ r, profile }) {
   const written = isWritten(it);
   const mine = answerText(it, r.answer, labelOf);
   const right = correctText(it, labelOf);
-  const hint = it.explain || it.hintText || (it.hint ? t(it.hint.key, it.hint.vars) : null);
+  const hint = it.explain || it.hintText || (it.hint ? tx(it.hint.key, it.hint.vars) : null);
   return (
     <div class="rev-card">
       <CitedLines item={it} />
@@ -107,13 +109,13 @@ function ReviewCard({ r, profile }) {
       <dl class="rev-answers">
         <div class="rev-row mine">
           <dt>{t('sim.rev.yours')}</dt>
-          <dd>{mine ? <>{mine.label && <b class="rev-letter">{mine.label}</b>}<bdi class="rev-val">{mine.text}</bdi></> : <span class="rev-none">{t('sim.rev.none')}</span>}</dd>
+          <dd>{mine ? <>{mine.label && <b class="rev-letter">{mine.label}</b>}<bdi class="rev-val"><Rich text={mine.text} /></bdi></> : <span class="rev-none">{t('sim.rev.none')}</span>}</dd>
         </div>
         <div class="rev-row right">
           <dt>{t('feedback.answerWas')}</dt>
           <dd>
             {right.label && <b class="rev-letter">{right.label}</b>}
-            <bdi class="rev-val">{right.text}</bdi>
+            <bdi class="rev-val"><Rich text={right.text} /></bdi>
             {it.kind === 'inequality' && (
               <span class="rev-note">{t(it.direction === 'greater' ? 'feedback.ineq.greater' : 'feedback.ineq.less', { bound: it.bound, example: it.example })}</span>
             )}
@@ -122,18 +124,33 @@ function ReviewCard({ r, profile }) {
       </dl>
       {hint && (
         <Say companion={profile.companion}>
-          <span class="rev-hint-lbl">{t('sim.rev.hint')}</span> {hint}
+          <span class="rev-hint-lbl">{t('sim.rev.hint')}</span> <StemText text={hint} />
         </Say>
       )}
     </div>
   );
 }
 
-export function MockResults({ profile, result, onDone, onMore }) {
+export function MockResults({ profile, result, onDone, onMore, onAlbum }) {
   const [phase, setPhase] = useState('summary');
   const [pos, setPos] = useState(0);
+  // Finishing the test earns a sticker (lib/rewards.js onMockComplete, called once by MockExam): a fanfare, then the
+  // sticker card peels in over the summary, as on the practice results.
+  const stickers = result.stickers || [];
+  const [showStickers, setShowStickers] = useState(false);
+  useEffect(() => {
+    const a = setTimeout(() => sfx.fanfare(), reducedMotion() ? 0 : 320);
+    const b = stickers.length ? setTimeout(() => setShowStickers(true), reducedMotion() ? 400 : 1600) : 0;
+    return () => (clearTimeout(a), clearTimeout(b));
+  }, []);
   const list = result.scored.mistakes;
-  if (phase === 'summary') return <Summary result={result} profile={profile} onReview={() => setPhase('review')} onDone={onDone} onMore={onMore} />;
+  if (phase === 'summary')
+    return (
+      <>
+        <Summary result={result} profile={profile} onReview={() => setPhase('review')} onDone={onDone} onMore={onMore} />
+        {showStickers && <StickerReward stickers={stickers} onClose={() => setShowStickers(false)} onAlbum={onAlbum} />}
+      </>
+    );
 
   const last = pos === list.length - 1;
   return (

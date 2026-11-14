@@ -151,7 +151,8 @@ export function lintText(text, source) {
   let prevSep = '';
   let seenWord = false;
   for (const t of toks) {
-    if (t.type === 'sep') { prevSep += t.text; continue; }
+    // `**bold**` markers (app content markup) are layout, not punctuation: ignore them when judging a pause.
+    if (t.type === 'sep') { prevSep += t.text.replace(/\*/g, ''); continue; }
     // after a digit/maqaf the "word" is glued to a number (בְּ־8 has the word before the maqaf), keep simple:
     const atPause = !seenWord ? !/[0-9A-Za-z]\s*$/.test(prevSep) : PAUSE_RE.test(prevSep);
     for (const iss of lintWord(t.text, { atPause })) issues.push({ ...iss, wordIndex: wi, word: t.text });

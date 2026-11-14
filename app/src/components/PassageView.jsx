@@ -1,11 +1,13 @@
 import { useLayoutEffect, useRef } from 'preact/hooks';
+import { Rich } from './Bits.jsx';
 
 // Smallest passage font we shrink to before giving up and letting the passage scroll sideways.
 const MIN_PX = 19;
 
 // Booklet lines are fixed: a line must NEVER wrap, or the numbers the questions cite stop matching. Each line is
 // `nowrap`; this shrinks the passage font until the longest line fits the panel (floor MIN_PX). If even the floor is
-// too wide, the passage gets `.pfit-scroll` and scrolls horizontally instead of wrapping.
+// too wide, the passage gets `.pfit-scroll` and scrolls horizontally instead of wrapping. It measures the RENDERED line
+// (scrollWidth), so `**bold**` counts at its real bold width and the markers, never rendered, never count.
 function fitPassage(article) {
   if (!article) return;
   article.style.fontSize = '';
@@ -53,7 +55,7 @@ export function PassageView({ passage, highlight = [] }) {
 
   return (
     <article class="passage" lang="he" ref={ref}>
-      <h2 class="passage-title">{passage.title}</h2>
+      <h2 class="passage-title"><Rich text={passage.title} /></h2>
       {passage.paragraphs.map((para, pi) => (
         <div class="passage-para" key={pi}>
           {para.map((line) => {
@@ -61,7 +63,7 @@ export function PassageView({ passage, highlight = [] }) {
             return (
               <div class={`pline ${hl.has(n) ? 'hl' : ''}`} key={n} data-line={n}>
                 <span class="pline-n" aria-hidden="true">{n}</span>
-                <span class="pline-text">{line}</span>
+                <span class="pline-text"><Rich text={line} /></span>
               </div>
             );
           })}

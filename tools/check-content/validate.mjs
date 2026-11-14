@@ -13,7 +13,9 @@
 //  - every file: JSON parses; ids unique across ALL banks; 4 distinct options; answer is an index 0–3
 //  - every Hebrew field: no nikud marks (U+0591–U+05C7 except maqaf U+05BE, paseq U+05C0, sof pasuq U+05C3,
 //    nun hafukha U+05C6), except inside a reading hint {{word|vocalized}} whose skeleton must equal the word;
-//    no Latin letters; one-letter prefixes before digits use the maqaf (ב־8, not ב-8 / ב8)
+//    no Latin letters; one-letter prefixes before digits use the maqaf (ב־8, not ב-8 / ב8);
+//    bold emphasis `**…**` (as the booklet bolds אין / גם) is allowed, but the markers must pair up, a bold span may not
+//    be empty or start/end with a space, and a single `*` is an error; options compare without the markers
 //  - word-problems: eval(check) equals checkValue (number, or array for two-part answers); the number(s) in
 //    options[answer] equal checkValue; no other option carries the same number(s)
 //  - picture-riddles: known icon ids; brute force every icon over 0–30; the asked icon has exactly one value
@@ -43,6 +45,9 @@ const HEB_LETTER = /[א-ת]/;
 const LATIN = /[A-Za-z]/;
 const HINT_G = /\{\{([^{}|]*)\|([^{}]*)\}\}/g;
 const MAQAF = '־';
+// Bold emphasis: `**word**` (rendered as <strong> by the app, app/src/lib/rich.js). Stripped before any comparison.
+const BOLD = '**';
+const stripBold = (s) => String(s).split(BOLD).join('');
 
 const ICONS = new Set(['flower', 'star', 'gem', 'key', 'house', 'car', 'sun', 'apple', 'heart', 'moon', 'ball', 'fish']);
 const PASSAGE_Q_TYPES = new Set(['detail', 'vocab', 'reference', 'purpose', 'not-answered', 'synonyms', 'inference',
@@ -75,6 +80,7 @@ function checkText(str, where, { required = true } = {}) {
   }
   const bare = str.replace(HINT_G, '$1');
   if (/\{\{|\}\}/.test(bare)) err(where, 'malformed {{word|vocalized}} hint');
+  checkBold(bare, where);
   const marks = bare.match(MARK_G);
   if (marks) err(where, `contains ${marks.length} nikud mark(s) (U+${marks[0].codePointAt(0).toString(16).toUpperCase()}…): "${clip(bare)}"`);
   // {name}-style interpolation placeholders (ui.json) are code, not text
@@ -87,13 +93,27 @@ function checkText(str, where, { required = true } = {}) {
   if (bare !== bare.trim()) warn(where, 'leading/trailing whitespace');
   if (/[‎‏‪-‮⁦-⁩﻿]/.test(bare)) warn(where, 'contains bidi control characters');
 }
+// `**…**` bold: markers pair up; no empty span; no space just inside a marker; no lone '*'.
+function checkBold(bare, where) {
+  if (!bare.includes('*')) return;
+  if (bare.replace(/\*\*/g, '').includes('*')) {
+    err(where, `stray "*" (bold is written **word**): "${clip(bare)}"`);
+    return;
+  }
+  const parts = bare.split(BOLD);
+  if (parts.length % 2 === 0) { err(where, `unbalanced ** bold markers (${parts.length - 1}): "${clip(bare)}"`); return; }
+  for (let i = 1; i < parts.length; i += 2) {
+    if (!parts[i].trim()) err(where, `empty **bold** span: "${clip(bare)}"`);
+    else if (parts[i] !== parts[i].trim()) err(where, `space just inside ** (write **word**, not ** word **): "${clip(bare)}"`);
+  }
+}
 const clip = (s) => (s.length > 70 ? s.slice(0, 70) + '…' : s);
 
 function checkOptions(opts, answer, where, { kind = 'string' } = {}) {
   if (!Array.isArray(opts) || opts.length !== 4) { err(where, `options must be an array of exactly 4 (got ${Array.isArray(opts) ? opts.length : typeof opts})`); return false; }
   if (kind === 'string') opts.forEach((o, i) => checkText(o, `${where}.options[${i}]`));
   if (kind === 'number') opts.forEach((o, i) => { if (!Number.isInteger(o) || o < 0) err(`${where}.options[${i}]`, `must be a non-negative integer (got ${JSON.stringify(o)})`); });
-  const norm = opts.map((o) => String(o).replace(/\s+/g, ' ').trim());
+  const norm = opts.map((o) => stripBold(o).replace(/\s+/g, ' ').trim());
   if (new Set(norm).size !== 4) err(where, `options are not distinct: ${JSON.stringify(opts)}`);
   if (!Number.isInteger(answer) || answer < 0 || answer > 3) { err(where, `answer must be an integer 0–3 (got ${JSON.stringify(answer)})`); return false; }
   return true;
@@ -274,7 +294,7 @@ function quotedSpans(stem) {
   for (let k = 0; k + 1 < delims.length; k += 2) spans.push(stem.slice(delims[k] + 1, delims[k + 1]));
   return { spans, odd: delims.length % 2 === 1 };
 }
-const normForMatch = (s) => s.replace(HINT_G, '$1').replace(MARK_G, '')
+const normForMatch = (s) => stripBold(s).replace(HINT_G, '$1').replace(MARK_G, '')
   .replace(/["״׳'“”„.,!?;:()–—]/g, ' ')
   .replace(/\s+/g, ' ').trim();
 

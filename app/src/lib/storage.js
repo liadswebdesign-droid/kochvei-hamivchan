@@ -1,3 +1,5 @@
+import { companionId } from '../config.js';
+
 // Tiny localStorage wrapper. Every read/write is guarded: private mode, quota, or blocked storage must never crash
 // the app (it then simply runs without persistence). Names stay on this device only.
 const NS = 'kh:';
@@ -46,7 +48,8 @@ export function remove(key) {
 
 // ---- profiles --------------------------------------------------------------
 // kh:profiles = [{ id, name, companion, created }]   kh:active = id
-export const getProfiles = () => load('profiles', []);
+// Old companion ids (dragon, rocket) map to the art companions on read (T5).
+export const getProfiles = () => load('profiles', []).map((p) => ({ ...p, companion: companionId(p.companion) }));
 export const getActiveId = () => load('active', null);
 export const setActiveId = (id) => save('active', id);
 
@@ -81,3 +84,35 @@ export function logAttempt(pid, entry) {
   save(pk(pid, 'log'), log);
 }
 export const getLog = (pid) => load(pk(pid, 'log'), []);
+
+// ---- per-profile settings: the ONE settings store (sounds read it, the parent screen writes it) ---------------------
+// kh:p:<id>:settings = { sound: bool, timeMode: 'timed' | 'free', dailyGoal: n }   Missing keys fall back to defaults.
+//   sound     soft sounds on/off (lib/sound.js)
+//   timeMode  default mode offered on the mock-exam start screen
+//   dailyGoal sessions per day, shown on the parent dashboard
+export const defaultSettings = () => ({ sound: true, timeMode: 'timed', dailyGoal: 3 });
+
+// The first parent-screen build kept ONE device-wide blob at kh:settings. On first read it seeds the own settings of
+// every profile that has none yet, and is then removed, so a device that already chose "sound off" keeps it.
+function migrateLegacySettings() {
+  const legacy = load('settings', null);
+  if (legacy == null) return;
+  if (typeof legacy === 'object') {
+    for (const p of load('profiles', [])) if (p && p.id && load(pk(p.id, 'settings'), null) == null) save(pk(p.id, 'settings'), { ...legacy });
+  }
+  remove('settings');
+}
+export function getSettings(pid) {
+  migrateLegacySettings();
+  return { ...defaultSettings(), ...load(pk(pid, 'settings'), {}) };
+}
+export function saveSettings(pid, patch) {
+  const s = { ...getSettings(pid), ...patch };
+  save(pk(pid, 'settings'), s);
+  return s;
+}
+export const isSoundOn = (pid) => getSettings(pid).sound !== false;
+
+// ---- rewards blob (T5, shape owned by lib/rewards.js) ---------------------------------------------------------------
+export const getRewardsRaw = (pid) => load(pk(pid, 'rewards'), null);
+export const saveRewardsRaw = (pid, r) => save(pk(pid, 'rewards'), r);

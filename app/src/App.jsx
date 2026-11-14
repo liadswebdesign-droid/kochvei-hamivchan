@@ -9,6 +9,9 @@ import { MockStart } from './screens/MockStart.jsx';
 import { MockExam } from './screens/MockExam.jsx';
 import { MockResults } from './screens/MockResults.jsx';
 import { Parent } from './screens/Parent.jsx';
+// T5: sticker album + mini-games
+import { Album } from './screens/Album.jsx';
+import { GamesHub, GameScreen } from './screens/Games.jsx';
 
 export function App() {
   const [content, setContent] = useState(null);
@@ -80,7 +83,15 @@ export function App() {
       />
     );
   } else if (screen.name === 'mockResults') {
-    body = <MockResults profile={profile} result={screen.result} onDone={() => setScreen({ name: 'map' })} onMore={() => setScreen({ name: 'mockStart' })} />;
+    body = (
+      <MockResults
+        profile={profile}
+        result={screen.result}
+        onDone={() => setScreen({ name: 'map' })}
+        onMore={() => setScreen({ name: 'mockStart' })}
+        onAlbum={() => setScreen({ name: 'album' })}
+      />
+    );
   } else if (screen.name === 'practice') {
     body = (
       <Practice
@@ -99,8 +110,15 @@ export function App() {
         summary={screen.summary}
         onAgain={() => setScreen({ name: 'practice', skill: screen.skill, run: Date.now() })}
         onMap={() => setScreen({ name: 'map' })}
+        onAlbum={() => setScreen({ name: 'album' })}
       />
     );
+  } else if (screen.name === 'album') {
+    body = <Album profile={profile} onBack={() => setScreen({ name: 'map' })} />;
+  } else if (screen.name === 'games') {
+    body = <GamesHub profile={profile} onBack={() => setScreen({ name: 'map' })} onPick={(id) => setScreen({ name: 'game', id })} />;
+  } else if (screen.name === 'game') {
+    body = <GameScreen key={screen.id} id={screen.id} profile={profile} content={content} onExit={() => setScreen({ name: 'games' })} onAlbum={() => setScreen({ name: 'album' })} />;
   } else {
     body = (
       <MapScreen
@@ -109,6 +127,8 @@ export function App() {
         onIsland={(skill) => setScreen(skill === 'mock' ? { name: 'mockStart' } : { name: 'practice', skill, run: Date.now() })}
         onSwitch={() => setScreen({ name: 'profiles' })}
         onParent={() => setScreen({ name: 'parent' })}
+        onAlbum={() => setScreen({ name: 'album' })}
+        onGames={() => setScreen({ name: 'games' })}
       />
     );
   }

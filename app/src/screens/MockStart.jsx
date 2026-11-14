@@ -1,7 +1,7 @@
 // The mock island's start screen: pick a time mode and a simulation (each with its best score).
 import { useState } from 'preact/hooks';
 import { t } from '../lib/content.js';
-import { getSettings } from '../lib/parentData.js';
+import { getSettings } from '../lib/storage.js';
 import { bestScores, getRun, clearRun, FIXED_SIM_COUNT } from '../lib/simStore.js';
 import { ENDLESS, simId } from '../lib/sim.js';
 import { Btn } from '../components/Bits.jsx';
@@ -10,7 +10,7 @@ import { UiIcon } from '../components/Icons.jsx';
 
 export function MockStart({ profile, onBack, onStart }) {
   const pid = profile.id;
-  const [mode, setMode] = useState(getSettings().timeMode);
+  const [mode, setMode] = useState(() => getSettings(profile.id).timeMode);
   const [run, setRun] = useState(getRun(pid));
   const best = bestScores(pid);
   const ids = [...Array.from({ length: FIXED_SIM_COUNT }, (_, i) => simId(i + 1)), ENDLESS];

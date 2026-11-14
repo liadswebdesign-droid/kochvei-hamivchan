@@ -31,13 +31,15 @@ const ws = new WebSocket(target.webSocketDebuggerUrl);
 await new Promise((r) => (ws.onopen = r));
 let msgId = 0;
 const pending = new Map();
+const consoleErrors = [];
 ws.onmessage = (e) => {
   const m = JSON.parse(e.data);
   if (m.id && pending.has(m.id)) {
     const { res, rej } = pending.get(m.id);
     pending.delete(m.id);
     m.error ? rej(new Error(m.error.message)) : res(m.result);
-  }
+  } else if (m.method === 'Runtime.exceptionThrown') consoleErrors.push(m.params.exceptionDetails.exception?.description || m.params.exceptionDetails.text);
+  else if (m.method === 'Runtime.consoleAPICalled' && m.params.type === 'error') consoleErrors.push(m.params.args.map((a) => a.value || a.description).join(' '));
 };
 const send = (method, params = {}) =>
   new Promise((res, rej) => {
@@ -51,6 +53,7 @@ async function js(expr) {
   if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description || r.exceptionDetails.text);
   return r.result.value;
 }
+await send('Runtime.enable');
 const report = [];
 const problems = [];
 async function shot(name, W, H, { full = false } = {}) {
@@ -257,6 +260,14 @@ async function run(W, H) {
   await js(`const bs = [...document.querySelectorAll('.confirm-card .btn')]; (bs.find(b => b.classList.contains('btn-ghost')) || bs[0]).click();`);
   await wait(900);
   await shot('18-results', W, H);
+  // finishing the test earns a sticker (rewards.onMockComplete): the card peels in over the results
+  await wait(1200);
+  const sticker = await js(`const c = document.querySelector('.sticker-card'); const r = JSON.parse(localStorage.getItem('kh:p:' + JSON.parse(localStorage.getItem('kh:active')) + ':rewards') || 'null'); return { card: !!c, reason: c && c.querySelector('.sticker-reason')?.textContent, stickers: r && Object.values(r.stickers).map((s) => s.reason) };`);
+  console.log('mock sticker:', JSON.stringify(sticker));
+  if (!sticker.card || !sticker.stickers || !sticker.stickers.includes('mock')) problems.push({ shot: '18b-results-sticker', sticker });
+  await shot('18b-results-sticker', W, H);
+  await click('.sticker-card .btn-primary');
+  await wait(500);
   await clickText('.results .btn', 'טעויות');
   await wait(900);
   await shot('19-review-mc', W, H);
@@ -292,6 +303,16 @@ async function run(W, H) {
   for (const d of '1234') await pinKey(d);
   await wait(1500);
   await shot('24-parent-dashboard', W, H);
+  // sound toggle → the ONE per-profile settings store that lib/sound.js reads (isSoundOn)
+  await js(`const row = [...document.querySelectorAll('.sett .prow')][1]; [...row.querySelectorAll('.seg-btn')][1].click();`);
+  await wait(300);
+  const snd = await js(`const pid = document.querySelector('.ptab.on') && JSON.parse(localStorage.getItem('kh:active')); const s = JSON.parse(localStorage.getItem('kh:p:' + pid + ':settings') || 'null'); return { settings: s, legacy: localStorage.getItem('kh:settings') };`);
+  console.log('sound off ->', JSON.stringify(snd));
+  if (!snd.settings || snd.settings.sound !== false || snd.legacy != null) problems.push({ shot: '24b-parent-sound-off', snd });
+  await js(`document.querySelector('.sett').scrollIntoView({ block: 'center' });`);
+  await shot('24b-parent-sound-off', W, H);
+  await js(`const row = [...document.querySelectorAll('.sett .prow')][1]; [...row.querySelectorAll('.seg-btn')][0].click(); window.scrollTo(0, 0);`);
+  await wait(300);
   // scroll down to see the rest of the dashboard
   await js(`window.scrollTo(0, document.documentElement.scrollHeight);`);
   await shot('25-parent-dashboard-bottom', W, H);
@@ -359,6 +380,8 @@ try {
 } finally {
   fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify({ problems, report }, null, 1));
   console.log(problems.length ? 'PROBLEMS: ' + JSON.stringify(problems.map((p) => p.shot)) : 'no layout problems flagged');
+  console.log(consoleErrors.length ? 'console errors: ' + JSON.stringify(consoleErrors.slice(0, 10)) : 'no console errors');
+  if (consoleErrors.length) process.exitCode = 1;
   ws.close();
   chrome.kill();
   try { fs.rmSync(profileDir, { recursive: true, force: true }); } catch {}

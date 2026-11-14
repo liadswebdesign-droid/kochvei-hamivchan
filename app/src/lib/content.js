@@ -1,3 +1,5 @@
+import { stripBold } from './rich.js';
+
 // Loads the vocalized content from public/content/ (copied from content/build by `npm run content`).
 const BASE = import.meta.env.BASE_URL + 'content/';
 
@@ -35,7 +37,9 @@ export async function loadCore() {
 export const loadPassage = (id) => getJSON(`passages/${id}.json`);
 
 // UI text lookup: t('map.stars', { n: 5 }). Every Hebrew string in the app comes through here.
-export function t(key, vars) {
+// t() returns plain text: any `**bold**` markers are removed, so it is safe in labels, buttons and aria attributes.
+// tx() keeps the markers, for text rendered through <Rich> / <StemText> (instructions, the companion's lines, examples).
+export function tx(key, vars) {
   let s = ui[key];
   if (s == null) {
     if (import.meta.env.DEV) console.warn('missing ui key', key);
@@ -44,4 +48,5 @@ export function t(key, vars) {
   if (vars) s = s.replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? String(vars[k]) : m));
   return s;
 }
+export const t = (key, vars) => stripBold(tx(key, vars));
 export const hasKey = (key) => ui[key] != null;

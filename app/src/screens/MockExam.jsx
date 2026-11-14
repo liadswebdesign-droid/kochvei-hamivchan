@@ -1,6 +1,6 @@
 // The simulated test: a paper booklet you page through. No right/wrong feedback until the end.
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { t, loadPassage } from '../lib/content.js';
+import { t, tx, loadPassage } from '../lib/content.js';
 import { STOP_PAUSE_MS } from '../config.js';
 import { logAttempt, getProgress, skillState } from '../lib/storage.js';
 import { recordForReview } from '../lib/session.js';
@@ -9,7 +9,8 @@ import {
   ENDLESS, TIME_LIMIT_MS, simNumber, planEndless, loadSim, canGoBack, scoreSim, isAnswered, historyEntry,
 } from '../lib/sim.js';
 import { defFor, addSim, saveRun, clearRun } from '../lib/simStore.js';
-import { Btn, Companion } from '../components/Bits.jsx';
+import { onMockComplete } from '../lib/rewards.js';
+import { Btn, Companion, Rich } from '../components/Bits.jsx';
 import { NumPad } from '../components/NumPad.jsx';
 import { UiIcon } from '../components/Icons.jsx';
 import { PassageView } from '../components/PassageView.jsx';
@@ -45,13 +46,13 @@ function ClockBar({ t0 }) {
 
 // ---- example pages (worked with the companion, never scored) ----------------------------------------------------
 function exampleItem(task) {
-  if (task === 'reading') return { kind: 'mc', no: 1, stem: t('sim.example.reading.q'), options: EX_OPTIONS.map((k) => t(k)), answer: 0 };
+  if (task === 'reading') return { kind: 'mc', no: 1, stem: tx('sim.example.reading.q'), options: EX_OPTIONS.map((k) => tx(k)), answer: 0 };
   if (task === 'A') return [{ kind: 'numeric', no: 1, expr: [24, '+', 13, '=', { blank: true }], answer: 37 }];
   if (task === 'B') return [
     { kind: 'numeric', no: 1, expr: [5, '+', { blank: true }, '=', 9], answer: 4 },
     { kind: 'inequality', no: 2, expr: [3, '+', 2, '<', 3, '+', { blank: true }], answer: 5, ineq: true },
   ];
-  if (task === 'C') return { kind: 'mc', no: 1, stem: t('sim.example.C.stem'), options: [6, 7, 8, 9], answer: 2 };
+  if (task === 'C') return { kind: 'mc', no: 1, stem: tx('sim.example.C.stem'), options: [6, 7, 8, 9], answer: 2 };
   return { kind: 'mc', no: 1, riddle: { rows: [{ terms: ['flower', 'flower'], total: 6 }], ask: 'flower' }, options: [2, 3, 4, 6], answer: 1 };
 }
 
@@ -69,8 +70,8 @@ function ExamplePage({ task, companion }) {
       </div>
       {task === 'reading' && (
         <article class="passage bk-mini" lang="he">
-          <div class="pline"><span class="pline-n" aria-hidden="true">1</span><span class="pline-text">{t('sim.example.reading.line1')}</span></div>
-          <div class="pline"><span class="pline-n" aria-hidden="true">2</span><span class="pline-text">{t('sim.example.reading.line2')}</span></div>
+          <div class="pline"><span class="pline-n" aria-hidden="true">1</span><span class="pline-text"><Rich text={tx('sim.example.reading.line1')} /></span></div>
+          <div class="pline"><span class="pline-n" aria-hidden="true">2</span><span class="pline-text"><Rich text={tx('sim.example.reading.line2')} /></span></div>
         </article>
       )}
       <div class="bk-items">
@@ -88,8 +89,8 @@ function ExamplePage({ task, companion }) {
           );
         })}
       </div>
-      {task === 'B' && <p class="bk-instr bk-instr-soft">{t('sim.example.B.ineq')}</p>}
-      <Say companion={companion} mood="happy">{t(SAY[task])}</Say>
+      {task === 'B' && <p class="bk-instr bk-instr-soft"><Rich text={tx('sim.example.B.ineq')} /></p>}
+      <Say companion={companion} mood="happy">{tx(SAY[task])}</Say>
     </>
   );
 }
@@ -196,7 +197,9 @@ export function MockExam({ profile, content, simId: id, mode, resume, onQuit, on
     const entry = historyEntry(sim, scored, { mode, ms });
     addSim(pid, entry);
     clearRun(pid);
-    onFinish({ sim, scored, entry, ms, mode });
+    // the 'mock' sticker (a gold star once the album is full) + the day counts for the streak; shown on the results
+    const stickers = onMockComplete(profile);
+    onFinish({ sim, scored, entry, ms, mode, stickers });
   }
 
   function quit() {
@@ -222,7 +225,7 @@ export function MockExam({ profile, content, simId: id, mode, resume, onQuit, on
       case 'passage':
         return (
           <>
-            <p class="bk-instr">{t(cur.story ? 'sim.part1.storyInstr' : 'sim.part1.instr')}</p>
+            <p class="bk-instr"><Rich text={tx(cur.story ? 'sim.part1.storyInstr' : 'sim.part1.instr')} /></p>
             <PassageView passage={cur.passage} />
           </>
         );
@@ -232,7 +235,7 @@ export function MockExam({ profile, content, simId: id, mode, resume, onQuit, on
         return (
           <div class="bk-end">
             <h1 class="bk-part">{t('sim.end.title')}</h1>
-            <Say companion={profile.companion} mood="happy">{t('sim.end.text')}</Say>
+            <Say companion={profile.companion} mood="happy">{tx('sim.end.text')}</Say>
             <Btn kind="primary" onClick={() => finish(false)}>{t('sim.end.finish')}</Btn>
           </div>
         );
@@ -244,7 +247,7 @@ export function MockExam({ profile, content, simId: id, mode, resume, onQuit, on
         return (
           <>
             {reading ? <p class="bk-ctx">{cur.ctxTitle}</p> : <h2 class="bk-task">{t(TITLE[cur.task])}</h2>}
-            {instrKey && <p class="bk-instr">{t(instrKey)}</p>}
+            {instrKey && <p class="bk-instr"><Rich text={tx(instrKey)} /></p>}
             <div class="bk-items">
               {cur.items.map((it, i) => (
                 <BkItem

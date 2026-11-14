@@ -1,15 +1,7 @@
-// Parent-screen data: PIN, settings, and the two destructive actions. Device-local; no server.
+// Parent-screen data: PIN and the two destructive actions. Device-local; no server.
 //   kh:pin       = hash of the 4-digit PIN
-//   kh:settings  = { timeMode: 'timed' | 'free', sound: bool, dailyGoal: n }
+// Settings (sound, default time mode, daily goal) are per profile: getSettings/saveSettings in storage.js.
 import { load, save, remove, getProfiles, getActiveId, setActiveId } from './storage.js';
-
-export const DEFAULT_SETTINGS = { timeMode: 'timed', sound: true, dailyGoal: 3 };
-export const getSettings = () => ({ ...DEFAULT_SETTINGS, ...load('settings', {}) });
-export function saveSettings(patch) {
-  const s = { ...getSettings(), ...patch };
-  save('settings', s);
-  return s;
-}
 
 // A 4-digit PIN is a lock against a seven-year-old, not a vault: a salted hash keeps it from sitting in plain sight.
 export function hashPin(pin) {
@@ -29,12 +21,14 @@ export function makeGate(random = Math.random) {
   return { a, b, answer: a * b };
 }
 
-const PROFILE_KEYS = ['progress', 'review', 'log', 'sims', 'simrun'];
+// Reset = everything earned or answered (stars, stickers, streak, results, mistakes). The parent's settings stay.
+const PROFILE_KEYS = ['progress', 'review', 'log', 'sims', 'simrun', 'rewards'];
 export function resetProfileData(pid) {
   for (const k of PROFILE_KEYS) remove(`p:${pid}:${k}`);
 }
 export function deleteProfile(pid) {
   resetProfileData(pid);
+  remove(`p:${pid}:settings`);
   const left = getProfiles().filter((p) => p.id !== pid);
   save('profiles', left);
   if (getActiveId() === pid) setActiveId(left.length ? left[0].id : null);

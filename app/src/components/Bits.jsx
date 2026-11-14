@@ -1,14 +1,24 @@
 import { Fragment } from 'preact';
-import { companions } from '../config.js';
+import { companions, companionId } from '../config.js';
 import { t } from '../lib/content.js';
+import { boldParts, hasBold } from '../lib/rich.js';
 import { Shape, RiddleIcon, StarIcon, UiIcon } from './Icons.jsx';
 
 // ---- companion ---------------------------------------------------------------
-export function Companion({ id, size = 72, mood }) {
-  const c = companions.find((x) => x.id === id) || companions[0];
+// Small sizes (≤ 72px, chips and feedback bubbles) show the head crop in a coloured disc; larger ones show the full
+// figure with a gentle idle bob. mood="happy" switches to the cheer pose (with a hop); mood="think" tilts the head.
+export function Companion({ id, size = 72, mood, variant }) {
+  const c = companions.find((x) => x.id === companionId(id)) || companions[0];
+  const face = variant ? variant === 'face' : size <= 72;
+  const src = face ? c.face : mood === 'happy' ? c.cheer : c.img;
   return (
-    <span class={`companion ${mood ? 'mood-' + mood : ''}`} style={{ '--size': size + 'px', '--bg': c.color }} role="img" aria-label={t('companion.' + c.id)}>
-      {c.img ? <img src={import.meta.env.BASE_URL + c.img} alt="" /> : <span class="companion-emoji" aria-hidden="true">{c.emoji}</span>}
+    <span
+      class={`companion ${face ? 'is-face' : 'is-figure'} ${mood ? 'mood-' + mood : ''}`}
+      style={{ '--size': size + 'px', '--bg': c.color }}
+      role="img"
+      aria-label={t('companion.' + c.id)}
+    >
+      <img src={import.meta.env.BASE_URL + src} alt="" draggable={false} decoding="async" />
     </span>
   );
 }
@@ -111,24 +121,32 @@ export function Btn({ kind = 'primary', icon, children, ...rest }) {
   );
 }
 
+// ---- content text with **bold** ---------------------------------------------------------------------------------
+// Any content string may mark key words as `**bold**` (lib/rich.js): rendered as <strong>, markers never shown.
+export function Rich({ text }) {
+  if (text == null) return null;
+  if (!hasBold(text)) return <>{text}</>;
+  return <>{boldParts(text).map((p, i) => (p.bold ? <strong class="em" key={i}>{p.text}</strong> : p.text))}</>;
+}
+
 // ---- Hebrew stems with numbers --------------------------------------------------
 // Every run of digits sits in its own LTR isolate (<bdi>) so multi-digit numbers never flip inside RTL text, and
 // "___" becomes a visible blank. The sentence itself keeps RTL order (first number of a list on the right).
-export function StemText({ text }) {
-  const parts = String(text).split(/(\d+|_{2,})/);
-  return (
-    <>
-      {parts.map((p, i) =>
-        /^\d+$/.test(p) ? (
-          <bdi class="n" key={i}>{p}</bdi>
-        ) : /^_{2,}$/.test(p) ? (
-          <span class="fillblank" key={i} aria-label="___" />
-        ) : (
-          p
-        ),
-      )}
-    </>
+// `**…**` spans become <strong> (with the numbers inside them still isolated).
+function stemRun(text, key) {
+  return String(text).split(/(\d+|_{2,})/).map((p, i) =>
+    /^\d+$/.test(p) ? (
+      <bdi class="n" key={key + '.' + i}>{p}</bdi>
+    ) : /^_{2,}$/.test(p) ? (
+      <span class="fillblank" key={key + '.' + i} aria-label="___" />
+    ) : (
+      p
+    ),
   );
+}
+export function StemText({ text }) {
+  if (text == null) return null;
+  return <>{boldParts(text).map((seg, i) => (seg.bold ? <strong class="em" key={i}>{stemRun(seg.text, i)}</strong> : stemRun(seg.text, i)))}</>;
 }
 
 // Bonus/series stems: "איזה מספר ממשיך את הסדרה? 2, 4, 6, 8, ?" → the question, then the series as big chips laid
@@ -140,7 +158,7 @@ export function BonusStem({ item }) {
     const list = series[2].split(',').map((x) => x.trim());
     return (
       <>
-        <p class="stem">{series[1]}</p>
+        <p class="stem"><StemText text={series[1]} /></p>
         <div class="series" dir="rtl">
           {list.map((x, i) => (x === '?' ? <span class="series-item ask" key={i}>?</span> : <bdi class="series-item" key={i}>{x}</bdi>))}
         </div>

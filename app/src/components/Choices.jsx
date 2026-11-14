@@ -1,4 +1,5 @@
 import { t } from '../lib/content.js';
+import { Rich } from './Bits.jsx';
 
 // Multiple choice: four big touch cards labelled א ב ג ד (right-to-left, so א sits on the right).
 // One tap selects; the parent shows the "בדיקה" button. `marks[i]` is 'wrong' (crossed, disabled) or 'correct'.
@@ -19,7 +20,7 @@ export function Choices({ options, selected, onSelect, marks = {}, locked, layou
             style={{ '--i': i }}
           >
             <span class="choice-label">{t('mc.label.' + (i + 1))}</span>
-            <span class="choice-text">{render ? render(opt, i) : opt}</span>
+            <span class="choice-text">{render ? render(opt, i) : <Rich text={opt} />}</span>
           </button>
         );
       })}

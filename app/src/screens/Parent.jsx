@@ -2,13 +2,13 @@
 // reads it. All text still comes from ui.json keys with the `parent.` prefix.
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { t, loadPassage } from '../lib/content.js';
-import { getLog } from '../lib/storage.js';
+import { getLog, getSettings, saveSettings } from '../lib/storage.js';
 import { getSims } from '../lib/simStore.js';
 import {
-  getSettings, saveSettings, hasPin, setPin, checkPin, makeGate, resetProfileData, deleteProfile,
+  hasPin, setPin, checkPin, makeGate, resetProfileData, deleteProfile,
 } from '../lib/parentData.js';
 import { accuracy, minutesPerDay, sessionsOn, recentMistakes, withTrend, describeItem, passageOf, bucketOf } from '../lib/stats.js';
-import { Companion, Btn } from '../components/Bits.jsx';
+import { Companion, Btn, Rich } from '../components/Bits.jsx';
 import { NumPad } from '../components/NumPad.jsx';
 import { UiIcon } from '../components/Icons.jsx';
 
@@ -230,7 +230,7 @@ function Mistakes({ list, ctx, readingTypes }) {
         const d = describeItem(e.id, ctx);
         return (
           <li class="pmist-item" key={e.id}>
-            <span class={`pmist-text ${d.math ? 'math' : ''}`}><bdi dir={d.math ? 'ltr' : 'auto'}>{d.text}</bdi></span>
+            <span class={`pmist-text ${d.math ? 'math' : ''}`}><bdi dir={d.math ? 'ltr' : 'auto'}><Rich text={d.text} /></bdi></span>
             <span class="pmist-tags">
               <span class="ptag">{labelFor(bucketOf(e, readingTypes))}</span>
               {e.sim && <span class="ptag sim">{t('parent.mistakes.sim')}</span>}
@@ -256,7 +256,7 @@ function Stepper({ value, min, max, onChange }) {
 // ---- dashboard --------------------------------------------------------------------------------------------------------------------
 function Dashboard({ profiles, activeId, content, onClose, onChanged }) {
   const [pid, setPid] = useState(profiles.some((p) => p.id === activeId) ? activeId : profiles[0] && profiles[0].id);
-  const [settings, setSettings] = useState(getSettings());
+  const [settings, setSettings] = useState(() => getSettings(pid));
   const [confirm, setConfirm] = useState(null); // 'reset' | 'delete'
   const [notice, setNotice] = useState('');
   const [rev, setRev] = useState(0);
@@ -265,13 +265,14 @@ function Dashboard({ profiles, activeId, content, onClose, onChanged }) {
 
   useEffect(() => {
     if (!pid) return;
+    setSettings(getSettings(pid));
     let alive = true;
     (async () => {
       const log = getLog(pid);
       const sims = getSims(pid);
       const recent = recentMistakes(log, 20);
       // reading question types and stems live in the passages: load the ones the log mentions
-      const needed = [...new Set([...log, ...recent].filter((e) => e.skill === 'reading').map((e) => passageOf(e.id)))];
+      const needed = [...new Set([...log, ...recent].filter((e) => e.skill === 'reading' && !e.game).map((e) => passageOf(e.id)))];
       const readingTypes = {};
       const questions = {};
       await Promise.all(
@@ -296,7 +297,7 @@ function Dashboard({ profiles, activeId, content, onClose, onChanged }) {
     return () => (alive = false);
   }, [pid, rev]);
 
-  const update = (patch) => setSettings(saveSettings(patch));
+  const update = (patch) => setSettings(saveSettings(pid, patch));
   const doReset = () => {
     resetProfileData(pid);
     setConfirm(null);

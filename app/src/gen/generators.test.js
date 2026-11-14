@@ -114,3 +114,17 @@ describe('ids', () => {
     expect(itemFromId('wp-001')).toBeNull();
   });
 });
+
+describe('the minus sign', () => {
+  // The booklet prints a real minus. Every generated operator must be U+2212 "−", never the ASCII hyphen "-" (the
+  // text font draws the two alike, fonts.css 'KH Minus' fixes the glyph; this keeps the data honest).
+  it('every generated item uses U+2212, never "-" or "–"', () => {
+    const ops = new Set();
+    for (const L of LEVELS) for (const s of SEEDS.slice(0, 150)) {
+      for (const it of [exercise(L, s), missing(L, s), inequality(L, s)]) for (const tok of it.expr) if (typeof tok === 'string') ops.add(tok);
+      for (const op of digitRiddle(L, s).digit.ops) ops.add(op);
+    }
+    expect([...ops].filter((o) => /[-–‐‑]/.test(o))).toEqual([]);
+    expect(ops.has('−')).toBe(true);
+  });
+});

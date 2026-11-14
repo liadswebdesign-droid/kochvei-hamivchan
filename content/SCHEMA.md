@@ -21,6 +21,11 @@ app/                    ← the PWA; copies content/build → app/public/content
   The pipeline adds nikud. Never hand-vocalize in `src/`.
 - Exception: a word whose reading is ambiguous even in context may carry a hint: `{{word|vocalized}}`
   e.g. `{{ספר|סֵפֶר}}`. The pipeline uses the hint as a 4th vote (it still checks it).
+- Bold emphasis, as the official booklet bolds key words ("**אין**", "**אינן**", "**גם**", "**בלי מקום בתבנית**"):
+  wrap the words in `**…**` in any string (stem, option, passage line, explanation, ui.json). The app shows them as
+  bold; the markers are never displayed, measured or compared. They must pair up, a bold span is never empty and has no
+  space just inside the markers, and a single `*` is an error (tools/check-content enforces this). The nikud pipeline
+  treats `**` as punctuation: it keeps it in place and never inside a word. A hint may sit inside bold: `**{{ספר|סֵפֶר}}**`.
 - Numbers stay as digits. Use the real maqaf (U+05BE) after one-letter prefixes before digits: `בְּ־8` is written `ב־8` in src.
 - Kid-facing register: grade 2, short sentences, warm, no slang. Addressing the child: plural like the official
   booklet ("קראו", "הקיפו", "ענו") in instructions; companion lines are gender-neutral or plural.
