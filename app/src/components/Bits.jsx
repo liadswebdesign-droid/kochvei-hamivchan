@@ -1,14 +1,23 @@
 import { Fragment } from 'preact';
-import { companions } from '../config.js';
+import { companions, companionId } from '../config.js';
 import { t } from '../lib/content.js';
 import { Shape, RiddleIcon, StarIcon, UiIcon } from './Icons.jsx';
 
 // ---- companion ---------------------------------------------------------------
-export function Companion({ id, size = 72, mood }) {
-  const c = companions.find((x) => x.id === id) || companions[0];
+// Small sizes (≤ 72px, chips and feedback bubbles) show the head crop in a coloured disc; larger ones show the full
+// figure with a gentle idle bob. mood="happy" switches to the cheer pose (with a hop); mood="think" tilts the head.
+export function Companion({ id, size = 72, mood, variant }) {
+  const c = companions.find((x) => x.id === companionId(id)) || companions[0];
+  const face = variant ? variant === 'face' : size <= 72;
+  const src = face ? c.face : mood === 'happy' ? c.cheer : c.img;
   return (
-    <span class={`companion ${mood ? 'mood-' + mood : ''}`} style={{ '--size': size + 'px', '--bg': c.color }} role="img" aria-label={t('companion.' + c.id)}>
-      {c.img ? <img src={import.meta.env.BASE_URL + c.img} alt="" /> : <span class="companion-emoji" aria-hidden="true">{c.emoji}</span>}
+    <span
+      class={`companion ${face ? 'is-face' : 'is-figure'} ${mood ? 'mood-' + mood : ''}`}
+      style={{ '--size': size + 'px', '--bg': c.color }}
+      role="img"
+      aria-label={t('companion.' + c.id)}
+    >
+      <img src={import.meta.env.BASE_URL + src} alt="" draggable={false} decoding="async" />
     </span>
   );
 }

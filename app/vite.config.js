@@ -52,7 +52,7 @@ export default defineConfig(({ command, isPreview }) => ({
       },
       workbox: {
         // Precache the app shell, fonts and every content JSON so the app works fully offline.
-        globPatterns: ['**/*.{js,css,html,woff2,png,svg,json,webmanifest}'],
+        globPatterns: ['**/*.{js,css,html,woff2,png,svg,webp,json,webmanifest}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,

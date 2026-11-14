@@ -1,3 +1,5 @@
+import { companionId } from '../config.js';
+
 // Tiny localStorage wrapper. Every read/write is guarded: private mode, quota, or blocked storage must never crash
 // the app (it then simply runs without persistence). Names stay on this device only.
 const NS = 'kh:';
@@ -46,7 +48,8 @@ export function remove(key) {
 
 // ---- profiles --------------------------------------------------------------
 // kh:profiles = [{ id, name, companion, created }]   kh:active = id
-export const getProfiles = () => load('profiles', []);
+// Old companion ids (dragon, rocket) map to the art companions on read (T5).
+export const getProfiles = () => load('profiles', []).map((p) => ({ ...p, companion: companionId(p.companion) }));
 export const getActiveId = () => load('active', null);
 export const setActiveId = (id) => save('active', id);
 
@@ -81,3 +84,14 @@ export function logAttempt(pid, entry) {
   save(pk(pid, 'log'), log);
 }
 export const getLog = (pid) => load(pk(pid, 'log'), []);
+
+// ---- per-profile settings (T5 reads; T6's parent screen writes) ---------------------------------------------------
+// kh:p:<id>:settings = { sound: true }   Missing keys fall back to the defaults.
+export const defaultSettings = () => ({ sound: true });
+export const getSettings = (pid) => ({ ...defaultSettings(), ...load(pk(pid, 'settings'), {}) });
+export const saveSettings = (pid, s) => save(pk(pid, 'settings'), { ...getSettings(pid), ...s });
+export const isSoundOn = (pid) => getSettings(pid).sound !== false;
+
+// ---- rewards blob (T5, shape owned by lib/rewards.js) ---------------------------------------------------------------
+export const getRewardsRaw = (pid) => load(pk(pid, 'rewards'), null);
+export const saveRewardsRaw = (pid, r) => save(pk(pid, 'rewards'), r);

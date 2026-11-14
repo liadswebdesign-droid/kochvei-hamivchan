@@ -4,6 +4,10 @@ import { getProgress, skillState } from '../lib/storage.js';
 import { islandAvailable, reviewCount } from '../lib/session.js';
 import { Companion, StarRow } from '../components/Bits.jsx';
 import { UiIcon, StarIcon } from '../components/Icons.jsx';
+// T5: album / streak / games corner / stars flying into the counter
+import { useLayoutEffect, useRef, useState } from 'preact/hooks';
+import { unseenStickers, streakDays, getStarsSeen, setStarsSeen } from '../lib/rewards.js';
+import { flyStars } from '../components/Celebrate.jsx';
 
 // Whole days from the device's today to the test date (local calendar days).
 export function daysUntil(dateStr, now = new Date()) {
@@ -25,8 +29,21 @@ function Countdown() {
   );
 }
 
-export function MapScreen({ profile, content, onIsland, onSwitch }) {
+export function MapScreen({ profile, content, onIsland, onSwitch, onAlbum, onGames }) {
   const progress = getProgress(profile.id);
+  // T5: stars earned since the map was last shown fly in from the middle and the counter ticks up as they land.
+  const starsRef = useRef(null);
+  const [seen] = useState(() => getStarsSeen(profile));
+  const [shownStars, setShownStars] = useState(seen == null ? progress.stars : Math.min(seen, progress.stars));
+  useLayoutEffect(() => {
+    const from = shownStars;
+    const gained = progress.stars - from;
+    setStarsSeen(profile, progress.stars);
+    if (gained <= 0) return;
+    return flyStars(gained, starsRef.current, (k) => setShownStars(from + k));
+  }, []);
+  const unseen = unseenStickers(profile).length;
+  const streak = streakDays(profile);
   return (
     <div class="screen map">
       <header class="topbar">
@@ -37,10 +54,21 @@ export function MapScreen({ profile, content, onIsland, onSwitch }) {
         </button>
         <div class="topbar-chips">
           <Countdown />
-          <div class="chip chip-stars">
+          {streak >= 2 && (
+            <div class="chip chip-streak">
+              <UiIcon id="flame" size={26} />
+              <span>{t('map.streak', { n: streak })}</span>
+            </div>
+          )}
+          <div class="chip chip-stars" ref={starsRef}>
             <StarIcon size={28} />
-            <span>{t('map.stars', { n: progress.stars })}</span>
+            <span>{t('map.stars', { n: shownStars })}</span>
           </div>
+          <button type="button" class="chip chip-album" onClick={onAlbum}>
+            <UiIcon id="album" size={28} />
+            <span>{t('map.album')}</span>
+            {unseen > 0 && <span class="chip-badge">{unseen}</span>}
+          </button>
         </div>
       </header>
 
@@ -89,6 +117,12 @@ export function MapScreen({ profile, content, onIsland, onSwitch }) {
             );
           })}
         </div>
+        <button type="button" class="games-corner" onClick={onGames}>
+          <span class="games-corner-art" aria-hidden="true">
+            <UiIcon id="games" size={52} />
+          </span>
+          <span class="games-corner-sign">{t('map.games')}</span>
+        </button>
       </main>
     </div>
   );

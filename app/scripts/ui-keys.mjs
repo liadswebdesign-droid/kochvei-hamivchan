@@ -13,6 +13,7 @@ const TITLES = {
   app: 'App', common: 'Shared buttons', profile: 'Profiles', companion: 'Companion names (one per entry in src/config.js)',
   map: 'World map', island: 'Island names', instr: 'Instructions', mc: 'Answer labels', numpad: 'Number pad (screen-reader labels)',
   practice: 'Practice screen', feedback: 'Feedback after an answer', hint: 'Hints for generated math items', results: 'Results screen',
+  album: 'Sticker album (T5)', sticker: 'Sticker reward (T5)', games: 'Mini-games corner (T5)', game: 'Inside a mini-game (T5)',
 };
 let md = `# UI text keys
 

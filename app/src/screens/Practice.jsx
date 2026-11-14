@@ -9,6 +9,8 @@ import { Choices } from '../components/Choices.jsx';
 import { NumPad } from '../components/NumPad.jsx';
 import { PassageView } from '../components/PassageView.jsx';
 import { RiddleIcon, StarIcon, UiIcon } from '../components/Icons.jsx';
+import { onPracticeComplete } from '../lib/rewards.js'; // T5
+import { sfx } from '../lib/sound.js'; // T5
 
 const isPortrait = () => window.matchMedia('(orientation: portrait)').matches;
 
@@ -145,14 +147,18 @@ function Explanation({ item }) {
 function Celebration({ companion, firstTry, item, onNext }) {
   const cheer = useMemo(() => (firstTry ? t('feedback.correct.' + (1 + Math.floor(Math.random() * 4))) : t('feedback.secondTry')), []);
   const btn = useRef(null);
-  useEffect(() => btn.current && btn.current.focus(), []);
+  useEffect(() => {
+    btn.current && btn.current.focus();
+    const id = setTimeout(() => sfx.star(), 420); // T5: as the star pops in
+    return () => clearTimeout(id);
+  }, []);
   return (
     <div class="overlay celebrate" role="dialog" aria-live="polite">
       <div class="confetti" aria-hidden="true">
         {Array.from({ length: 18 }, (_, i) => <span style={{ '--i': i }} />)}
       </div>
       <div class="celebrate-card">
-        <Companion id={companion} size={128} mood="happy" />
+        <Companion id={companion} size={150} mood="happy" />
         <p class="cheer">{cheer}</p>
         {item.kind === 'inequality' && <IneqNote item={item} />}
         <p class="star-earned">
@@ -251,12 +257,14 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
   function check() {
     if (!canCheck) return;
     if (isRight(item, choice, value)) {
+      sfx.correct();
       finishItem(attempt === 1, true);
       if (item.kind === 'mc') setMarks({ ...marks, [item.answer]: 'correct' });
       setPhase('correct');
       return;
     }
     setShake((s) => s + 1);
+    sfx.tryAgain();
     if (attempt === 1) {
       if (item.kind === 'mc') setMarks({ ...marks, [choice]: 'wrong' });
       setChoice(null);
@@ -288,7 +296,8 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
       const readingDone = session.passageId ? [...new Set([...(s.readingDone || []), session.passageId])] : s.readingDone;
       p.skills[skill] = { ...s, sessions: s.sessions + 1, best: Math.max(s.best, rating), level: levelUp ? s.level + 1 : s.level, ...(readingDone ? { readingDone } : {}) };
       saveProgress(pid, p);
-      onFinish({ skill, rating, total: all.length, firstTry: all.length - mistakes, starsEarned: all.filter((r) => r.solved).length, levelUp, level: p.skills[skill].level, reviewAdded: mistakes });
+      const stickers = onPracticeComplete(profile, { rating }); // T5: album + streak
+      onFinish({ skill, rating, total: all.length, firstTry: all.length - mistakes, starsEarned: all.filter((r) => r.solved).length, levelUp, level: p.skills[skill].level, reviewAdded: mistakes, stickers });
       return;
     }
     setIdx(idx + 1);

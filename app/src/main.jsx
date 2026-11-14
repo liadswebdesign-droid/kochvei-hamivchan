@@ -1,7 +1,11 @@
 import { render } from 'preact';
 import './fonts.css';
 import './styles.css';
+import './fun.css'; // T5: companions, album, celebrations, mini-games
 import { App } from './App.jsx';
+import { initSound } from './lib/sound.js';
+
+initSound(); // T5: unlock WebAudio on the first touch; soft tap sound on buttons
 
 render(<App />, document.getElementById('app'));
 

@@ -5,6 +5,9 @@ import { ProfileCreate, ProfileSwitcher } from './screens/Profiles.jsx';
 import { MapScreen } from './screens/MapScreen.jsx';
 import { Practice } from './screens/Practice.jsx';
 import { Results } from './screens/Results.jsx';
+// T5: sticker album + mini-games
+import { Album } from './screens/Album.jsx';
+import { GamesHub, GameScreen } from './screens/Games.jsx';
 
 export function App() {
   const [content, setContent] = useState(null);
@@ -70,8 +73,15 @@ export function App() {
         summary={screen.summary}
         onAgain={() => setScreen({ name: 'practice', skill: screen.skill, run: Date.now() })}
         onMap={() => setScreen({ name: 'map' })}
+        onAlbum={() => setScreen({ name: 'album' })}
       />
     );
+  } else if (screen.name === 'album') {
+    body = <Album profile={profile} onBack={() => setScreen({ name: 'map' })} />;
+  } else if (screen.name === 'games') {
+    body = <GamesHub profile={profile} onBack={() => setScreen({ name: 'map' })} onPick={(id) => setScreen({ name: 'game', id })} />;
+  } else if (screen.name === 'game') {
+    body = <GameScreen key={screen.id} id={screen.id} profile={profile} content={content} onExit={() => setScreen({ name: 'games' })} onAlbum={() => setScreen({ name: 'album' })} />;
   } else {
     body = (
       <MapScreen
@@ -79,6 +89,8 @@ export function App() {
         content={content}
         onIsland={(skill) => setScreen({ name: 'practice', skill, run: Date.now() })}
         onSwitch={() => setScreen({ name: 'profiles' })}
+        onAlbum={() => setScreen({ name: 'album' })}
+        onGames={() => setScreen({ name: 'games' })}
       />
     );
   }
