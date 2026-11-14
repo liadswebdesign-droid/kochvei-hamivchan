@@ -229,7 +229,7 @@
   "parent.type.sequence": "סדר אירועים",
   "parent.type.other": "שאלות קריאה אחרות",
   "parent.minutes.title": "דקות תרגול ב־14 הימים האחרונים",
-  "parent.minutes.total": "סה״כ {n} דקות",
+  "parent.minutes.total": "בסך הכול {n} דקות",
   "parent.today": "סבבים היום: {n} מתוך {goal} (הערכה)",
   "parent.sims.title": "מבחני דמה",
   "parent.sims.none": "עדיין לא נעשה מבחן דמה",
