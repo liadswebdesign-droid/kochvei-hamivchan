@@ -985,9 +985,12 @@
     min-height: 100dvh;
   }
   .album-page {
-    flex-direction: column-reverse;
+    flex-direction: column;
+    justify-content: center;
+    gap: 28px;
   }
   .album-grid {
+    flex: none;
     grid-auto-rows: auto;
     padding: 14px;
     gap: 10px;
