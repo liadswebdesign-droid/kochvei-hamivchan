@@ -87,13 +87,26 @@ async function shot(name, W, H) {
       const s = p ? p.getBoundingClientRect() : { top: 0, bottom: innerHeight };
       return { overlap, fullyVisible: b.top >= s.top - 1 && b.bottom <= Math.min(s.bottom, innerHeight) + 1 };
     })() : null;
-    return { over, offenders, rowOrder, maths, text, passage, feedback, docW: document.documentElement.scrollWidth, vw };
+    // the yellow preview banner must not cover anything a child can tap
+    const bannerCovers = (() => {
+      const bn = document.querySelector('.preview-banner');
+      if (!bn) return [];
+      const b = bn.getBoundingClientRect();
+      return [...document.querySelectorAll('button, a[href], input, select, textarea, [role=button], [role=radio], [role=tab], [tabindex]:not([tabindex="-1"])')]
+        .filter((el) => { const r = el.getBoundingClientRect(); return r.width && r.height && getComputedStyle(el).visibility !== 'hidden' && r.left < b.right && r.right > b.left && r.top < b.bottom && r.bottom > b.top; })
+        .slice(0, 5).map((el) => (el.className && el.className.baseVal !== undefined ? el.className.baseVal : el.className) || el.tagName);
+    })();
+    return { over, offenders, rowOrder, maths, text, passage, feedback, docW: document.documentElement.scrollWidth, vw, bannerCovers };
   `);
   const file = path.join(OUT, `${name}-${W}x${H}.png`);
   const { data } = await send('Page.captureScreenshot', { format: 'png' });
   fs.writeFileSync(file, Buffer.from(data, 'base64'));
   report.push({ shot: path.basename(file), ...checks });
   console.log(path.basename(file), JSON.stringify(checks));
+  if (checks.bannerCovers.length) {
+    console.log('✖ preview banner covers', JSON.stringify(checks.bannerCovers), 'on', path.basename(file));
+    process.exitCode = 1;
+  }
 }
 const click = (sel, i = 0) => js(`const el = document.querySelectorAll(${JSON.stringify(sel)})[${i}]; if (!el) throw new Error('no ' + ${JSON.stringify(sel)}); el.click();`);
 const clickText = (sel, text) => js(`const el = [...document.querySelectorAll(${JSON.stringify(sel)})].find(e => e.textContent.includes(${JSON.stringify(text)})); if (!el) throw new Error('no ' + ${JSON.stringify(text)}); el.click();`);

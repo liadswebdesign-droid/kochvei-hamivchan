@@ -64,13 +64,26 @@ async function shot(name, W, H, settle = 700) {
     const over = document.documentElement.scrollWidth > vw + 1;
     const offenders = [...document.querySelectorAll('body *')].filter(el => { const r = el.getBoundingClientRect(); return r.width && (r.right > vw + 1 || r.left < -1) && getComputedStyle(el).position !== 'fixed' && !el.closest('.confetti,.waves,.sky-deco,.catch-field,.flystar'); }).slice(0, 5).map(el => (el.className && el.className.baseVal !== undefined ? el.className.baseVal : el.className) || el.tagName);
     const vOver = document.documentElement.scrollHeight > innerHeight + 1;
-    return { over, offenders, vScroll: vOver, dir: document.documentElement.dir };
+    // the yellow preview banner must not cover anything a child can tap
+    const bannerCovers = (() => {
+      const bn = document.querySelector('.preview-banner');
+      if (!bn) return [];
+      const b = bn.getBoundingClientRect();
+      return [...document.querySelectorAll('button, a[href], input, select, textarea, [role=button], [role=radio], [role=tab], [tabindex]:not([tabindex="-1"])')]
+        .filter((el) => { const r = el.getBoundingClientRect(); return r.width && r.height && getComputedStyle(el).visibility !== 'hidden' && r.left < b.right && r.right > b.left && r.top < b.bottom && r.bottom > b.top; })
+        .slice(0, 5).map((el) => (el.className && el.className.baseVal !== undefined ? el.className.baseVal : el.className) || el.tagName);
+    })();
+    return { over, offenders, vScroll: vOver, dir: document.documentElement.dir, bannerCovers };
   `);
   const file = path.join(OUT, `${name}-${W}x${H}${REDUCED ? '-reduced' : ''}.png`);
   const { data } = await send('Page.captureScreenshot', { format: 'png' });
   fs.writeFileSync(file, Buffer.from(data, 'base64'));
   report.push({ shot: path.basename(file), ...checks });
   console.log(path.basename(file), JSON.stringify(checks));
+  if (checks.bannerCovers.length) {
+    console.log('✖ preview banner covers', JSON.stringify(checks.bannerCovers), 'on', path.basename(file));
+    process.exitCode = 1;
+  }
 }
 const click = (sel, i = 0) => js(`const el = document.querySelectorAll(${JSON.stringify(sel)})[${i}]; if (!el) throw new Error('no ' + ${JSON.stringify(sel)}); el.click();`);
 const item = () => js(`const it = window.__khItem; return it && { kind: it.kind, answer: it.answer, example: it.example };`);
