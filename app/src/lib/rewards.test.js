@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   applyStreak, currentStreak, prevDay, localDay, nextSticker, emptyRewards, practiceRewards,
-  awardSticker, onPracticeComplete, onMockComplete, onGameComplete, getRewards, streakDays,
+  awardSticker, onPracticeComplete, onMockComplete, onGameComplete, getRewards, streakDays, goldCount, earnedCount,
 } from './rewards.js';
 import { STICKER_COUNT } from '../config.js';
 
@@ -25,16 +25,16 @@ describe('local calendar days', () => {
 });
 
 describe('streak', () => {
-  it('counts consecutive days and pays 2/4/6 once each', () => {
+  it('counts consecutive days and pays 2/4/6/8/10 once each', () => {
     let s = null;
     const got = [];
-    for (let d = 1; d <= 8; d++) {
+    for (let d = 1; d <= 12; d++) {
       const r = applyStreak(s, `2026-11-${String(d).padStart(2, '0')}`);
       s = r.streak;
       got.push(r.milestone);
     }
-    expect(s.days).toBe(8);
-    expect(got).toEqual([null, 2, null, 4, null, 6, null, null]);
+    expect(s.days).toBe(12);
+    expect(got).toEqual([null, 2, null, 4, null, 6, null, 8, null, 10, null, null]);
   });
   it('a second activity on the same day changes nothing', () => {
     const a = applyStreak(null, '2026-11-14').streak;
@@ -75,6 +75,29 @@ describe('sticker rules', () => {
     expect(practiceRewards(r, { rating: 2 }, now)).toEqual([]);
     expect(practiceRewards(r, { rating: 3 }, now).map((s) => s.reason)).toEqual(['three-stars']);
   });
+  it('only the first 3-star session of a calendar day earns a sticker', () => {
+    const r = emptyRewards();
+    expect(practiceRewards(r, { rating: 3 }, at(2026, 11, 14, 9)).map((s) => s.reason)).toEqual(['three-stars']);
+    expect(practiceRewards(r, { rating: 3 }, at(2026, 11, 14, 17))).toEqual([]);
+    // next day: the 3-star sticker is back (plus the 2-day streak sticker)
+    expect(practiceRewards(r, { rating: 3 }, at(2026, 11, 15, 8)).map((s) => s.reason)).toEqual(['three-stars', 'streak']);
+    expect(practiceRewards(r, { rating: 3 }, at(2026, 11, 15, 19))).toEqual([]);
+    expect(Object.keys(r.stickers)).toEqual(['1', '2', '3']);
+  });
+  it('a full album turns every reward into a gold star', () => {
+    const r = emptyRewards();
+    r.stickers = Object.fromEntries(Array.from({ length: STICKER_COUNT }, (_, i) => [i + 1, { reason: 'mock', t: 0 }]));
+    r.sessions = 4;
+    r.streak = { last: '2026-11-13', days: 1, hit: [] };
+    const got = practiceRewards(r, { rating: 3 }, at(2026, 11, 14));
+    expect(got.map((s) => s.reason)).toEqual(['three-stars', 'five-sessions', 'streak']);
+    expect(got.every((s) => s.n === null)).toBe(true);
+    expect(got.map((s) => s.gold)).toEqual([1, 2, 3]);
+    expect(got[2].days).toBe(2);
+    expect(r.gold).toBe(3);
+    expect(r.unseen).toEqual([]);
+    expect(Object.keys(r.stickers)).toHaveLength(STICKER_COUNT);
+  });
   it('every 5th session earns a sticker, whatever the stars', () => {
     const r = emptyRewards();
     r.streak = { last: '2026-11-14', days: 1, hit: [] };
@@ -108,6 +131,19 @@ describe('storage-backed API', () => {
     const got = onMockComplete(p, at(2026, 11, 14));
     expect(got.map((s) => s.reason)).toEqual(['mock', 'streak']);
     expect(streakDays(p, at(2026, 11, 14))).toBe(2);
+    // every finished mock pays, even twice on the same day
+    expect(onMockComplete(p, at(2026, 11, 14, 18)).map((s) => s.reason)).toEqual(['mock']);
+  });
+  it('a full album keeps paying gold stars and stores the count', () => {
+    for (let i = 0; i < STICKER_COUNT; i++) awardSticker(p, 'mock', at(2026, 11, 14));
+    expect(awardSticker(p, 'mock', at(2026, 11, 14))).toEqual({ n: null, gold: 1, reason: 'mock' });
+    expect(onMockComplete(p, at(2026, 11, 14))).toEqual([{ n: null, gold: 2, reason: 'mock' }]);
+    expect(onMockComplete(p, at(2026, 11, 15))).toEqual([
+      { n: null, gold: 3, reason: 'mock' },
+      { n: null, gold: 4, reason: 'streak', days: 2 },
+    ]);
+    expect(goldCount(p)).toBe(4);
+    expect(earnedCount(p)).toBe(STICKER_COUNT);
   });
   it('games keep a personal best and count toward the streak', () => {
     const a = onGameComplete(p, 'race', 7, at(2026, 11, 14));

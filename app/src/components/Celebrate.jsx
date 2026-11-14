@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { t } from '../lib/content.js';
 import { sfx } from '../lib/sound.js';
+import { StarIcon } from './Icons.jsx';
 
 export const reducedMotion = () => typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -100,13 +101,20 @@ export function StickerReward({ stickers, onClose, onAlbum }) {
   }, [i]);
   if (!s) return null;
   const last = i + 1 >= stickers.length;
+  const gold = s.n == null; // album full: the reward is a gold star
   return (
-    <div class="overlay sticker-overlay" role="dialog" aria-live="polite" aria-label={t('sticker.new')}>
+    <div class="overlay sticker-overlay" role="dialog" aria-live="polite" aria-label={gold ? t('sticker.gold') : t('sticker.new')}>
       <Confetti key={i} pieces={80} />
       <div class="sticker-card" key={'c' + i}>
-        <p class="sticker-new">{t('sticker.new')}</p>
-        <div class="sticker-stage">
-          <Sticker n={s.n} size={220} peel delay={200} tilt={-4} />
+        <p class="sticker-new">{gold ? t('sticker.gold') : t('sticker.new')}</p>
+        <div class={`sticker-stage ${gold ? 'is-gold' : ''}`}>
+          {gold ? (
+            <span class="gold-star">
+              <StarIcon size={180} />
+            </span>
+          ) : (
+            <Sticker n={s.n} size={220} peel delay={200} tilt={-4} />
+          )}
         </div>
         <p class="sticker-reason">{reasonText(s)}</p>
         <div class="row-btns">

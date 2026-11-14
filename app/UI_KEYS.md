@@ -8,7 +8,7 @@ and the nikud pipeline vocalizes it into `content/build/ui.json`.
   exactly as written (Latin, curly braces). A number placeholder after a one-letter prefix takes the real maqaf: `מ־{bound}`.
 - Addressing the child: plural in instructions ("קראו", "פתרו"), gender-neutral or plural in companion lines.
 - `npm run build` fails if `content/build/ui.json` lacks any key in this list (scripts/content.mjs).
-- Total: 148 keys. Regenerate this file with `npm run ui-keys`.
+- Total: 152 keys. Regenerate this file with `npm run ui-keys`.
 
 ## App
 
@@ -188,16 +188,20 @@ and the nikud pipeline vocalizes it into `content/build/ui.json`.
 | `album.streak` | {n} ימים ברצף |
 | `album.streak.one` | יום ראשון ברצף |
 | `album.how` | איך מקבלים מדבקה? |
-| `album.rule.threeStars` | סבב עם שלושה כוכבים |
+| `album.rule.threeStars` | הסבב הראשון של היום עם שלושה כוכבים |
 | `album.rule.fiveSessions` | כל חמישה סבבים |
-| `album.rule.streak` | יומיים, ארבעה ושישה ימים ברצף |
-| `album.rule.mock` | מבחן דמה עד הסוף |
+| `album.rule.streak` | כל יומיים ברצף, עד 10 ימים |
+| `album.rule.mock` | כל מבחן דמה עד הסוף |
+| `album.rule.gold` | האלבום מלא? כל פרס הוא כוכב זהב |
+| `album.gold` | {n} כוכבי זהב |
+| `album.gold.one` | כוכב זהב אחד |
 
 ## Sticker reward (T5)
 
 | Key | Placeholder (unvocalized) |
 |---|---|
 | `sticker.new` | מדבקה חדשה! |
+| `sticker.gold` | כוכב זהב! |
 | `sticker.reason.three-stars` | סבב עם שלושה כוכבים! |
 | `sticker.reason.five-sessions` | עוד חמישה סבבים! |
 | `sticker.reason.streak` | {n} ימים ברצף! |

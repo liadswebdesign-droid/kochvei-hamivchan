@@ -264,6 +264,35 @@
   background: var(--purple-soft);
   margin: 8px 0;
 }
+/* Album full: the reward is a gold star instead of a sticker. */
+.sticker-stage.is-gold {
+  border-color: #f5d77a;
+  background: radial-gradient(circle at 50% 45%, #fff6cf 0%, #ffe9a6 70%);
+}
+.gold-star {
+  display: grid;
+  animation: gold-in 700ms var(--ease-out) 150ms both;
+}
+@keyframes gold-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-30deg);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.08) rotate(4deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+.album-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 5px 0 #f5d77a;
+  color: #a8740a;
+}
 .sticker-reason {
   font: 600 24px/1.5 var(--f-text);
   color: var(--ink-soft);
@@ -986,7 +1015,7 @@
   }
   .album-page {
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start; /* grid sits right under the header; the side panel follows it */
     gap: 28px;
   }
   .album-grid {

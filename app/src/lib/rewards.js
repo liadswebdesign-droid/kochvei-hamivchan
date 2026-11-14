@@ -2,13 +2,17 @@
 //
 //   { stickers: { "<n>": { reason, t } },   earned stickers, n = 1..STICKER_COUNT
 //     unseen: [n],                          earned but not yet stuck into the album (album animates these)
+//     gold: 0,                              rewards earned after the album was full (gold-star badge in the album header)
+//     lastThreeStarDay: 'YYYY-MM-DD',       the day the 3-star sticker was last paid (one per calendar day)
 //     sessions: 0,                          finished practice sessions (all islands)
 //     streak: { last: 'YYYY-MM-DD', days, hit: [2, 4] },   local calendar days; `hit` = milestones paid this run
 //     games: { <gameId>: { best, plays } },
 //     starsSeen: null | number }            star total the map last showed (drives the "stars fly in" moment)
 //
-// Rules (PLAN §2 rewards): a sticker for every practice session finished with 3 stars, for every 5th finished session,
-// for a daily streak of 2, 4 and 6 days, and for finishing a mock exam. The mock exam (T6) calls
+// Rules (paced so the 24 stickers last until the test on 30.11): the FIRST practice session of each calendar day that
+// ends with 3 stars, every 5th finished session, a daily streak of 2/4/6/8/10 days, and every finished mock exam.
+// Once the album is full each reward becomes a gold star (r.gold), so a reward never silently disappears.
+// The mock exam (T6) calls
 // onMockComplete(profile) — or awardSticker(profile, 'mock') directly — and shows <StickerReward> with the result.
 import { STICKER_COUNT, STREAK_MILESTONES, STICKER_EVERY_SESSIONS } from '../config.js';
 import { getRewardsRaw, saveRewardsRaw } from './storage.js';
@@ -24,7 +28,7 @@ export function prevDay(day) {
   return localDay(new Date(y, m - 1, d - 1));
 }
 
-export const emptyRewards = () => ({ stickers: {}, unseen: [], sessions: 0, streak: { last: null, days: 0, hit: [] }, games: {}, starsSeen: null });
+export const emptyRewards = () => ({ stickers: {}, unseen: [], gold: 0, lastThreeStarDay: null, sessions: 0, streak: { last: null, days: 0, hit: [] }, games: {}, starsSeen: null });
 
 // ---- pure rules (unit-tested) -------------------------------------------------------------------------------------
 // Count `today` as an active day. Returns the new streak and the milestone reached today (or null).
@@ -49,10 +53,13 @@ export function nextSticker(stickers) {
   return null;
 }
 
-// Mutates `r`. Returns { n, reason, days? } or null when the album is full.
+// Mutates `r`. Returns { n, reason, days? }; once the album is full, a gold star: { n: null, gold: <total>, reason, days? }.
 function give(r, reason, now, extra = {}) {
   const n = nextSticker(r.stickers);
-  if (n == null) return null;
+  if (n == null) {
+    r.gold = (r.gold || 0) + 1;
+    return { n: null, gold: r.gold, reason, ...extra };
+  }
   r.stickers[n] = { reason, t: now.getTime(), ...extra };
   r.unseen = [...r.unseen.filter((x) => x !== n), n];
   return { n, reason, ...extra };
@@ -62,7 +69,11 @@ function give(r, reason, now, extra = {}) {
 export function practiceRewards(r, { rating }, now) {
   const out = [];
   r.sessions += 1;
-  if (rating === 3) out.push(give(r, 'three-stars', now));
+  const today = localDay(now);
+  if (rating === 3 && r.lastThreeStarDay !== today) {
+    r.lastThreeStarDay = today;
+    out.push(give(r, 'three-stars', now));
+  }
   if (r.sessions % STICKER_EVERY_SESSIONS === 0) out.push(give(r, 'five-sessions', now));
   out.push(...activityRewards(r, now));
   return out.filter(Boolean);
@@ -87,7 +98,8 @@ function update(profile, fn) {
   return out;
 }
 
-// Give one sticker for `reason` ('three-stars' | 'five-sessions' | 'streak' | 'mock'). Returns { n, reason } or null.
+// Give one sticker for `reason` ('three-stars' | 'five-sessions' | 'streak' | 'mock'). Returns { n, reason }, or a gold
+// star { n: null, gold } once the album is full.
 export function awardSticker(profile, reason, now = new Date()) {
   return update(profile, (r) => give(r, reason, now));
 }
@@ -112,6 +124,7 @@ export function onGameComplete(profile, gameId, score, now = new Date()) {
 
 export const gameBest = (profile, gameId) => (getRewards(profile).games[gameId] || { best: 0 }).best;
 export const earnedCount = (profile) => Object.keys(getRewards(profile).stickers).length;
+export const goldCount = (profile) => getRewards(profile).gold || 0;
 export const unseenStickers = (profile) => getRewards(profile).unseen;
 export const markStickersSeen = (profile, ns) => update(profile, (r) => void (r.unseen = r.unseen.filter((n) => !ns.includes(n))));
 export const streakDays = (profile, now = new Date()) => currentStreak(getRewards(profile).streak, localDay(now));

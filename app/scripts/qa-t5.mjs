@@ -150,6 +150,23 @@ async function run(W, H) {
   await click('.album-top .corner-btn');
   await wait(400);
 
+  // 4b. full album: every slot filled and 3 gold stars in the header (the stickers are restored afterwards)
+  await js(`
+    const pid = JSON.parse(localStorage.getItem('kh:active'));
+    const k = 'kh:p:' + pid + ':rewards';
+    window.__khSavedRewards = localStorage.getItem(k);
+    const r = JSON.parse(window.__khSavedRewards);
+    for (let n = 1; n <= 24; n++) r.stickers[n] = r.stickers[n] || { reason: 'mock', t: Date.now() };
+    r.unseen = [];
+    r.gold = 3;
+    localStorage.setItem(k, JSON.stringify(r));
+  `);
+  await click('.chip-album');
+  await shot('t5-09b-album-full-gold', W, H, 600);
+  await click('.album-top .corner-btn');
+  await wait(400);
+  await js(`localStorage.setItem('kh:p:' + JSON.parse(localStorage.getItem('kh:active')) + ':rewards', window.__khSavedRewards)`);
+
   // 5. games
   await click('.games-corner');
   await shot('t5-10-games-hub', W, H);

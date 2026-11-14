@@ -26,7 +26,7 @@ export const companionId = (id) => COMPANION_ALIASES[id] || id;
 
 // ---- T5: sticker album + mini-games ---------------------------------------------------------------------------------
 export const STICKER_COUNT = 24; // public/art/stickers/sticker-01..24.webp
-export const STREAK_MILESTONES = [2, 4, 6];
+export const STREAK_MILESTONES = [2, 4, 6, 8, 10];
 export const STICKER_EVERY_SESSIONS = 5;
 // skill = the practice skill a game trains (the attempt log tags every game attempt with `game` and this skill).
 export const games = [

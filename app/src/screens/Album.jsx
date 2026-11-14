@@ -7,7 +7,7 @@ import { getRewards, markStickersSeen, streakDays } from '../lib/rewards.js';
 import { sfx } from '../lib/sound.js';
 import { Sticker, stickerSrc, reducedMotion } from '../components/Celebrate.jsx';
 import { Companion } from '../components/Bits.jsx';
-import { UiIcon } from '../components/Icons.jsx';
+import { UiIcon, StarIcon } from '../components/Icons.jsx';
 
 // A stable, slight tilt per slot so the page looks hand-stuck.
 const tiltOf = (n) => ((n * 37) % 11) - 5;
@@ -35,6 +35,12 @@ export function Album({ profile, onBack }) {
           <UiIcon id="back" />
         </button>
         <h1 class="title album-title">{t('album.title')}</h1>
+        {r.gold > 0 && (
+          <span class="chip album-gold">
+            <StarIcon size={26} />
+            <span>{r.gold === 1 ? t('album.gold.one') : t('album.gold', { n: r.gold })}</span>
+          </span>
+        )}
         <span class="chip album-count">{t('album.count', { n: count, total: STICKER_COUNT })}</span>
       </header>
       <main class="album-page">
@@ -79,6 +85,7 @@ export function Album({ profile, onBack }) {
               <li>{t('album.rule.fiveSessions')}</li>
               <li>{t('album.rule.streak')}</li>
               <li>{t('album.rule.mock')}</li>
+              <li>{t('album.rule.gold')}</li>
             </ul>
           </div>
         </aside>
