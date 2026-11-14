@@ -8,6 +8,8 @@
 //                              Same as --dev, for an explicit preview deploy. Fixture output is stamped
 //                              source:"fixtures" in manifest.json; vite.config.js refuses to build such output unless
 //                              KH_ALLOW_FIXTURES=1, and the app shows a "preview content" banner.
+//   KH_CONTENT=src (with --dev / --preview): skip content/build and use content/src → dev-fixtures (layout QA with the
+//                              real full-length drafts; also what --dev does anyway while content/build is missing).
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -46,7 +48,17 @@ const buildProblems = problems(BUILD);
 // ui.json is merged: fixture keys (the app's master key list) overlaid with any src/build values.
 const SRC = path.resolve(APP, '../content/src');
 let sources; // ordered list of folders to read from
-if (!buildProblems.length) sources = [BUILD];
+// KH_CONTENT=src (dev/preview only): read content/src even when content/build is complete, e.g. to lay out and QA
+// the full-length drafts (`KH_CONTENT=src scripts/serve.sh dev 5199`). Nothing is ever written to content/.
+const forceSrc = process.env.KH_CONTENT === 'src';
+if (forceSrc && mode === 'strict') {
+  console.error('\n✖ content: KH_CONTENT=src is for dev/preview only; a strict build always uses content/build.\n');
+  process.exit(1);
+}
+if (forceSrc) {
+  console.warn('⚠ content: KH_CONTENT=src → using content/src → app/dev-fixtures per file — NOT FOR SHIPPING');
+  sources = [SRC, FIXTURES];
+} else if (!buildProblems.length) sources = [BUILD];
 else if (mode === 'strict') {
   console.error('\n✖ content: ../content/build is not complete, refusing to build (dev fixtures are never shipped).');
   for (const p of buildProblems) console.error('   - ' + p);
