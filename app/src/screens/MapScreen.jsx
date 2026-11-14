@@ -2,6 +2,7 @@ import { t } from '../lib/content.js';
 import { islands, TEST_DATE } from '../config.js';
 import { getProgress, skillState } from '../lib/storage.js';
 import { islandAvailable, reviewCount } from '../lib/session.js';
+import { bestOverall } from '../lib/simStore.js';
 import { Companion, StarRow } from '../components/Bits.jsx';
 import { UiIcon, StarIcon } from '../components/Icons.jsx';
 
@@ -25,8 +26,9 @@ function Countdown() {
   );
 }
 
-export function MapScreen({ profile, content, onIsland, onSwitch }) {
+export function MapScreen({ profile, content, onIsland, onSwitch, onParent }) {
   const progress = getProgress(profile.id);
+  const mockBest = bestOverall(profile.id);
   return (
     <div class="screen map">
       <header class="topbar">
@@ -79,8 +81,14 @@ export function MapScreen({ profile, content, onIsland, onSwitch }) {
                     <span class="island-meta">{t('map.locked')}</span>
                   ) : (
                     <span class="island-meta">
-                      <StarRow n={st.best} size={20} />
-                      <span class="island-level">{t('map.level', { n: st.level })}</span>
+                      {isl.id === 'mock' ? (
+                        <span class="island-level">{mockBest ? t('map.mock.best', { score: mockBest.score, max: mockBest.max }) : t('map.mock.none')}</span>
+                      ) : (
+                        <>
+                          <StarRow n={st.best} size={20} />
+                          <span class="island-level">{t('map.level', { n: st.level })}</span>
+                        </>
+                      )}
                     </span>
                   )}
                 </span>
@@ -90,6 +98,9 @@ export function MapScreen({ profile, content, onIsland, onSwitch }) {
           })}
         </div>
       </main>
+      <button type="button" class="parent-btn" onClick={onParent} aria-label={t('map.parent')}>
+        <UiIcon id="gear" size={26} />
+      </button>
     </div>
   );
 }

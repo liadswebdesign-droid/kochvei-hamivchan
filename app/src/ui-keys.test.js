@@ -17,7 +17,7 @@ function sources(dir) {
   });
 }
 const code = sources(__dirname).join('\n');
-const PREFIX = '(?:app|common|profile|companion|map|island|instr|mc|numpad|practice|feedback|hint|results)';
+const PREFIX = '(?:app|common|profile|companion|map|island|instr|mc|numpad|practice|feedback|hint|results|sim|parent)';
 const literal = [...code.matchAll(new RegExp(`'(${PREFIX}\\.[\\w.-]+)'`, 'g'))].map((m) => m[1]).filter((k) => !k.endsWith('.'));
 const dynamic = [
   ...companions.map((c) => 'companion.' + c.id),

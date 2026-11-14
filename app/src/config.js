@@ -6,6 +6,9 @@ export const TEST_DATE = '2026-11-30';
 export const SESSION_SIZE = 8;
 export const MAX_REVIEW_PER_SESSION = 3;
 
+// Test simulation: how long the companion-as-teacher keeps the "stop" page closed before saying "you may continue".
+export const STOP_PAUSE_MS = 10000;
+
 // Companions. T5 replaces `emoji` with art: give an entry `img: 'companions/owl.svg'` (path under public/) and the
 // <Companion> component renders the image instead of the emoji. Names come from ui.json key `companion.<id>`.
 export const companions = [
@@ -25,5 +28,5 @@ export const islands = [
   { id: 'wordProblems', titleKey: 'island.wordProblems', instrKey: 'instr.wordProblems', color: '#f58fb4', deep: '#c94f7f', icon: 'bubble' },
   { id: 'riddles', titleKey: 'island.riddles', instrKey: 'instr.riddles', color: '#b49af0', deep: '#7a5cc9', icon: 'shapes' },
   { id: 'bonus', titleKey: 'island.bonus', color: '#ffd84d', deep: '#c9a21f', icon: 'gift' },
-  { id: 'mock', titleKey: 'island.mock', locked: true, color: '#c9c2b6', deep: '#8f877a', icon: 'flag' },
+  { id: 'mock', titleKey: 'island.mock', color: '#f4837d', deep: '#b9473f', icon: 'flag' },
 ];

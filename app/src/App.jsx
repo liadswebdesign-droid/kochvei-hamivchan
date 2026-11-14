@@ -5,6 +5,10 @@ import { ProfileCreate, ProfileSwitcher } from './screens/Profiles.jsx';
 import { MapScreen } from './screens/MapScreen.jsx';
 import { Practice } from './screens/Practice.jsx';
 import { Results } from './screens/Results.jsx';
+import { MockStart } from './screens/MockStart.jsx';
+import { MockExam } from './screens/MockExam.jsx';
+import { MockResults } from './screens/MockResults.jsx';
+import { Parent } from './screens/Parent.jsx';
 
 export function App() {
   const [content, setContent] = useState(null);
@@ -52,6 +56,31 @@ export function App() {
         onAdd={() => setScreen({ name: 'create' })}
       />
     );
+  } else if (screen.name === 'parent') {
+    body = <Parent profiles={profiles} activeId={activeId} content={content} onChanged={refresh} onClose={() => setScreen({ name: 'map' })} />;
+  } else if (screen.name === 'mockStart') {
+    body = (
+      <MockStart
+        profile={profile}
+        onBack={() => setScreen({ name: 'map' })}
+        onStart={(simId, mode, resume) => setScreen({ name: 'mock', simId, mode, resume, run: Date.now() })}
+      />
+    );
+  } else if (screen.name === 'mock') {
+    body = (
+      <MockExam
+        key={screen.run}
+        profile={profile}
+        content={content}
+        simId={screen.simId}
+        mode={screen.mode}
+        resume={screen.resume}
+        onQuit={() => setScreen({ name: 'mockStart' })}
+        onFinish={(result) => setScreen({ name: 'mockResults', result })}
+      />
+    );
+  } else if (screen.name === 'mockResults') {
+    body = <MockResults profile={profile} result={screen.result} onDone={() => setScreen({ name: 'map' })} onMore={() => setScreen({ name: 'mockStart' })} />;
   } else if (screen.name === 'practice') {
     body = (
       <Practice
@@ -77,8 +106,9 @@ export function App() {
       <MapScreen
         profile={profile}
         content={content}
-        onIsland={(skill) => setScreen({ name: 'practice', skill, run: Date.now() })}
+        onIsland={(skill) => setScreen(skill === 'mock' ? { name: 'mockStart' } : { name: 'practice', skill, run: Date.now() })}
         onSwitch={() => setScreen({ name: 'profiles' })}
+        onParent={() => setScreen({ name: 'parent' })}
       />
     );
   }
