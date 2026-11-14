@@ -1,0 +1,118 @@
+{
+  "g-549a76c791f8": {
+    "form": "שְׁלוֹשׁ",
+    "reason": "construct before הַשְּׁאֵלוֹת (על שלוש השאלות) → שְׁלוֹשׁ, not absolute שָׁלוֹשׁ"
+  },
+  "g-29080a9968c2": {
+    "form": "שֶׁלַּיָּרֵחַ",
+    "reason": "שֶׁ + לַ (definite: the moon) + יָּרֵחַ; dagesh chazak in ל after שֶׁ"
+  },
+  "g-c14912daa4d0": {
+    "form": "שֶׁלְּכָל",
+    "reason": "dagesh chazak in the letter after שֶׁ, also under sheva (שֶׁלְּ); כָל without dagesh after the vowel"
+  },
+  "g-a42c773c3e8e": {
+    "form": "שֶׁלִּצְמָחִים",
+    "reason": "generic statement 'plants have no legs' → indefinite לִ (לְ before sheva); dagesh in ל after שֶׁ"
+  },
+  "g-25d04985f6f5": {
+    "form": "שֶׁמֵּאֲחוֹרֵי",
+    "reason": "dagesh chazak in מ after שֶׁ"
+  },
+  "g-5b72e2e198fd": {
+    "form": "שֶׁמָּה",
+    "reason": "שֶׁ + מָה (children's-book rule: מָה before most consonants, here before ש); dagesh in מ after שֶׁ"
+  },
+  "g-6eaf9c56950c": {
+    "form": "שָׂמַח",
+    "reason": "past verb paired with הוּפְתַּע in 'הוא שמח והופתע' → שָׂמַח"
+  },
+  "g-e19fe331fb36": {
+    "form": "שֶׁמִּי",
+    "reason": "dagesh chazak in מ after שֶׁ"
+  },
+  "g-9afe3d122dd9": {
+    "form": "שֶׁמְּכַרְסֵם",
+    "reason": "dagesh chazak in מ after שֶׁ, also under sheva"
+  },
+  "g-43b60ffc8bf9": {
+    "form": "שָׁמַעְתָּ",
+    "reason": "both votes wrong: Michal is answering Roi (male, 'שאל את מיכל') → 2ms past שָׁמַעְתָּ, not 2fs"
+  },
+  "g-5523eef22194": {
+    "form": "שֶׁנּוֹצוֹת",
+    "reason": "dagesh chazak in נ after שֶׁ"
+  },
+  "g-063b5bc58304": {
+    "form": "שֶׁנִּיצַּח",
+    "reason": "piel past 3ms of a ל״ח root takes patach (נִצַּח; cf. מְנַצֵּחַ present); dagesh in נ after שֶׁ"
+  },
+  "g-f6a4edd82732": {
+    "form": "שֶׁנִּכְנַס",
+    "reason": "hypothetical past ('a child who had entered would have left tracks', with היה משאיר) → past נִכְנַס"
+  },
+  "g-42ed585941a0": {
+    "form": "שֶׁנִּשְׁאָר",
+    "reason": "descriptive present, parallel to the option 'שפונה אל השמש' → present נִשְׁאָר"
+  },
+  "g-b44b77c8989a": {
+    "form": "שֶׁסָּבְתָא",
+    "reason": "dictionary form סָבְתָא (Wiktionary, and the project's majority form); dagesh in ס after שֶׁ"
+  },
+  "g-026287f23765": {
+    "form": "שֶׁעָמִית",
+    "reason": "the name עָמִית (pattern קָטִיל, full kamatz); ע is guttural, so no dagesh after שֶׁ"
+  },
+  "g-b3e954ec8455": {
+    "form": "שְׁעָתַיִים",
+    "reason": "dual of שָׁעָה: the pretonic kamatz reduces → שְׁעָתַיִים (doubled י per house style)"
+  },
+  "g-3ef1c649bac6": {
+    "form": "שָׂפָם",
+    "reason": "noun שָׂפָם (moustache), sin dot, two kamatz"
+  },
+  "g-181ae2cf2a5c": {
+    "form": "שֶׁצְּפַרְדֵּעַ",
+    "reason": "dagesh chazak in צ after שֶׁ, also under sheva; patach gnuva under ע"
+  },
+  "g-ec2c3484c5b3": {
+    "form": "שֶׁקּוֹל",
+    "reason": "dagesh chazak in ק after שֶׁ"
+  },
+  "g-fcd25101d6c1": {
+    "form": "שֶׁקּוֹנִים",
+    "reason": "dagesh chazak in ק after שֶׁ"
+  },
+  "g-1ef92cc2c742": {
+    "form": "שֶׁקּוֹרְאִים",
+    "reason": "dagesh chazak in ק after שֶׁ"
+  },
+  "g-486efab20abe": {
+    "form": "שֶׁשָּׁקֵט",
+    "reason": "adjective 'that is quiet', paraphrasing the passage's 'הם שקטים שנים רבות' → שָׁקֵט; dagesh in ש after שֶׁ"
+  },
+  "g-bdeccb0c161b": {
+    "form": "שָׁתִיל",
+    "reason": "singular noun שָׁתִיל (kamatz, stressed last syllable); שְׁתִילִים is the plural"
+  },
+  "g-39d2a1153df0": {
+    "form": "תּוֹכְנִית",
+    "reason": "kamatz katan written with ו in ktiv male → holam male וֹ; ת with dagesh kal at the start of the word"
+  },
+  "g-3ede5fd9181a": {
+    "form": "תִּימַּס",
+    "reason": "ice cream 'will melt': nifal future of מסס (תִּמַּס) with patach and dagesh in מ; the י is a mater for the hiriq"
+  },
+  "g-b7f0e64bac08": {
+    "form": "תְּצוּגָה",
+    "reason": "noun תְּצוּגָה (pattern תְּקוּלָה), no dagesh in צ"
+  },
+  "g-9922796dd800": {
+    "form": "תִּקְפָּא",
+    "reason": "the egg 'will freeze': qal future of intransitive קָפָא → תִּקְפָּא, not nifal"
+  },
+  "g-2e64644a0cd3": {
+    "form": "תְּרֵיסָר",
+    "reason": "dictionary form תְּרֵיסָר with kamatz (Wiktionary/Even-Shoshan)"
+  }
+}

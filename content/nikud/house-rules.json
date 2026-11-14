@@ -109,7 +109,7 @@
     { "id": "ima", "word": "אמא", "form": "אִמָּא", "reason": "Source spelling kept (the booklet writes אִימָּא).", "source": "booklet p.5" },
     { "id": "ima-male", "word": "אימא", "form": "אִימָּא", "reason": "As in the booklet.", "source": "booklet p.5" },
     { "id": "aba", "word": "אבא", "form": "אַבָּא", "reason": "Only one reading.", "source": "booklet p.5" },
-    { "id": "saba", "word": "סבא", "form": "סַבָּא", "reason": "Only one reading.", "source": "grammar" },
+    { "id": "saba", "word": "סבא", "form": "סַבָּא", "reason": "Grandpa as children say it and children's books print it (saba: dagesh in ב; סָבָא would read sava). Pairs with סָבְתָא (savta). The vocalizers split by passage, so dissent is expected.", "source": "grammar", "expectDissent": true },
 
     { "id": "hateshuva", "word": "התשובה", "form": "הַתְּשׁוּבָה", "reason": "Instruction formula; dagesh after the article per spec (booklet font drops it).", "source": "booklet pp.3, 11" },
     { "id": "hanechona", "word": "הנכונה", "form": "הַנְּכוֹנָה", "reason": "Instruction formula; dagesh after the article per spec (booklet font drops it).", "source": "booklet pp.3, 11" },
