@@ -116,6 +116,7 @@
     { "id": "name-adi", "word": "עדי", "form": "עֲדִי", "reason": "The name Adi (עֲדִי, hataf patach); one spelling of the name across the corpus.", "source": "grammar", "expectDissent": true },
     { "id": "name-amit", "word": "עמית", "form": "עָמִית", "reason": "The name Amit (kamatz); one spelling of the name across the corpus.", "source": "grammar", "expectDissent": true },
     { "id": "name-hadar", "word": "הדר", "form": "הָדָר", "reason": "The modern name Hadar (a sense of the noun הָדָר); one spelling across the corpus.", "source": "grammar", "expectDissent": true },
+    { "id": "name-itai", "word": "איתי", "form": "אִיתַּי", "reason": "The name Itai (biblical אִתַּי, dagesh in ת); one spelling across the corpus.", "source": "grammar", "expectDissent": true },
     { "id": "magma", "word": "מאגמה", "form": "מַאגְמָה", "reason": "Loanword: patach before the silent א; one spelling across the corpus.", "source": "grammar", "expectDissent": true },
 
     { "id": "hateshuva", "word": "התשובה", "form": "הַתְּשׁוּבָה", "reason": "Instruction formula; dagesh after the article per spec (booklet font drops it).", "source": "booklet pp.3, 11" },
