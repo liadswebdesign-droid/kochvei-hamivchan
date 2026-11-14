@@ -1,0 +1,35 @@
+{
+  "name": "kochvei-hamivchan",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "content": "node scripts/content.mjs",
+    "content:dev": "node scripts/content.mjs --dev",
+    "dev": "node scripts/content.mjs --dev && vite",
+    "build": "node scripts/content.mjs && vite build",
+    "build:preview": "node scripts/content.mjs --preview && KH_ALLOW_FIXTURES=1 vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "ui-keys": "node scripts/ui-keys.mjs",
+    "qa:shots": "node scripts/qa-shots.mjs"
+  },
+  "dependencies": {
+    "preact": "^11.2.0"
+  },
+  "devDependencies": {
+    "@fontsource/alef": "^5.3.0",
+    "@fontsource/assistant": "^5.3.0",
+    "@fontsource/david-libre": "^5.3.0",
+    "@fontsource/frank-ruhl-libre": "^5.3.0",
+    "@fontsource/fredoka": "^5.3.0",
+    "@fontsource/noto-sans-hebrew": "^5.3.0",
+    "@fontsource/noto-serif-hebrew": "^5.3.0",
+    "@fontsource/rubik": "^5.3.0",
+    "@fontsource/varela-round": "^5.3.0",
+    "@preact/preset-vite": "^2.10.6",
+    "vite": "^8.3.8",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.1.0"
+  }
+}

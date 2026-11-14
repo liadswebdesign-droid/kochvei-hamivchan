@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nikud font test (dev only)</title>
+<style>
+  /* Self-hosted from the fontsource npm packages (dev server serves node_modules). Hebrew subset only. */
+  @font-face { font-family: 'T-NotoSans'; src: url('/node_modules/@fontsource/noto-sans-hebrew/files/noto-sans-hebrew-hebrew-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'T-NotoSerif'; src: url('/node_modules/@fontsource/noto-serif-hebrew/files/noto-serif-hebrew-hebrew-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'T-Frank'; src: url('/node_modules/@fontsource/frank-ruhl-libre/files/frank-ruhl-libre-hebrew-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'T-David'; src: url('/node_modules/@fontsource/david-libre/files/david-libre-hebrew-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'T-Alef'; src: url('/node_modules/@fontsource/alef/files/alef-hebrew-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'T-Assistant'; src: url('/node_modules/@fontsource/assistant/files/assistant-hebrew-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'T-Fredoka'; src: url('/node_modules/@fontsource/fredoka/files/fredoka-hebrew-600-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'T-Varela'; src: url('/node_modules/@fontsource/varela-round/files/varela-round-hebrew-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'T-Rubik'; src: url('/node_modules/@fontsource/rubik/files/rubik-hebrew-500-normal.woff2') format('woff2'); }
+  body { margin: 0; padding: 16px; background: #fffaf2; color: #2a2238; font-family: system-ui, sans-serif; }
+  h1 { font-size: 18px; margin: 0 0 8px; }
+  .row { display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: start; padding: 10px 0; border-bottom: 1px solid #eadfcf; }
+  .name { font: 600 14px/1.3 system-ui; direction: ltr; text-align: left; color: #6b5a7a; }
+  .sample { font-size: 34px; line-height: 1.9; }
+  .bad { color: #b3261e; }
+  .check { font: 12px system-ui; color: #6b5a7a; direction: ltr; }
+</style>
+</head>
+<body>
+<h1>בדיקת ניקוד — dev only, not shipped</h1>
+<p class="check" id="info"></p>
+<div id="rows"></div>
+<script type="module">
+  // Test string: every risky mark combination. Normalized to NFC (canonical mark order:
+  // vowel, then dagesh, then shin/sin dot) — exactly what the pipeline ships.
+  const SAMPLE = [
+    'שָׁ שִׂ שּׁ שּׂ שֻּׁ שִּׂ שׁוֹ שׂוּ',            // shin/sin dot, with dagesh and vowel
+    'וֹ וּ וֹּ וָּ מִצְוֹת מִצְוָה שׁוֹשַׁנָּה',     // holam male vs shuruk; vav+dagesh+vowel; holam haser for vav
+    'חֲלוֹם אֱמֶת אֳנִיָּה עֲשָׂרָה',              // hataf vowels
+    'רֵיחַ רוּחַ תַּפּוּחַ',                         // patach gnuva
+    'מֶלֶךְ לְךָ תּוֹךְ',                             // final kaf with sheva / qamats
+    'לֹא רֹאשׁ פֹּה שְׂמֹאל כֻּלָּם',                // holam on tall/left letters
+    'יִשְׂרָאֵל הַשֶּׁמֶשׁ שִׁשָּׁה מִשְׁפָּחָה',
+    'הַטְּלִית בְּ־8 אֲנַחְנוּ 47 + 15 = 62',
+  ].join('\n').normalize('NFC');
+  const FONTS = [
+    ['Noto Sans Hebrew', 'T-NotoSans'], ['Noto Serif Hebrew', 'T-NotoSerif'], ['Frank Ruhl Libre', 'T-Frank'],
+    ['David Libre', 'T-David'], ['Alef', 'T-Alef'], ['Assistant', 'T-Assistant'],
+    ['Fredoka 600 (display?)', 'T-Fredoka'], ['Varela Round (display?)', 'T-Varela'], ['Rubik 500 (display?)', 'T-Rubik'],
+  ];
+  let SAMPLE_OVERRIDE = null;
+  const rows = document.getElementById("rows");
+  // ?zoom=1 → only the riskiest clusters, very large, for the top candidates.
+  const zoom = new URLSearchParams(location.search).get('zoom');
+  if (zoom) {
+    const ZOOM = 'שּׁ שָּׁ שׂוּ שׁוֹ וֹ וּ פֹּה כֻּלָּם תַּפּוּחַ מִצְוֹת'.normalize('NFC');
+    const keep = ['Noto Sans Hebrew', 'Assistant', 'Fredoka 600 (display?)', 'Frank Ruhl Libre'];
+    FONTS.splice(0, FONTS.length, ...FONTS.filter(([l]) => keep.includes(l)));
+    document.head.insertAdjacentHTML('beforeend', '<style>.sample{font-size:64px!important;line-height:1.7!important}</style>');
+    SAMPLE_OVERRIDE = ZOOM;
+  }
+  for (const [label, fam] of FONTS) {
+    const r = document.createElement('div'); r.className = 'row';
+    const n = document.createElement('div'); n.className = 'name'; n.textContent = label;
+    const s = document.createElement('div'); s.className = 'sample'; s.style.fontFamily = `'${fam}', 'Times New Roman'`;
+    s.style.whiteSpace = 'pre-line'; s.textContent = SAMPLE_OVERRIDE || SAMPLE; s.dataset.family = fam;
+    r.append(n, s); rows.append(r);
+  }
+  await document.fonts.ready;
+  const loaded = FONTS.map(([l, f]) => `${l}: ${document.fonts.check(`34px '${f}'`, 'שָׁ') ? 'loaded' : 'NOT LOADED'}`);
+  document.getElementById('info').textContent = loaded.join(' | ');
+</script>
+</body>
+</html>
