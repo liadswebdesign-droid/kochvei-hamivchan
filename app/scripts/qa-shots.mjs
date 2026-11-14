@@ -12,6 +12,8 @@ const OUT = path.resolve(process.argv[2] || 'qa-shots');
 const BASE = process.argv[3] || 'http://localhost:5173/';
 const ORIENT = process.argv[4] || 'both';
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+// Width stress test for fixed passage lines: real booklet lines run 7–11 words WITH nikud.
+const LONG_LINE = 'כְּשֶׁאֲנַחְנוּ שׁוֹמְעִים אֶת הַמִּילָה טוֹרְפִים רוּבֵּנוּ חוֹשְׁבִים עַל בַּעֲלֵי חַיִּים כְּמוֹ אֲרָיוֹת'.normalize('NFC');
 fs.mkdirSync(OUT, { recursive: true });
 
 const profileDir = fs.mkdtempSync(path.join(os.tmpdir(), 'kh-qa-'));
@@ -63,7 +65,26 @@ async function shot(name, W, H) {
     const rowOrder = ch.length >= 2 && Math.abs(ch[0].top - ch[1].top) < 4 ? (ch[0].left > ch[1].left ? 'א-right OK' : 'WRONG') : (ch.length ? 'list: label side ' + (document.querySelector('.choice-label').getBoundingClientRect().left > document.querySelector('.choice-text').getBoundingClientRect().left ? 'right OK' : 'WRONG') : '-');
     const maths = [...document.querySelectorAll('.math')].map(m => { const xs = [...m.children].map(c => c.getBoundingClientRect().left); return xs.every((x, i) => i === 0 || x > xs[i-1]) ? 'LTR OK' : 'WRONG'; });
     const text = [...document.querySelectorAll('.math')].map(m => m.innerText.replace(/\\s+/g, ' ')).join(' | ');
-    return { over, offenders, rowOrder, maths, text, docW: document.documentElement.scrollWidth, vw };
+    // passage lines: a booklet line must render as ONE row (height ≤ 1.3 × line-height) and not overflow its column
+    const pa = document.querySelector('.passage');
+    const passage = pa ? (() => {
+      const ls = [...pa.querySelectorAll('.pline-text')];
+      const lh = parseFloat(getComputedStyle(ls[0]).lineHeight);
+      const wrapped = ls.filter(l => l.getBoundingClientRect().height > lh * 1.3).length;
+      const clipped = ls.filter(l => l.scrollWidth > l.clientWidth + 1).length;
+      return { fontPx: parseFloat(getComputedStyle(pa).fontSize), wrapped, clipped, hscroll: pa.classList.contains('pfit-scroll'), panelPct: Math.round(100 * document.querySelector('.ppassage').getBoundingClientRect().width / innerWidth) };
+    })() : null;
+    // feedback vs button: never overlapping, and the bubble fully inside its visible scroller
+    const bub = document.querySelector('.bubble'), foot = document.querySelector('.pfoot .btn');
+    const feedback = bub ? (() => {
+      const b = bub.getBoundingClientRect();
+      const f = foot && foot.getBoundingClientRect();
+      const overlap = !!f && f.height > 0 && !(f.top >= b.bottom || f.bottom <= b.top || f.left >= b.right || f.right <= b.left);
+      let p = bub.parentElement; while (p && !['auto', 'scroll'].includes(getComputedStyle(p).overflowY)) p = p.parentElement;
+      const s = p ? p.getBoundingClientRect() : { top: 0, bottom: innerHeight };
+      return { overlap, fullyVisible: b.top >= s.top - 1 && b.bottom <= Math.min(s.bottom, innerHeight) + 1 };
+    })() : null;
+    return { over, offenders, rowOrder, maths, text, passage, feedback, docW: document.documentElement.scrollWidth, vw };
   `);
   const file = path.join(OUT, `${name}-${W}x${H}.png`);
   const { data } = await send('Page.captureScreenshot', { format: 'png' });
@@ -120,6 +141,13 @@ async function run(W, H) {
   // reading: passage question, then a wrong answer → highlighted lines + hint
   await island('reading');
   await shot('04-passage-question', W, H);
+  // stress: a synthetic 12-word fully vocalized line in place of line 4, then re-fit (dev-only hook)
+  await js(`document.querySelector('[data-line="4"] .pline-text').textContent = ${JSON.stringify(LONG_LINE)}; window.__khFitPassage();`);
+  await shot('04b-passage-longline', W, H);
+  // past the 19px floor: the line still must not wrap; the passage scrolls sideways instead
+  await js(`document.querySelector('[data-line="4"] .pline-text').textContent = ${JSON.stringify(LONG_LINE + ' ' + LONG_LINE)}; window.__khFitPassage();`);
+  await shot('04c-passage-floor-hscroll', W, H);
+  await js(`document.querySelector('[data-line="4"] .pline-text').textContent = ${JSON.stringify(LONG_LINE)}; window.__khFitPassage();`);
   let it = await item();
   if (!it.lineRef || !it.lineRef.length) {
     await answer(true);

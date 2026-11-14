@@ -636,6 +636,11 @@ button:disabled {
   gap: 18px;
   padding-bottom: 12px;
 }
+.pscroll {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
 .qcard {
   background: var(--paper);
   border-radius: var(--r-lg);
@@ -1043,8 +1048,15 @@ button:disabled {
   text-align: center;
   direction: ltr;
 }
+/* A booklet line never wraps: the line numbers the questions cite depend on it. PassageView shrinks the font to fit
+   (floor 19px) and, only past that floor, `.pfit-scroll` lets the passage scroll sideways. */
 .pline-text {
   font: 400 1em/2.15 var(--f-text);
+  white-space: nowrap;
+}
+.passage.pfit-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 .pline.hl {
   background: #fff0a6;
@@ -1068,14 +1080,44 @@ button:disabled {
   }
   .with-passage .ppassage,
   .with-passage .pquestion {
-    overflow-y: auto;
     max-height: 100%;
     margin: 0;
     max-width: none;
+  }
+  .with-passage .ppassage {
+    overflow-y: auto;
     overscroll-behavior: contain;
   }
   .with-passage .pquestion {
-    padding: 0 4px 16px;
+    padding: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+  /* Question column: the card and its feedback scroll; the check button sits BELOW the scroller, never on top of it. */
+  .with-passage .pscroll,
+  .practice.pk-mc:not(.with-passage) .pscroll {
+    flex: 0 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 2px 10px 30px; /* room for the card's soft shadow inside the scroller */
+    margin-inline: -10px;
+  }
+  .with-passage .pfoot,
+  .practice.pk-mc:not(.with-passage) .pfoot {
+    flex: none;
+  }
+  .practice.pk-mc:not(.with-passage) .pbody {
+    overflow: hidden;
+  }
+  .practice.pk-mc:not(.with-passage) .pquestion {
+    min-height: 0;
+    max-height: 100%;
+    padding-bottom: 0;
+  }
+  .kind-numeric .pscroll,
+  .kind-inequality .pscroll {
+    display: contents;
   }
   .with-passage .stem {
     font-size: 26px;
@@ -1083,6 +1125,33 @@ button:disabled {
   .with-passage .choice-text {
     font-size: 23px;
     line-height: 1.6;
+  }
+  /* the question column is ~40% wide and 800px tall: tighten it so card + hint + button fit without scrolling */
+  .with-passage .qcard {
+    padding-block: 20px 22px;
+    gap: 14px;
+  }
+  .with-passage .choices {
+    gap: 10px;
+  }
+  .with-passage .choice {
+    min-height: 66px;
+    padding-block: 6px;
+  }
+  .with-passage .bubble {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  .with-passage .bubble p {
+    font-size: 21px;
+    line-height: 1.55;
+  }
+  .with-passage .bubble .bubble-title {
+    font-size: 23px;
+    margin-bottom: 0;
+  }
+  .with-passage .bubble .companion {
+    --size: 52px !important;
   }
   /* numeric questions: equation + number pad side by side */
   .pquestion.kind-numeric,
@@ -1145,6 +1214,13 @@ button:disabled {
   .with-passage .pquestion {
     scroll-margin-top: 8px;
     padding-bottom: 96px;
+  }
+  /* give fixed passage lines the full width before the font has to shrink */
+  .with-passage .pbody {
+    padding-inline: 14px;
+  }
+  .with-passage .ppassage {
+    padding-inline: 8px 16px;
   }
   .pad-wrap {
     padding: 4px 0;
@@ -1408,16 +1484,12 @@ button:disabled {
   }
 }
 @media (orientation: landscape) and (min-width: 900px) {
-  /* keep the check / continue button in reach while the question column scrolls */
   .with-passage .pfoot {
-    position: sticky;
-    bottom: 0;
-    padding: 14px 0 8px;
-    background: linear-gradient(to top, var(--cream) 70%, rgba(255, 246, 232, 0));
-    z-index: 2;
+    padding: 12px 0 4px;
   }
+  /* passage panel takes ~60% so a 7–11 word vocalized line fits without shrinking far */
   .with-passage .pbody {
-    grid-template-columns: minmax(0, 1.32fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
     padding-inline: 16px;
   }
   .with-passage .ppassage {
@@ -1510,11 +1582,7 @@ bdi.n {
   min-width: 0;
 }
 @media (orientation: landscape) and (min-width: 900px) {
-  .practice:not(.with-passage) .pfoot {
-    position: sticky;
-    bottom: 0;
-    padding: 14px 0 8px;
-    background: linear-gradient(to top, var(--cream) 70%, rgba(255, 246, 232, 0));
-    z-index: 2;
+  .practice.pk-mc:not(.with-passage) .pfoot {
+    padding: 10px 0 4px;
   }
 }

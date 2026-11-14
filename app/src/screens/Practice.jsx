@@ -11,6 +11,27 @@ import { PassageView } from '../components/PassageView.jsx';
 import { RiddleIcon, StarIcon, UiIcon } from '../components/Icons.jsx';
 
 const isPortrait = () => window.matchMedia('(orientation: portrait)').matches;
+
+function scrollParent(el) {
+  for (let p = el && el.parentElement; p; p = p.parentElement) {
+    const oy = getComputedStyle(p).overflowY;
+    if ((oy === 'auto' || oy === 'scroll') && p.scrollHeight > p.clientHeight + 1) return p;
+  }
+  return null;
+}
+
+function revealFeedback(scroller, foot) {
+  const bubble = scroller && scroller.querySelector('.bubble');
+  const sc = scrollParent(bubble);
+  if (!sc) return;
+  const s = sc.getBoundingClientRect();
+  const b = bubble.getBoundingClientRect();
+  // Bottom target: the button too when it scrolls along with the bubble; leave room for the fixed portrait toggle.
+  const end = foot && sc.contains(foot) ? foot.getBoundingClientRect().bottom : b.bottom;
+  const room = document.querySelector('.passage-toggle') && isPortrait() ? 104 : 16;
+  const down = Math.min(end + room - s.bottom, b.top - s.top - 12); // never push the bubble's top out of view
+  if (down > 0) sc.scrollBy({ top: down, behavior: 'smooth' });
+}
 const lineLabel = (refs) => (refs.length > 1 ? `${Math.min(...refs)}–${Math.max(...refs)}` : String(refs[0]));
 
 function instruction(item) {
@@ -162,6 +183,8 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
   const bodyRef = useRef(null);
   const passageRef = useRef(null);
   const questionRef = useRef(null);
+  const scrollRef = useRef(null);
+  const footRef = useRef(null);
 
   const progress0 = useMemo(() => getProgress(pid), [pid]);
   const st = skillState(progress0, skill);
@@ -197,6 +220,14 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
       window.removeEventListener('resize', onScroll);
     };
   }, [item && item.passageId, !!session]);
+
+  // When a hint or explanation appears, scroll it into full view (with the check/continue button after it when that
+  // shares the scroller) so the feedback is never half-hidden below the fold.
+  useEffect(() => {
+    if (phase !== 'hint' && phase !== 'explain') return;
+    const raf = requestAnimationFrame(() => revealFeedback(scrollRef.current, footRef.current));
+    return () => cancelAnimationFrame(raf);
+  }, [phase, idx]);
 
   if (!session) return <div class="screen center"><div class="loader" aria-busy="true" /></div>;
   if (!item) return null;
@@ -268,6 +299,7 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
     setMarks({});
     if (bodyRef.current && !passage) bodyRef.current.scrollTop = 0;
     if (questionRef.current) questionRef.current.scrollTop = 0;
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
   }
 
   const togglePassage = () => {
@@ -280,7 +312,7 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
   const numericOptions = item.kind === 'mc' && item.options.every((o) => typeof o === 'number' || /^[\d\s־]+$/.test(String(o)));
 
   return (
-    <div class={`screen practice sk-${skill} ${passage ? 'with-passage' : ''}`}>
+    <div class={`screen practice sk-${skill} pk-${item.kind} ${passage ? 'with-passage' : ''}`}>
       <header class="ptop">
         <button type="button" class="corner-btn" onClick={onQuit} aria-label={t('practice.quit')}>
           <UiIcon id="close" />
@@ -301,6 +333,7 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
           </section>
         )}
         <section class={`pquestion kind-${item.kind}`} ref={questionRef}>
+          <div class="pscroll" ref={scrollRef}>
           <div class={`qcard ${shake ? 'shake-' + (shake % 2) : ''}`} key={idx}>
             {item.review && <span class="review-tag">{t('practice.review')}</span>}
             {instr && <p class="instr">{instr}</p>}
@@ -349,8 +382,9 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
               </div>
             </div>
           )}
+          </div>
 
-          <div class="pfoot">
+          <div class="pfoot" ref={footRef}>
             {phase === 'explain' ? (
               <Btn kind="primary" onClick={next}>{t('common.continue')}</Btn>
             ) : (
