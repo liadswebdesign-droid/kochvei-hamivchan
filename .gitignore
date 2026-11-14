@@ -1,0 +1,20 @@
+# dependencies / build output
+node_modules/
+dist/
+app/public/content/
+*.log
+
+# never commit: official Ministry PDFs, third-party sample tests, local notes
+*.pdf
+web-samples/
+NOTES*.md
+*.local.md
+notes/
+.env
+.env.*
+
+# editor / OS / local tooling
+.DS_Store
+.claude/
+.vscode/
+.idea/

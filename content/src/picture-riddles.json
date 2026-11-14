@@ -1,0 +1,681 @@
+[
+  {
+    "id": "pr-01",
+    "level": 1,
+    "rows": [
+      {"terms":["flower","flower"],"total":6},
+      {"terms":["flower","flower","star"],"total":14}
+    ],
+    "ask": "star",
+    "options": [3,6,7,8],
+    "answer": 3
+  },
+  {
+    "id": "pr-02",
+    "level": 1,
+    "rows": [
+      {"terms":["sun","sun"],"total":8},
+      {"terms":["sun","moon"],"total":11}
+    ],
+    "ask": "moon",
+    "options": [3,4,7,11],
+    "answer": 2
+  },
+  {
+    "id": "pr-03",
+    "level": 1,
+    "rows": [
+      {"terms":["apple","apple","apple"],"total":15},
+      {"terms":["apple","heart"],"total":7}
+    ],
+    "ask": "heart",
+    "options": [1,2,5,7],
+    "answer": 1
+  },
+  {
+    "id": "pr-04",
+    "level": 1,
+    "rows": [
+      {"terms":["ball","ball"],"total":12},
+      {"terms":["ball","ball","car"],"total":21}
+    ],
+    "ask": "car",
+    "options": [6,9,15,21],
+    "answer": 1
+  },
+  {
+    "id": "pr-05",
+    "level": 1,
+    "rows": [
+      {"terms":["key","key","key"],"total":6},
+      {"terms":["key","house"],"total":12}
+    ],
+    "ask": "house",
+    "options": [2,6,9,10],
+    "answer": 3
+  },
+  {
+    "id": "pr-06",
+    "level": 1,
+    "rows": [
+      {"terms":["fish","fish"],"total":14},
+      {"terms":["fish","gem"],"total":11}
+    ],
+    "ask": "gem",
+    "options": [4,7,11,18],
+    "answer": 0
+  },
+  {
+    "id": "pr-07",
+    "level": 1,
+    "rows": [
+      {"terms":["star","star","star"],"total":15},
+      {"terms":["star","star","sun"],"total":16}
+    ],
+    "ask": "sun",
+    "options": [1,5,6,16],
+    "answer": 2
+  },
+  {
+    "id": "pr-08",
+    "level": 1,
+    "rows": [
+      {"terms":["moon","moon"],"total":16},
+      {"terms":["moon","apple"],"total":11}
+    ],
+    "ask": "apple",
+    "options": [3,5,8,11],
+    "answer": 0
+  },
+  {
+    "id": "pr-09",
+    "level": 1,
+    "rows": [
+      {"terms":["heart","heart"],"total":8},
+      {"terms":["heart","heart","key"],"total":17}
+    ],
+    "ask": "key",
+    "options": [4,8,9,17],
+    "answer": 2
+  },
+  {
+    "id": "pr-10",
+    "level": 1,
+    "rows": [
+      {"terms":["car","car"],"total":20},
+      {"terms":["car","ball"],"total":15}
+    ],
+    "ask": "ball",
+    "options": [4,5,10,15],
+    "answer": 1
+  },
+  {
+    "id": "pr-11",
+    "level": 1,
+    "rows": [
+      {"terms":["gem","gem","gem"],"total":18},
+      {"terms":["gem","flower"],"total":8}
+    ],
+    "ask": "flower",
+    "options": [1,2,6,8],
+    "answer": 1
+  },
+  {
+    "id": "pr-12",
+    "level": 1,
+    "rows": [
+      {"terms":["house","house"],"total":6},
+      {"terms":["house","house","sun"],"total":17}
+    ],
+    "ask": "sun",
+    "options": [3,6,10,11],
+    "answer": 3
+  },
+  {
+    "id": "pr-13",
+    "level": 1,
+    "rows": [
+      {"terms":["apple","apple"],"total":14},
+      {"terms":["apple","moon"],"total":16}
+    ],
+    "ask": "moon",
+    "options": [2,7,9,16],
+    "answer": 2
+  },
+  {
+    "id": "pr-14",
+    "level": 1,
+    "rows": [
+      {"terms":["fish","fish","fish"],"total":15},
+      {"terms":["fish","heart"],"total":13}
+    ],
+    "ask": "heart",
+    "options": [2,5,7,8],
+    "answer": 3
+  },
+  {
+    "id": "pr-15",
+    "level": 1,
+    "rows": [
+      {"terms":["key","key","key"],"total":12},
+      {"terms":["key","key","car"],"total":20}
+    ],
+    "ask": "car",
+    "options": [4,12,16,20],
+    "answer": 1
+  },
+  {
+    "id": "pr-16",
+    "level": 1,
+    "rows": [
+      {"terms":["ball","ball"],"total":18},
+      {"terms":["ball","gem"],"total":12}
+    ],
+    "ask": "gem",
+    "options": [3,6,9,12],
+    "answer": 0
+  },
+  {
+    "id": "pr-17",
+    "level": 1,
+    "rows": [
+      {"terms":["sun","sun"],"total":4},
+      {"terms":["sun","fish"],"total":16}
+    ],
+    "ask": "fish",
+    "options": [2,4,12,14],
+    "answer": 3
+  },
+  {
+    "id": "pr-18",
+    "level": 1,
+    "rows": [
+      {"terms":["flower","flower"],"total":12},
+      {"terms":["flower","flower","apple"],"total":16}
+    ],
+    "ask": "apple",
+    "options": [4,6,10,16],
+    "answer": 0
+  },
+  {
+    "id": "pr-19",
+    "level": 1,
+    "rows": [
+      {"terms":["moon","moon","moon"],"total":15},
+      {"terms":["moon","house"],"total":18}
+    ],
+    "ask": "house",
+    "options": [3,5,12,13],
+    "answer": 3
+  },
+  {
+    "id": "pr-20",
+    "level": 1,
+    "rows": [
+      {"terms":["heart","heart","heart"],"total":9},
+      {"terms":["heart","star"],"total":13}
+    ],
+    "ask": "star",
+    "options": [3,4,10,13],
+    "answer": 2
+  },
+  {
+    "id": "pr-21",
+    "level": 2,
+    "rows": [
+      {"terms":["house","car"],"total":15},
+      {"terms":["star","star","star","house","car"],"total":24}
+    ],
+    "ask": "star",
+    "options": [2,3,9,15],
+    "answer": 1
+  },
+  {
+    "id": "pr-22",
+    "level": 2,
+    "rows": [
+      {"terms":["apple","ball"],"total":20},
+      {"terms":["moon","moon","apple","ball"],"total":30}
+    ],
+    "ask": "moon",
+    "options": [5,10,20,30],
+    "answer": 0
+  },
+  {
+    "id": "pr-23",
+    "level": 2,
+    "rows": [
+      {"terms":["fish","gem"],"total":11},
+      {"terms":["heart","heart","heart","heart","heart","fish","gem"],"total":21}
+    ],
+    "ask": "heart",
+    "options": [1,2,10,11],
+    "answer": 1
+  },
+  {
+    "id": "pr-24",
+    "level": 2,
+    "rows": [
+      {"terms":["key","flower"],"total":17},
+      {"terms":["sun","sun","key","flower"],"total":29}
+    ],
+    "ask": "sun",
+    "options": [6,12,17,29],
+    "answer": 0
+  },
+  {
+    "id": "pr-25",
+    "level": 2,
+    "rows": [
+      {"terms":["car","star"],"total":14},
+      {"terms":["apple","apple","apple","car","star"],"total":26}
+    ],
+    "ask": "apple",
+    "options": [3,4,12,14],
+    "answer": 1
+  },
+  {
+    "id": "pr-26",
+    "level": 2,
+    "rows": [
+      {"terms":["star","star"],"total":10},
+      {"terms":["star","heart","heart"],"total":19}
+    ],
+    "ask": "heart",
+    "options": [5,6,7,14],
+    "answer": 2
+  },
+  {
+    "id": "pr-27",
+    "level": 2,
+    "rows": [
+      {"terms":["moon","moon"],"total":8},
+      {"terms":["moon","fish","fish"],"total":24}
+    ],
+    "ask": "fish",
+    "options": [4,9,10,20],
+    "answer": 2
+  },
+  {
+    "id": "pr-28",
+    "level": 2,
+    "rows": [
+      {"terms":["ball","ball","ball"],"total":9},
+      {"terms":["ball","key","key"],"total":13}
+    ],
+    "ask": "key",
+    "options": [3,4,5,10],
+    "answer": 2
+  },
+  {
+    "id": "pr-29",
+    "level": 2,
+    "rows": [
+      {"terms":["flower","flower"],"total":8},
+      {"terms":["flower","sun"],"total":11},
+      {"terms":["sun","gem"],"total":16}
+    ],
+    "ask": "gem",
+    "options": [5,7,8,9],
+    "answer": 3
+  },
+  {
+    "id": "pr-30",
+    "level": 2,
+    "rows": [
+      {"terms":["apple","apple","apple"],"total":12},
+      {"terms":["apple","car"],"total":10},
+      {"terms":["car","car","house"],"total":20}
+    ],
+    "ask": "house",
+    "options": [6,7,8,14],
+    "answer": 2
+  },
+  {
+    "id": "pr-31",
+    "level": 2,
+    "rows": [
+      {"terms":["heart","heart","heart"],"total":15},
+      {"terms":["moon","moon","heart"],"total":21}
+    ],
+    "ask": "moon",
+    "options": [5,6,7,8],
+    "answer": 3
+  },
+  {
+    "id": "pr-32",
+    "level": 2,
+    "rows": [
+      {"terms":["gem","gem"],"total":12},
+      {"terms":["ball","ball","gem"],"total":20}
+    ],
+    "ask": "ball",
+    "options": [7,8,14,20],
+    "answer": 0
+  },
+  {
+    "id": "pr-33",
+    "level": 2,
+    "rows": [
+      {"terms":["fish","star"],"total":13},
+      {"terms":["fish","star","star"],"total":17}
+    ],
+    "ask": "fish",
+    "options": [4,5,8,9],
+    "answer": 3
+  },
+  {
+    "id": "pr-34",
+    "level": 2,
+    "rows": [
+      {"terms":["key","car"],"total":20},
+      {"terms":["key","car","car"],"total":31}
+    ],
+    "ask": "key",
+    "options": [8,9,11,20],
+    "answer": 1
+  },
+  {
+    "id": "pr-35",
+    "level": 2,
+    "rows": [
+      {"terms":["sun","sun"],"total":14},
+      {"terms":["sun","moon"],"total":10},
+      {"terms":["moon","moon","apple"],"total":11}
+    ],
+    "ask": "apple",
+    "options": [3,4,5,11],
+    "answer": 2
+  },
+  {
+    "id": "pr-36",
+    "level": 2,
+    "rows": [
+      {"terms":["house","house","house","house"],"total":20},
+      {"terms":["house","house","flower"],"total":19}
+    ],
+    "ask": "flower",
+    "options": [5,8,9,14],
+    "answer": 2
+  },
+  {
+    "id": "pr-37",
+    "level": 2,
+    "rows": [
+      {"terms":["heart","gem"],"total":13},
+      {"terms":["ball","ball","ball","ball","heart","gem"],"total":33}
+    ],
+    "ask": "ball",
+    "options": [5,13,20,33],
+    "answer": 0
+  },
+  {
+    "id": "pr-38",
+    "level": 2,
+    "rows": [
+      {"terms":["car","car"],"total":18},
+      {"terms":["car","ball","ball"],"total":23}
+    ],
+    "ask": "ball",
+    "options": [7,9,14,23],
+    "answer": 0
+  },
+  {
+    "id": "pr-39",
+    "level": 2,
+    "rows": [
+      {"terms":["star","star","star"],"total":6},
+      {"terms":["star","fish"],"total":14},
+      {"terms":["fish","fish","moon"],"total":30}
+    ],
+    "ask": "moon",
+    "options": [2,6,12,18],
+    "answer": 1
+  },
+  {
+    "id": "pr-40",
+    "level": 2,
+    "rows": [
+      {"terms":["apple","apple"],"total":16},
+      {"terms":["key","key","key","apple"],"total":23}
+    ],
+    "ask": "key",
+    "options": [4,5,8,15],
+    "answer": 1
+  },
+  {
+    "id": "pr-41",
+    "level": 2,
+    "rows": [
+      {"terms":["flower","heart"],"total":12},
+      {"terms":["flower","heart","heart"],"total":20}
+    ],
+    "ask": "flower",
+    "options": [4,8,12,20],
+    "answer": 0
+  },
+  {
+    "id": "pr-42",
+    "level": 2,
+    "rows": [
+      {"terms":["sun","house"],"total":22},
+      {"terms":["star","star","star","sun","house"],"total":31}
+    ],
+    "ask": "star",
+    "options": [2,3,9,22],
+    "answer": 1
+  },
+  {
+    "id": "pr-43",
+    "level": 2,
+    "rows": [
+      {"terms":["gem","gem","gem","gem"],"total":12},
+      {"terms":["gem","fish","fish"],"total":21}
+    ],
+    "ask": "fish",
+    "options": [3,8,9,18],
+    "answer": 2
+  },
+  {
+    "id": "pr-44",
+    "level": 2,
+    "rows": [
+      {"terms":["moon","moon"],"total":12},
+      {"terms":["car","car"],"total":10},
+      {"terms":["moon","car","heart"],"total":20}
+    ],
+    "ask": "heart",
+    "options": [9,11,14,15],
+    "answer": 0
+  },
+  {
+    "id": "pr-45",
+    "level": 2,
+    "rows": [
+      {"terms":["ball","ball","ball"],"total":21},
+      {"terms":["ball","ball","key"],"total":25}
+    ],
+    "ask": "key",
+    "options": [4,7,10,11],
+    "answer": 3
+  },
+  {
+    "id": "pr-46",
+    "level": 3,
+    "rows": [
+      {"terms":["star","moon"],"total":10},
+      {"terms":["star","moon","sun"],"total":17},
+      {"terms":["sun","sun","star"],"total":20}
+    ],
+    "ask": "moon",
+    "options": [3,4,6,7],
+    "answer": 1
+  },
+  {
+    "id": "pr-47",
+    "level": 3,
+    "rows": [
+      {"terms":["apple","apple","apple"],"total":18},
+      {"terms":["apple","key"],"total":14},
+      {"terms":["key","key","heart"],"total":25}
+    ],
+    "ask": "heart",
+    "options": [9,11,17,19],
+    "answer": 0
+  },
+  {
+    "id": "pr-48",
+    "level": 3,
+    "rows": [
+      {"terms":["car","fish"],"total":15},
+      {"terms":["car","fish","car","fish","gem"],"total":36},
+      {"terms":["gem","car"],"total":13}
+    ],
+    "ask": "fish",
+    "options": [6,7,8,15],
+    "answer": 2
+  },
+  {
+    "id": "pr-49",
+    "level": 3,
+    "rows": [
+      {"terms":["sun","sun","sun"],"total":12},
+      {"terms":["sun","moon","moon"],"total":20},
+      {"terms":["moon","star","star"],"total":30}
+    ],
+    "ask": "star",
+    "options": [4,8,10,11],
+    "answer": 3
+  },
+  {
+    "id": "pr-50",
+    "level": 3,
+    "rows": [
+      {"terms":["ball","heart"],"total":11},
+      {"terms":["heart","flower"],"total":9},
+      {"terms":["ball","heart","flower"],"total":16}
+    ],
+    "ask": "ball",
+    "options": [4,5,6,7],
+    "answer": 3
+  },
+  {
+    "id": "pr-51",
+    "level": 3,
+    "rows": [
+      {"terms":["house","house","key"],"total":17},
+      {"terms":["house","key"],"total":11},
+      {"terms":["key","key","gem"],"total":19}
+    ],
+    "ask": "gem",
+    "options": [5,6,8,9],
+    "answer": 3
+  },
+  {
+    "id": "pr-52",
+    "level": 3,
+    "rows": [
+      {"terms":["fish","fish","fish","fish"],"total":20},
+      {"terms":["apple","fish"],"total":15},
+      {"terms":["apple","apple","star"],"total":28}
+    ],
+    "ask": "star",
+    "options": [3,7,8,18],
+    "answer": 2
+  },
+  {
+    "id": "pr-53",
+    "level": 3,
+    "rows": [
+      {"terms":["moon","sun"],"total":9},
+      {"terms":["moon","sun","moon","sun","moon"],"total":25}
+    ],
+    "ask": "sun",
+    "options": [1,2,7,9],
+    "answer": 1
+  },
+  {
+    "id": "pr-54",
+    "level": 3,
+    "rows": [
+      {"terms":["star","star","heart"],"total":16},
+      {"terms":["star","heart"],"total":11},
+      {"terms":["heart","heart","key"],"total":20}
+    ],
+    "ask": "key",
+    "options": [5,6,7,8],
+    "answer": 3
+  },
+  {
+    "id": "pr-55",
+    "level": 3,
+    "rows": [
+      {"terms":["gem","gem"],"total":8},
+      {"terms":["gem","car"],"total":13},
+      {"terms":["car","ball"],"total":15}
+    ],
+    "ask": "ball",
+    "options": [2,4,6,9],
+    "answer": 2
+  },
+  {
+    "id": "pr-56",
+    "level": 3,
+    "rows": [
+      {"terms":["apple","ball"],"total":12},
+      {"terms":["apple","ball","flower","flower"],"total":20},
+      {"terms":["flower","apple"],"total":11}
+    ],
+    "ask": "ball",
+    "options": [5,7,8,12],
+    "answer": 0
+  },
+  {
+    "id": "pr-57",
+    "level": 3,
+    "rows": [
+      {"terms":["key","key","key"],"total":15},
+      {"terms":["sun","key","key"],"total":22},
+      {"terms":["sun","sun","fish"],"total":27}
+    ],
+    "ask": "fish",
+    "options": [2,3,12,15],
+    "answer": 1
+  },
+  {
+    "id": "pr-58",
+    "level": 3,
+    "rows": [
+      {"terms":["house","moon"],"total":14},
+      {"terms":["house","house","moon"],"total":22},
+      {"terms":["moon","moon","moon","star"],"total":21}
+    ],
+    "ask": "star",
+    "options": [3,6,8,15],
+    "answer": 0
+  },
+  {
+    "id": "pr-59",
+    "level": 3,
+    "rows": [
+      {"terms":["heart","gem"],"total":8},
+      {"terms":["heart","gem","heart","gem","fish"],"total":25},
+      {"terms":["fish","heart"],"total":14}
+    ],
+    "ask": "gem",
+    "options": [2,3,5,9],
+    "answer": 1
+  },
+  {
+    "id": "pr-60",
+    "level": 3,
+    "rows": [
+      {"terms":["car","car"],"total":16},
+      {"terms":["car","apple","apple"],"total":18},
+      {"terms":["apple","ball","ball","ball"],"total":26}
+    ],
+    "ask": "ball",
+    "options": [5,6,7,21],
+    "answer": 2
+  }
+]
