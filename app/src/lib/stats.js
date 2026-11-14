@@ -70,10 +70,13 @@ export function minutesPerDay(log, sims, days = 14, now = Date.now()) {
   return out.map((d) => ({ ...d, minutes: Math.round(d.minutes) }));
 }
 
-// Practice sessions today (estimate): a new session starts after a 15 minute gap in the log; a simulation counts as one.
-export function sessionsOn(log, sims, now = Date.now(), gapMs = 15 * 60000) {
+// Sessions today: the practice sessions FINISHED today, as recorded per day in progress.days (storage.js
+// countFinishedSession), plus one per simulation. Data saved before that record existed (no `days` object) falls back to
+// the old estimate: a new session starts after a 15 minute gap in the log.
+export function sessionsOn(log, sims, now = Date.now(), days = null, gapMs = 15 * 60000) {
   const today = dayKey(now);
   let n = sims.filter((s) => dayKey(s.t) === today).length;
+  if (days && typeof days === 'object' && !Array.isArray(days)) return n + (Number(days[today]) || 0);
   let last = -Infinity;
   for (const e of log) {
     if (e.sim || dayKey(e.t) !== today) continue;

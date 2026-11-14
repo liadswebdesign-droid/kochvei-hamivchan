@@ -6,7 +6,7 @@ import { bestOverall } from '../lib/simStore.js';
 import { Companion, StarRow } from '../components/Bits.jsx';
 import { UiIcon, StarIcon } from '../components/Icons.jsx';
 // T5: album / streak / games corner / stars flying into the counter
-import { useLayoutEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { unseenStickers, streakDays, getStarsSeen, setStarsSeen } from '../lib/rewards.js';
 import { flyStars } from '../components/Celebrate.jsx';
 
@@ -18,7 +18,43 @@ export function daysUntil(dateStr, now = new Date()) {
   return Math.round((test - today) / 86400000);
 }
 
+// Milliseconds from `now` to the next local midnight (a calendar-date step, so a DST day of 23 or 25 hours is right).
+export function msToMidnight(now = new Date()) {
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) - now;
+}
+
+// The app can stay open on the map for days (fullscreen PWA, tablet asleep in between): the count is recomputed at the
+// next local midnight and whenever the app becomes visible again, not only when the map is first drawn.
+function useToday() {
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    let timer;
+    const refresh = () => setTick((x) => x + 1);
+    const arm = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        refresh();
+        arm();
+      }, msToMidnight() + 1000);
+    };
+    const onVisible = () => {
+      if (document.visibilityState !== 'visible') return;
+      refresh();
+      arm(); // timers do not run while the tablet sleeps: aim again from the real time
+    };
+    arm();
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('pageshow', onVisible);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('pageshow', onVisible);
+    };
+  }, []);
+}
+
 function Countdown() {
+  useToday();
   const n = daysUntil(TEST_DATE);
   if (n < 0) return null;
   const text = n === 0 ? t('map.countdown.today') : n === 1 ? t('map.countdown.one') : t('map.countdown', { n });
@@ -84,7 +120,7 @@ export function MapScreen({ profile, content, onIsland, onSwitch, onParent, onAl
           {islands.map((isl, i) => {
             const st = skillState(progress, isl.id);
             const available = !isl.locked && islandAvailable(isl.id, content);
-            const rc = available ? reviewCount(profile.id, isl.id) : 0;
+            const rc = available ? reviewCount(profile.id, isl.id, content) : 0;
             return (
               <button
                 type="button"

@@ -2,10 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { t, tx } from '../lib/content.js';
 import { stripBold } from '../lib/rich.js';
 import { islands } from '../config.js';
-import { getProgress, saveProgress, skillState, logAttempt } from '../lib/storage.js';
+import { getProgress, saveProgress, skillState, logAttempt, countFinishedSession } from '../lib/storage.js';
 import { buildSession, recordForReview, sessionStars } from '../lib/session.js';
 import { checkInequality } from '../gen/index.js';
-import { Companion, MathLine, DigitEquation, RiddleRows, Btn, StemText, BonusStem, Rich } from '../components/Bits.jsx';
+import { Companion, MathLine, DigitEquation, RiddleRows, Btn, StemText, BonusStem, Rich, LoadFailed } from '../components/Bits.jsx';
 import { Choices } from '../components/Choices.jsx';
 import { NumPad } from '../components/NumPad.jsx';
 import { PassageView } from '../components/PassageView.jsx';
@@ -186,6 +186,8 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
   const [shake, setShake] = useState(0);
   const [results, setResults] = useState([]);
   const [qVisible, setQVisible] = useState(true);
+  const [qPeek, setQPeek] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
   const started = useRef(0);
   const bodyRef = useRef(null);
   const passageRef = useRef(null);
@@ -198,7 +200,10 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
 
   useEffect(() => {
     let alive = true;
-    buildSession({ pid, skill, level: st.level, sessions: st.sessions, content, readingDone: st.readingDone || [] }).then((s) => alive && setSession(s));
+    buildSession({ pid, skill, level: st.level, sessions: st.sessions, content, readingDone: st.readingDone || [] }).then(
+      (s) => alive && setSession(s),
+      () => alive && setLoadFailed(true), // no passage could be loaded: an error with a way back, not an endless loader
+    );
     return () => (alive = false);
   }, []);
 
@@ -209,7 +214,9 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
   if (import.meta.env.DEV) window.__khItem = item; // dev-only hook for the screenshot/QA script
 
   // Portrait: the question counts as "in view" once its top has scrolled into the upper part of the screen; this flips
-  // the sticky toggle between "to the passage" and "to the question".
+  // the sticky toggle between "to the passage" and "to the question". While the question's first lines peek in at the
+  // bottom of the screen (its top in the lower part, the passage end above it) the toggle steps away: it would sit on
+  // exactly those lines, and the question is already in view. That is also the first view of a passage that fits.
   useEffect(() => {
     const body = bodyRef.current;
     if (!body || !questionRef.current) return;
@@ -218,6 +225,7 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
       if (!q) return;
       const top = q.getBoundingClientRect().top - body.getBoundingClientRect().top;
       setQVisible(top < body.clientHeight * 0.45);
+      setQPeek(top >= body.clientHeight * 0.45 && top < body.clientHeight);
     };
     onScroll();
     body.addEventListener('scroll', onScroll, { passive: true });
@@ -236,6 +244,7 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
     return () => cancelAnimationFrame(raf);
   }, [phase, idx]);
 
+  if (loadFailed) return <LoadFailed onBack={onQuit} label={t('practice.quit')} />;
   if (!session) return <div class="screen center"><div class="loader" aria-busy="true" /></div>;
   if (!item) return null;
 
@@ -296,6 +305,7 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
       const levelUp = rating === 3 && s.level < 3;
       const readingDone = session.passageId ? [...new Set([...(s.readingDone || []), session.passageId])] : s.readingDone;
       p.skills[skill] = { ...s, sessions: s.sessions + 1, best: Math.max(s.best, rating), level: levelUp ? s.level + 1 : s.level, ...(readingDone ? { readingDone } : {}) };
+      countFinishedSession(p); // the parent's "rounds today"
       saveProgress(pid, p);
       const stickers = onPracticeComplete(profile, { rating }); // T5: album + streak
       onFinish({ skill, rating, total: all.length, firstTry: all.length - mistakes, starsEarned: all.filter((r) => r.solved).length, levelUp, level: p.skills[skill].level, reviewAdded: mistakes, stickers });
@@ -409,7 +419,7 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
       </div>
 
       {passage && (
-        <button type="button" class="passage-toggle" onClick={togglePassage}>
+        <button type="button" class={`passage-toggle ${qPeek ? 'is-away' : ''}`} onClick={togglePassage}>
           <UiIcon id={qVisible ? 'passage' : 'question'} size={26} />
           <span>{qVisible ? t('practice.toPassage') : t('practice.toQuestion')}</span>
         </button>

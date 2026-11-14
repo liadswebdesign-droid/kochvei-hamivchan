@@ -11,7 +11,7 @@ import {
 } from '../lib/sim.js';
 import { defFor, addSim, saveRun, clearRun } from '../lib/simStore.js';
 import { onMockComplete } from '../lib/rewards.js';
-import { Btn, Companion, Rich } from '../components/Bits.jsx';
+import { Btn, Companion, Rich, LoadFailed } from '../components/Bits.jsx';
 import { NumPad } from '../components/NumPad.jsx';
 import { UiIcon } from '../components/Icons.jsx';
 import { PassageView } from '../components/PassageView.jsx';
@@ -274,6 +274,7 @@ function useBookletPages(sim, props, onPaged) {
 export function MockExam({ profile, content, simId: id, mode, resume, onQuit, onFinish }) {
   const pid = profile.id;
   const [sim, setSim] = useState(null);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [answers, setAnswers] = useState((resume && resume.answers) || {});
   const [page, setPage] = useState(0);
   const [dir, setDir] = useState('next');
@@ -291,7 +292,10 @@ export function MockExam({ profile, content, simId: id, mode, resume, onQuit, on
     let def = id === ENDLESS ? planEndless(content, seed.current) : defFor(simNumber(id), content);
     // dev-only QA hook: replace parts of the plan (qa-sim.mjs pages a booklet holding EVERY passage and word problem)
     if (import.meta.env.DEV && window.__khSimOverride) def = { ...def, ...window.__khSimOverride(content) };
-    loadSim(def, content, loadPassage).then((s) => alive && setSim(s));
+    loadSim(def, content, loadPassage).then(
+      (s) => alive && setSim(s),
+      () => alive && setLoadFailed(true), // a passage of this booklet could not be loaded
+    );
     return () => (alive = false);
   }, []);
 
@@ -329,6 +333,7 @@ export function MockExam({ profile, content, simId: id, mode, resume, onQuit, on
 
   if (import.meta.env.DEV && sim && pages) window.__khExam = { sim: { ...sim, pages }, pages, page, setPage, answers, setAnswers, setT0, setStopOk, active };
 
+  if (loadFailed) return <LoadFailed onBack={onQuit} label={t('common.back')} />;
   if (!cur) return <div class="screen center"><div class="loader" aria-busy="true" /></div>;
 
   const go = (to) => {

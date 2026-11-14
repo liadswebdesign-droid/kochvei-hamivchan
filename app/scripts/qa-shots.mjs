@@ -109,7 +109,7 @@ async function shot(name, W, H) {
   }
 }
 const click = (sel, i = 0) => js(`const el = document.querySelectorAll(${JSON.stringify(sel)})[${i}]; if (!el) throw new Error('no ' + ${JSON.stringify(sel)}); el.click();`);
-const clickText = (sel, text) => js(`const el = [...document.querySelectorAll(${JSON.stringify(sel)})].find(e => e.textContent.includes(${JSON.stringify(text)})); if (!el) throw new Error('no ' + ${JSON.stringify(text)}); el.click();`);
+const clickText = (sel, text) => js(`const el = [...document.querySelectorAll(${JSON.stringify(sel)})].find(e => e.textContent.replace(/[\\u0591-\\u05C7]/g, "").includes(${JSON.stringify(text)})); if (!el) throw new Error('no ' + ${JSON.stringify(text)}); el.click();`);
 const item = () => js(`const it = window.__khItem; return it && { id: it.id, kind: it.kind, answer: it.answer, example: it.example, bound: it.bound, type: it.type, skill: it.skill, riddle: !!it.riddle, digit: !!it.digit, expr: it.expr && it.expr.map(t => t && t.blank ? '_' : t).join(' '), passage: !!it.passage, lineRef: it.lineRef };`);
 
 async function typeDigits(n) {

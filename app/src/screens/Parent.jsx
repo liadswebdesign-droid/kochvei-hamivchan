@@ -2,7 +2,7 @@
 // reads it. All text still comes from ui.json keys with the `parent.` prefix.
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { t, loadPassage } from '../lib/content.js';
-import { getLog, getSettings, saveSettings } from '../lib/storage.js';
+import { getLog, getSettings, saveSettings, getProgress } from '../lib/storage.js';
 import { getSims } from '../lib/simStore.js';
 import {
   hasPin, setPin, checkPin, makeGate, checkGate, lockedFor, resetProfileData, deleteProfile,
@@ -56,7 +56,7 @@ function PinPad({ title, error, onSubmit, maxLen = 4, explicit, extra, resetKey 
         {explicit ? <span class="pin-num">{v || ' '}</span> : Array.from({ length: maxLen }, (_, i) => <span class={`pin-dot ${i < v.length ? 'on' : ''}`} key={i} />)}
       </div>
       <p class="pin-error" role="alert">{error || ' '}</p>
-      <NumPad value={v} onChange={setV} maxLen={maxLen} />
+      <NumPad value={v} onChange={setV} maxLen={maxLen} keepZeros />
       <div class="pin-actions">
         {explicit && <Btn kind="primary" onClick={() => v && submit(v)} disabled={!v}>{t('common.check')}</Btn>}
         {extra}
@@ -311,7 +311,7 @@ function Dashboard({ profiles, activeId, content, onClose, onChanged }) {
       setData({
         acc: accuracy(log, readingTypes),
         days: minutesPerDay(log, sims),
-        today: sessionsOn(log, sims),
+        today: sessionsOn(log, sims, Date.now(), getProgress(pid).days),
         sims,
         recent,
         readingTypes,

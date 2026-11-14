@@ -3,11 +3,15 @@ import { UiIcon } from './Icons.jsx';
 
 // Large on-screen number pad. Never opens the device keyboard. Digits are laid out LTR (1 2 3 like a calculator)
 // even though the page is RTL.
-export function NumPad({ value, onChange, disabled, maxLen = 3 }) {
+// An answer is a number, so a leading 0 is replaced by the next digit (0 then 7 → 7). `keepZeros` types every digit as
+// is, for codes: a PIN may start with 0 (0123 stays 0123).
+export const pressDigit = (value, d, maxLen, keepZeros = false) => (value.length >= maxLen ? value : !keepZeros && value === '0' ? d : value + d);
+
+export function NumPad({ value, onChange, disabled, maxLen = 3, keepZeros = false }) {
   const press = (d) => {
     if (disabled) return;
-    if (value.length >= maxLen) return;
-    onChange(value === '0' ? d : value + d);
+    const next = pressDigit(value, d, maxLen, keepZeros);
+    if (next !== value) onChange(next);
   };
   const back = () => !disabled && onChange(value.slice(0, -1));
   const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];

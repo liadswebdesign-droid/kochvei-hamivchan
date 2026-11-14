@@ -121,6 +121,17 @@ export function Btn({ kind = 'primary', icon, children, ...rest }) {
   );
 }
 
+// Content that a screen needs could not be loaded (a passage file missing, or offline before it was cached). Instead
+// of an endless loader: the app's load-error line and a way back. Opening the island again is the retry.
+export function LoadFailed({ onBack, label }) {
+  return (
+    <div class="screen center load-failed">
+      <p class="bigmsg" role="alert">{t('app.loadError')}</p>
+      <Btn kind="primary" onClick={onBack}>{label}</Btn>
+    </div>
+  );
+}
+
 // ---- content text with **bold** ---------------------------------------------------------------------------------
 // Any content string may mark key words as `**bold**` (lib/rich.js): rendered as <strong>, markers never shown.
 export function Rich({ text }) {

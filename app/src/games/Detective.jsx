@@ -48,14 +48,26 @@ export function Detective({ content, api }) {
   const [passage, setPassage] = useState(null);
   const [target, setTarget] = useState(null);
   const [found, setFound] = useState(null); // line number just found
+  const [failed, setFailed] = useState(false);
+  const passageRef = useRef(null);
   const wrap = useRef(null);
   const state = useRef({ list: [], used: new Set(), asked: 0, order: [], at: 0, tries: 1, t0: 0, last: 0, lock: false });
 
   const loadNext = async () => {
     const s = state.current;
     if (!s.order.length) s.order = content.passages.map((p) => p.id).sort(() => Math.random() - 0.5);
-    const id = s.order[s.at++ % s.order.length];
-    const p = await loadPassage(id);
+    // A passage that fails to load (offline before it was cached) is skipped; if none loads, the game keeps the
+    // passage it has, or shows the load error instead of an endless loader.
+    let p = null;
+    for (let i = 0; i < s.order.length && !p; i++) {
+      p = await loadPassage(s.order[s.at++ % s.order.length]).catch(() => null);
+    }
+    if (!p) {
+      if (passageRef.current) ask();
+      else setFailed(true);
+      return;
+    }
+    passageRef.current = p;
     s.list = targetsOf(p);
     s.used = new Set();
     s.asked = 0;
@@ -115,6 +127,7 @@ export function Detective({ content, api }) {
     }
   };
 
+  if (failed) return <div class="screen center"><p class="bigmsg" role="alert">{t('app.loadError')}</p></div>;
   if (!passage || !target) return <div class="screen center"><div class="loader" aria-busy="true" /></div>;
   if (import.meta.env.DEV) window.__khGame = { line: target.line }; // dev-only hook for scripts/qa-t5.mjs
   return (

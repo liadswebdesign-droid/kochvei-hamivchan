@@ -90,7 +90,7 @@ async function shot(name, W, H, { full = false } = {}) {
   console.log(path.basename(file), JSON.stringify(checks));
 }
 const click = (sel, i = 0) => js(`const el = document.querySelectorAll(${JSON.stringify(sel)})[${i}]; if (!el) throw new Error('no ' + ${JSON.stringify(sel)}); el.click();`);
-const clickText = (sel, text) => js(`const el = [...document.querySelectorAll(${JSON.stringify(sel)})].find(e => e.textContent.includes(${JSON.stringify(text)})); if (!el) throw new Error('no ' + ${JSON.stringify(text)}); el.click();`);
+const clickText = (sel, text) => js(`const el = [...document.querySelectorAll(${JSON.stringify(sel)})].find(e => e.textContent.replace(/[\\u0591-\\u05C7]/g, "").includes(${JSON.stringify(text)})); if (!el) throw new Error('no ' + ${JSON.stringify(text)}); el.click();`);
 const exam = () => js(`const e = window.__khExam; return e && { page: e.page, type: e.sim.pages[e.page].type, task: e.sim.pages[e.page].task || null, items: (e.sim.pages[e.page].items || []).map(i => ({ id: i.id, kind: i.kind, answer: i.answer, example: i.example, bound: i.bound })), pages: e.sim.pages.length };`);
 async function typeDigits(n) {
   for (const d of String(n)) {
@@ -367,11 +367,11 @@ async function run(W, H) {
   await wait(500);
   const title = await js(`return document.querySelector('.pin-title').textContent;`);
   console.log('after gate:', title);
-  // set a new PIN (5555 twice) → dashboard → reset one profile, then delete the other
+  // set a new PIN with a leading zero (0123 twice: the PIN pad keeps the 0) → dashboard → reset one profile, then delete the other
   const pk = (d) => js(`[...document.querySelectorAll('.numpad .key')].find(k => k.textContent.trim() === '${d}').click();`);
-  for (const d of '5555') await pk(d);
+  for (const d of '0123') await pk(d);
   await wait(500);
-  for (const d of '5555') await pk(d);
+  for (const d of '0123') await pk(d);
   await wait(1500);
   const logBefore = await js(`return JSON.parse(localStorage.getItem('kh:p:' + JSON.parse(localStorage.getItem('kh:profiles'))[0].id + ':log') || '[]').length;`);
   await clickText('.dangerbtn', 'איפוס');

@@ -3,7 +3,7 @@ import { accuracy, bucketOf, minutesPerDay, sessionsOn, recentMistakes, withTren
 import { hashPin, setPin, checkPin, hasPin, makeGate, resetProfileData, deleteProfile } from './parentData.js';
 import {
   createProfile, getProfiles, getActiveId, logAttempt, getLog, saveProgress, getProgress, saveReview, getReview,
-  getSettings, saveSettings, isSoundOn, save, load,
+  getSettings, saveSettings, isSoundOn, save, load, countFinishedSession,
 } from './storage.js';
 import { awardSticker, getRewards } from './rewards.js';
 import { addSim, getSims, bestScores, getRun, saveRun, clearRun, currentDefs } from './simStore.js';
@@ -69,6 +69,25 @@ describe('minutes per day', () => {
     const log = [{ t: NOW }, { t: NOW + 60000 }, { t: NOW + 3600000 }, { t: NOW - DAY }];
     expect(sessionsOn(log, [{ t: NOW }], NOW + 7200000)).toBe(3);
   });
+  it('counts the sessions FINISHED today from progress.days, plus simulations; old data falls back to the estimate', () => {
+    const log = [{ t: NOW }, { t: NOW + 60000 }, { t: NOW + 3600000 }]; // the gap estimate would say 2
+    const p = { stars: 0, skills: {} };
+    countFinishedSession(p, new Date(NOW - DAY));
+    countFinishedSession(p, new Date(NOW));
+    countFinishedSession(p, new Date(NOW + 3600000));
+    expect(sessionsOn(log, [{ t: NOW }], NOW + 7200000, p.days)).toBe(3); // 2 finished today + 1 simulation
+    expect(sessionsOn(log, [], NOW + DAY, p.days)).toBe(0); // the next day starts at 0
+    expect(sessionsOn(log, [], NOW + 7200000, undefined)).toBe(2); // no record yet: the gap estimate
+  });
+  it('keeps the finished-session record to the last 31 days, through a saved progress', () => {
+    const p = getProgress('pdays');
+    expect(p.days).toBeUndefined(); // the empty progress shape is unchanged
+    for (let i = 40; i >= 0; i--) countFinishedSession(p, new Date(NOW - i * DAY));
+    saveProgress('pdays', p);
+    const keys = Object.keys(getProgress('pdays').days);
+    expect(keys).toHaveLength(31);
+    expect(keys.at(-1)).toBe('2026-11-20');
+  });
 });
 
 describe('mistakes and trend', () => {
@@ -107,6 +126,12 @@ describe('parent data (memory storage)', () => {
     setPin('1111'); // "forgot" path sets a new one
     expect(checkPin('4821')).toBe(false);
     expect(checkPin('1111')).toBe(true);
+  });
+  it('PIN: a leading zero is part of the PIN (the PIN pad keeps it)', () => {
+    setPin('0123');
+    expect(checkPin('0123')).toBe(true);
+    expect(checkPin('123')).toBe(false);
+    setPin('1111');
   });
   it('the forgot gate is two-digit × two-digit (13-29, no 20) with a three-digit answer', () => {
     for (let i = 0; i < 200; i++) {

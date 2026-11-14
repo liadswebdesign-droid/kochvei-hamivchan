@@ -47,33 +47,64 @@ function pickContent(pool, n, level, pid) {
   return pool.slice().sort((a, b) => score(a) - score(b)).slice(0, n);
 }
 
-// Review items due for this skill (resolved to full items). Content ids that no longer exist are dropped.
-async function dueReview(pid, skill, sessions, content) {
-  const q = getReview(pid).filter((e) => e.skill === skill && e.due <= sessions).slice(0, MAX_REVIEW_PER_SESSION);
-  const out = [];
-  for (const e of q) {
-    let it = itemFromId(e.id);
-    if (!it && skill === 'wordProblems') {
-      const w = content.wordProblems.find((x) => x.id === e.id);
-      it = w && wpItem(w);
-    } else if (!it && skill === 'reading' && e.ref) {
-      try {
-        const p = await loadPassage(e.ref);
-        const qq = p.questions.find((x) => x.id === e.id);
-        it = qq && passageQ(p, qq);
-      } catch {
-        it = null;
-      }
-    } else if (!it && skill === 'riddles') {
-      const r = content.pictureRiddles.find((x) => x.id === e.id);
-      it = r && prItem(r);
-    } else if (!it && skill === 'bonus') {
-      const b = content.bonus.find((x) => x.id === e.id);
-      it = b && bonusItem(b);
-    }
-    if (it) out.push({ ...it, review: true });
+// One review entry → its full item. Returns null when the item no longer exists (a question removed from the content,
+// an id no generator knows): the entry is stale and leaves the queue. Returns undefined when it exists but cannot be
+// loaded right now (its passage failed to fetch, e.g. offline): the entry stays for a later session.
+async function resolveReview(e, content) {
+  const it = itemFromId(e.id);
+  if (it) return it;
+  if (e.skill === 'wordProblems') {
+    const w = content.wordProblems.find((x) => x.id === e.id);
+    return w ? wpItem(w) : null;
   }
+  if (e.skill === 'riddles') {
+    const r = content.pictureRiddles.find((x) => x.id === e.id);
+    return r ? prItem(r) : null;
+  }
+  if (e.skill === 'bonus') {
+    const b = content.bonus.find((x) => x.id === e.id);
+    return b ? bonusItem(b) : null;
+  }
+  if (e.skill === 'reading') {
+    if (!e.ref || !content.passages.some((p) => p.id === e.ref)) return null;
+    let p;
+    try {
+      p = await loadPassage(e.ref);
+    } catch {
+      return undefined;
+    }
+    const qq = p.questions.find((x) => x.id === e.id);
+    return qq ? passageQ(p, qq) : null;
+  }
+  return null;
+}
+
+// Review items due for this skill, resolved to full items: up to MAX_REVIEW_PER_SESSION of the ones that still exist.
+// Stale entries met on the way are removed from the stored queue, so they can neither fill the review slots ahead of
+// valid items nor keep the map's review count up.
+async function dueReview(pid, skill, sessions, content) {
+  const due = getReview(pid).filter((e) => e.skill === skill && e.due <= sessions);
+  const out = [];
+  const stale = new Set();
+  for (const e of due) {
+    if (out.length >= MAX_REVIEW_PER_SESSION) break;
+    const it = await resolveReview(e, content);
+    if (it === null) stale.add(e.id);
+    else if (it) out.push({ ...it, review: true });
+  }
+  if (stale.size) saveReview(pid, getReview(pid).filter((e) => !(e.skill === skill && stale.has(e.id))));
   return out;
+}
+
+// Without loading anything: could this entry still resolve? (A reading entry counts while its passage is in the index.)
+function mayResolve(e, content) {
+  if (itemFromId(e.id)) return true;
+  const has = (list) => list.some((x) => x.id === e.id);
+  if (e.skill === 'wordProblems') return has(content.wordProblems);
+  if (e.skill === 'riddles') return has(content.pictureRiddles);
+  if (e.skill === 'bonus') return has(content.bonus);
+  if (e.skill === 'reading') return !!e.ref && content.passages.some((p) => p.id === e.ref);
+  return false;
 }
 
 export function islandAvailable(skill, content) {
@@ -109,7 +140,19 @@ export async function buildSession({ pid, skill, level, sessions, content, readi
       const rb = readingDone.includes(b.id) ? 1 : 0;
       return ra - rb || Math.abs(a.level - level) - Math.abs(b.level - level) || Math.random() - 0.5;
     });
-    const p = await loadPassage(list[0].id);
+    // A passage that fails to load (a missing file, or offline before it was cached) is skipped for the next one; when
+    // none loads, the session rejects and Practice shows its load error.
+    let p = null;
+    let lastError = null;
+    for (const cand of list) {
+      try {
+        p = await loadPassage(cand.id);
+        break;
+      } catch (e) {
+        lastError = e;
+      }
+    }
+    if (!p) throw lastError || new Error('no passage');
     fresh = p.questions.map((q) => passageQ(p, q));
     return { items: [...fresh, ...review.filter((r) => r.passageId !== p.id)], passageId: p.id };
   }
@@ -137,7 +180,8 @@ export function recordForReview(pid, item, firstTry, sessions) {
   saveReview(pid, q.slice(-200));
 }
 
-export const reviewCount = (pid, skill) => getReview(pid).filter((e) => e.skill === skill).length;
+// Queued review items of a skill (the map's badge). With `content`, entries whose question is gone are not counted.
+export const reviewCount = (pid, skill, content) => getReview(pid).filter((e) => e.skill === skill && (!content || mayResolve(e, content))).length;
 
 export function sessionStars(mistakes) {
   return mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1;

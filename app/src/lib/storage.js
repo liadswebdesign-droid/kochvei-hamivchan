@@ -99,6 +99,17 @@ export const getProgress = (pid) => withDefaults(emptyProgress(), load(pk(pid, '
 export const saveProgress = (pid, p) => save(pk(pid, 'progress'), p);
 export const skillState = (progress, skill) => withDefaults({ level: 1, best: 0, sessions: 0 }, progress.skills[skill]);
 
+// progress.days = { 'YYYY-MM-DD': n }: practice sessions FINISHED per local calendar day (the parent's "rounds today"),
+// kept for the last 31 days. Absent on data saved before it was recorded. Mutates and returns `p`.
+const localDayKey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+export function countFinishedSession(p, now = new Date()) {
+  const days = isPlainObject(p.days) ? { ...p.days } : {};
+  const k = localDayKey(now);
+  days[k] = (Number(days[k]) || 0) + 1;
+  p.days = Object.fromEntries(Object.entries(days).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).slice(-31));
+  return p;
+}
+
 export const getReview = (pid) => loadList(pk(pid, 'review'));
 export const saveReview = (pid, q) => save(pk(pid, 'review'), q);
 
