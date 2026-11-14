@@ -353,5 +353,25 @@
   "w-63bd2f179f36": {
     "form": "אִיתִּי",
     "reason": "proofread: אִתִּי = with me (preposition), NOT the name אִיתַּי — keep against the name-itai house rule"
+  },
+  "w-266415286263": {
+    "form": "בַּבַּיִת",
+    "reason": "definite: הבית של גלי (the house that is Gali's), as in the earlier adjudicated build"
+  },
+  "w-dd3b09588c6a": {
+    "form": "כְּלַבְלַב",
+    "reason": "dictionary כְּלַבְלַב (diminutive of כֶּלֶב)"
+  },
+  "w-9c86a1adcd44": {
+    "form": "הַסַּפָּה",
+    "reason": "the sofa: סַפָּה, dagesh in ס after the article"
+  },
+  "w-94526e95ccba": {
+    "form": "לַחֶדֶר",
+    "reason": "definite: לחדר שלה (her room) → לַחֶדֶר"
+  },
+  "w-e9c400a0c5a9": {
+    "form": "אָה",
+    "reason": "interjection אָה, no mappiq"
   }
 }
