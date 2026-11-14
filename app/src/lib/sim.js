@@ -245,7 +245,11 @@ function number(pages) {
 // questions on to the next page until it fits. A question is never split; if one question alone is taller than the
 // page, that page gets `scroll: true` (it scrolls vertically instead of clipping). With `fits = () => true` this gives
 // back exactly the estimated layout. Other pages are kept as they are.
-export function paginate(pages, fits) {
+// `cols` (a wide landscape page): a page whose questions do not fit stacked may be tried as an open-booklet spread,
+// `cols: true`, the questions in two columns side by side (the first half in the right-hand column, RTL). For each
+// count it tries stacked first, then the spread, and only then hands a question on — so a spread is used only where
+// it keeps more questions on a page than stacking would.
+export function paginate(pages, fits, { cols = false } = {}) {
   const out = [];
   for (let i = 0; i < pages.length; ) {
     const p = pages[i];
@@ -260,13 +264,15 @@ export function paginate(pages, fits) {
     const per = p.per || 2;
     let first = p.first;
     while (rest.length) {
-      const make = (n) => ({ ...p, key: itemsKey(rest), items: rest.slice(0, n), first, scroll: false });
-      let n = chunk(rest, per, p.merge)[0].length;
-      while (n > 1 && !fits(make(n))) n -= 1;
-      const page = make(n);
-      if (n === 1 && !fits(page)) page.scroll = true;
+      const make = (n, spread) => ({ ...p, key: itemsKey(rest), items: rest.slice(0, n), first, scroll: false, ...(spread ? { cols: true } : {}) });
+      let page = null;
+      for (let n = chunk(rest, per, p.merge)[0].length; n >= 1 && !page; n--) {
+        if (fits(make(n))) page = make(n);
+        else if (cols && n > 1 && fits(make(n, true))) page = make(n, true);
+      }
+      if (!page) page = { ...make(1), scroll: true };
       out.push(page);
-      rest = rest.slice(n);
+      rest = rest.slice(page.items.length);
       first = false;
     }
     i = j;

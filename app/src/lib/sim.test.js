@@ -156,6 +156,20 @@ describe('booklet layout', () => {
     // the inequalities stay on their own page(s), after the missing numbers
     expect(itemPages.filter((x) => x.ineq).every((x) => x.items.every((i) => i.kind === 'inequality'))).toBe(true);
   });
+  it('paginate() with `cols` tries a two-column spread before handing a question on, and only when stacking fails', () => {
+    // stacked, a page holds one question; as a spread it holds two (never three)
+    const fits = (pg) => pg.items.length === 1 || (!!pg.cols && pg.items.length === 2);
+    const p = paginate(sim.pages, fits, { cols: true });
+    const itemPages = p.filter((x) => x.type === 'items');
+    expect(itemPages.flatMap((x) => x.items.map((i) => i.id))).toEqual(sim.items.map((i) => i.id));
+    expect(itemPages.some((x) => x.cols)).toBe(true);
+    expect(itemPages.filter((x) => x.cols).every((x) => x.items.length === 2)).toBe(true);
+    expect(itemPages.filter((x) => !x.cols).every((x) => x.items.length === 1)).toBe(true);
+    expect(p.some((x) => x.scroll)).toBe(false);
+    // no `cols` option (portrait): never a spread; and stacking that fits always wins over a spread
+    expect(paginate(sim.pages, fits).some((x) => x.cols)).toBe(false);
+    expect(paginate(sim.pages, () => true, { cols: true }).some((x) => x.cols)).toBe(false);
+  });
   it('a place in the booklet survives re-paging (by item, or by page key)', () => {
     const wide = paginate(sim.pages, () => true);
     const narrow = paginate(sim.pages, (pg) => pg.items.length === 1);

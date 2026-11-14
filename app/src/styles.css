@@ -1998,6 +1998,12 @@ bdi.n {
   color: #1f1b2e;
   position: relative;
 }
+/* landscape: a wider page, like an open booklet, so two questions can stand side by side (MockExam: `cols`) */
+@media (orientation: landscape) and (min-width: 1000px) {
+  .sheet {
+    width: min(1240px, 100%);
+  }
+}
 .sheet.turn-next {
   animation: page-next 340ms var(--ease-out) both;
 }
@@ -2133,8 +2139,39 @@ bdi.n {
   padding-bottom: 12px;
   border-bottom: 2px dashed #efe6d6;
 }
-.bk-items > .bk-item:last-child {
+.bk-items > .bk-item:last-child,
+.bk-col > .bk-item:last-child {
   border-bottom: 0;
+}
+/* landscape spread (MockExam: `cols`): two questions side by side like an open booklet, the right column first (RTL),
+   a dashed fold between them. A half-width column is too narrow for the 2×2 option grid, so options go one per row
+   (numbers: two per row). */
+.bk-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+}
+.bk-col {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.bk-col:first-child {
+  padding-inline-end: 24px;
+}
+.bk-col + .bk-col {
+  padding-inline-start: 24px;
+  border-inline-start: 2px dashed #efe6d6;
+}
+.bk-cols .bk-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+.bk-cols .bk-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.bk-cols .bk-choices {
+  padding-inline-start: 1.2em;
 }
 .bk-qhead {
   display: flex;

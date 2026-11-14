@@ -121,6 +121,12 @@ function StopPage({ companion, ready, onReady, onContinue }) {
   );
 }
 
+// an open-booklet spread (`cols`, landscape): the first half of the questions in the right-hand column (RTL: first)
+const halves = (items) => {
+  const k = Math.ceil(items.length / 2);
+  return [items.slice(0, k), items.slice(k)];
+};
+
 // ---- one page's content -------------------------------------------------------------------------------------------------
 // Shared by the real booklet and the hidden measuring copy, so what is measured is exactly what is shown.
 function PageBody({ cur, sim, profile, mode, answers, onAnswer, active, setActive, stopOk, setStopOk, go, page, finish }) {
@@ -157,22 +163,29 @@ function PageBody({ cur, sim, profile, mode, answers, onAnswer, active, setActiv
     default: {
       const reading = cur.task === 'reading';
       const digit = cur.items.some((it) => it.digit);
+      const item = (it) => (
+        <BkItem
+          key={it.id}
+          item={it}
+          answer={answers[it.id]}
+          onAnswer={(v) => onAnswer(it, v)}
+          active={active === it.id}
+          onActivate={() => setActive(it.id)}
+        />
+      );
       const instrKey = cur.ineq ? 'sim.taskB.ineq' : reading ? (cur.first ? 'sim.part1.questions' : null) : cur.task === 'D' ? (digit ? 'instr.digit' : 'instr.riddles') : INSTR[cur.task];
       return (
         <>
           {reading ? <p class="bk-ctx">{cur.ctxTitle}</p> : <h2 class="bk-task">{t(TITLE[cur.task])}</h2>}
           {instrKey && <p class="bk-instr"><Rich text={tx(instrKey)} /></p>}
-          <div class="bk-items">
-            {cur.items.map((it) => (
-              <BkItem
-                key={it.id}
-                item={it}
-                answer={answers[it.id]}
-                onAnswer={(v) => onAnswer(it, v)}
-                active={active === it.id}
-                onActivate={() => setActive(it.id)}
-              />
-            ))}
+          <div class={`bk-items ${cur.cols ? 'bk-cols' : ''}`}>
+            {cur.cols
+              ? halves(cur.items).map((col, ci) => (
+                  <div class="bk-col" key={ci}>
+                    {col.map(item)}
+                  </div>
+                ))
+              : cur.items.map(item)}
           </div>
         </>
       );
@@ -209,6 +222,8 @@ const fitsIn = (host, props) => (cur) => {
   return !body || body.scrollHeight <= body.clientHeight;
 };
 
+const SPREAD = '(orientation: landscape) and (min-width: 1000px)';
+
 // Pages the booklet for the current screen size, and again whenever it changes (rotation). The child's place (the
 // question she is on) is carried over to the new paging; answers are untouched. Until the first paging: null.
 function useBookletPages(sim, props, onPaged) {
@@ -229,7 +244,8 @@ function useBookletPages(sim, props, onPaged) {
       const now = innerWidth + 'x' + innerHeight;
       if (!alive || (now === size && !force)) return;
       size = now;
-      const next = paginate(sim.pages, fitsIn(host, { ...props, sim }));
+      // a wide landscape page may lay two questions side by side (paginate: `cols`)
+      const next = paginate(sim.pages, fitsIn(host, { ...props, sim }), { cols: matchMedia(SPREAD).matches });
       render(null, host);
       // a webfont that was first needed while measuring changes line widths: measure again once it has arrived
       if (document.fonts && document.fonts.status === 'loading') document.fonts.ready.then(() => measure(true));
