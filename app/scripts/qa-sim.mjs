@@ -402,7 +402,9 @@ async function run(W, H) {
 // question alone taller than a page) is allowed to scroll: then its last option must be reachable by scrolling.
 // Any other page whose content is taller than its box fails (the overflow:auto sheet hides it without a scrollbar,
 // which is exactly how option ד disappeared under "עמוד 3"). Passage pages are measured and reported (lines, font,
-// content height vs box) rather than failed.
+// spacing, content height vs box); in portrait a passage must fit its page (PassageView's height fit) and in both
+// orientations every line number must sit on its line. In landscape the "turn the tablet" note (RotateHint) must be in
+// the top bar, clear of the page, the nav buttons, the number pad and the close button; in portrait it must be absent.
 const PAGE_CHECK = `
   const r = (el) => el.getBoundingClientRect();
   const sheet = document.querySelector('.exam-stage .sheet');
@@ -464,7 +466,13 @@ const PAGE_CHECK = `
   let passage = null;
   if (isPassage) {
     const a = body.querySelector('.passage');
-    passage = { lines: a.querySelectorAll('.pline').length, fontPx: parseFloat(getComputedStyle(a).fontSize), passageH: Math.round(r(a).height), boxH: body.clientHeight, contentH: body.scrollHeight, fits: over <= 0, hscroll: a.classList.contains('pfit-scroll') };
+    const t0 = a.querySelector('.pline-text');
+    passage = { lines: a.querySelectorAll('.pline').length, fontPx: parseFloat(getComputedStyle(a).fontSize), lineHeight: +(parseFloat(getComputedStyle(t0).lineHeight) / parseFloat(getComputedStyle(t0).fontSize)).toFixed(2), paraGap: getComputedStyle(a).getPropertyValue('--pp-gap').trim() || '0.7em', passageH: Math.round(r(a).height), boxH: body.clientHeight, contentH: body.scrollHeight, fits: over <= 0, hscroll: a.classList.contains('pfit-scroll') };
+    // every line number still sits on its own line (inside that line's text box), at whatever size/spacing the fit chose
+    const off = [...a.querySelectorAll('.pline')].filter((l) => { const nb = r(l.querySelector('.pline-n')), tb = r(l.querySelector('.pline-text')); return nb.top < tb.top - 1 || nb.bottom > tb.bottom + 1; }).map((l) => l.dataset.line);
+    if (off.length) fails.push({ why: 'line numbers not aligned with their lines: ' + off.join(',') });
+    // portrait: the whole passage is on its page (PassageView's height fit), as in the real booklet
+    if (innerHeight > innerWidth && over > 0) fails.push({ why: 'passage is ' + over + 'px taller than its portrait page (should fit, floor 19px)' });
     // the same page at the auto-fit floor (19px, PassageView MIN_PX): would shrinking the font make it fit?
     const keep = a.style.fontSize;
     a.style.fontSize = '19px';
@@ -583,6 +591,7 @@ try {
     if (!ps.length) continue;
     const bad = ps.filter((p) => !p.fits);
     console.log(`  passages ${o}: ${ps.length - bad.length}/${ps.length} fit their page` + (bad.length ? `; overflowing: ${bad.map((p) => `${p.id} (${p.lines} lines @${p.fontPx}px: content ${p.contentH}px in a ${p.boxH}px box; @19px floor ${p.floorContentH}px)`).join(', ')}` : ''));
+    if (o === 'portrait') for (const p of ps) console.log(`    ${p.id}: ${p.lines} lines, ${p.fontPx}px, line-height ${p.lineHeight}, paragraph gap ${p.paraGap}, passage ${p.passageH}px, page ${p.contentH}/${p.boxH}px ${p.fits ? 'fits' : 'SCROLLS'}`);
   }
   if (longest) console.log('  longest passage:', longest.id, longest.lines, 'lines');
   if (audit.fails.length) {

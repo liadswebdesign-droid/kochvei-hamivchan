@@ -141,7 +141,7 @@ function PageBody({ cur, sim, profile, mode, answers, onAnswer, active, setActiv
       return (
         <>
           <p class="bk-instr"><Rich text={tx(cur.story ? 'sim.part1.storyInstr' : 'sim.part1.instr')} /></p>
-          <PassageView passage={cur.passage} />
+          <PassageView passage={cur.passage} fitHeight />
         </>
       );
     case 'stop':

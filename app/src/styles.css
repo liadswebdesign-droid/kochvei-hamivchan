@@ -2110,8 +2110,12 @@ bdi.n {
 .sheet .passage {
   font-size: 22px;
 }
+/* PassageView's height fit (booklet passage page) may tighten these a little: --pl-lh ≥ 1.6, --pp-gap ≥ 0.4em */
 .sheet .pline-text {
-  line-height: 1.75;
+  line-height: var(--pl-lh, 1.75);
+}
+.sheet .passage-para {
+  margin-bottom: var(--pp-gap, 0.7em);
 }
 .bk-mini {
   background: #fcf8ef;
