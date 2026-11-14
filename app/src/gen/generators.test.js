@@ -77,7 +77,7 @@ describe('picture riddles', () => {
       expect(it.riddle.rows.length).toBeGreaterThanOrEqual(2);
       expect(it.riddle.rows.length).toBeLessThanOrEqual(3);
     }
-  });
+  }, 30000); // 450 brute-force solves: ~2.5 s on a Mac, ~6 s on the GitHub runner (vitest's default is 5 s)
   it('validates the schema example (flower+flower=6, flower+flower+star=14 → star=8)', () => {
     const sols = solveRiddle([{ terms: ['flower', 'flower'], total: 6 }, { terms: ['flower', 'flower', 'star'], total: 14 }]);
     expect(sols).toEqual([{ flower: 3, star: 8 }]);
