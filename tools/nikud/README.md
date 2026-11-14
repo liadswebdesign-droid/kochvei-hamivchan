@@ -1,13 +1,14 @@
 # Nikud pipeline (T2)
 
 Turns `content/src/**` (Hebrew in ktiv male, **no nikud**) into `content/build/**` (same files, same keys, every
-Hebrew string fully vocalized, NFC). Three independent vocalizers, a word-by-word vote, an adjudication file, a
-mechanical lint, and a review page for LiaD.
+Hebrew string fully vocalized, NFC). Three independent vocalizers, a word-by-word vote, house rules, an adjudication
+file, a mechanical lint, and a review page for LiaD.
 
 ```
 node tools/nikud/run.mjs [--only <glob>] [--vocalizers dicta,codex,claude] [--dry]
-                         [--src DIR] [--build DIR] [--work DIR] [--decisions FILE]
-                         [--refresh dicta,codex] [--claude-mode auto|cli|handoff] [--font "Family"] [--seed S]
+                         [--src DIR] [--build DIR] [--work DIR] [--decisions FILE] [--house-rules FILE]
+                         [--refresh dicta,codex] [--claude-mode auto|cli|handoff] [--font "Family"] [--seed S] [--batch-size 60]
+node tools/nikud/run.mjs --promote g-…[,g-…]   # context-free group ruling → house rule (no vocalizing)
 node --test tools/nikud/test/          # unit tests (no network)
 ```
 
@@ -17,7 +18,7 @@ the run fails with `codex app-server connection closed`).
 | Exit | Meaning |
 |---|---|
 | 0 | build written to `content/build` |
-| 1 | build blocked: unresolved disagreements, lint errors, bad decisions, or bad source (nikud in src, bad hint) |
+| 1 | build blocked: unresolved disagreements, lint errors, bad decisions, conflicting decision files, bad house rules, or bad source (nikud in src, bad hint) |
 | 2 | a vocalizer is incomplete (error, pending Claude handoff, or `--dry` with uncached units) |
 
 ## Stages
@@ -37,7 +38,28 @@ the run fails with `codex app-server connection closed`).
    marks) must equal the source; an LLM unit that fails is retried once, then kept and recorded in
    `skeleton-errors.json`. Words are aligned to the source by skeleton (LCS), so one dropped letter costs that
    vocalizer only the affected word's vote. A word is **accepted** when all selected vocalizers (and the hint, if any)
-   give the identical form. Anything else goes to `disagreements.json`.
+   give the identical form. Anything else goes to `disagreements.json`, unless a house rule decides it (3a).
+3a. **House rules** (`<work>/house-rules.json`, `lib/house.mjs`, tests in `test/house.test.mjs`): a 5th, overriding
+   vote. **Precedence: decision > house rule > vote.** A word a rule decides never reaches `disagreements.json`; it is
+   still skeleton-checked and linted. Shape:
+   ```json
+   { "id": "beshura-n", "word": "בשורה", "after": "^\\s*\\d", "form": "בְּשׁוּרָה", "reason": "…", "source": "booklet p.8" }
+   { "id": "prefix-before-digit", "wordRe": "^[בלכ]$", "after": "^[־-]\\d", "forms": { "ב": "בְּ", "ל": "לְ", "כ": "כְּ" }, "reason": "…" }
+   ```
+   `word`/`wordRe` match the **whole bare word**; `before`/`after` are regexes on the **bare item text** before/after
+   the word. First match wins (context rules go first). At load every rule is validated: one of word/wordRe, a reason,
+   valid regexes, each form's letters equal its word, each form passes lint (`lintAllow` to whitelist), no two
+   context-free rules for one word, unique ids. **A bad rule blocks the build** (and no rule is applied that run).
+   A `{{word|hint}}` that contradicts a rule switches the rule off for that occurrence (specific beats general); the
+   word then goes through the normal vote with the hint as 4th vote. Every place a rule **went against the majority of
+   the vocalizers** (fewer than half wrote the rule form; a replaced unanimous vote is the extreme case) is printed,
+   written to `house-report.json` (with per-rule use counts, rules never used, hint skips) and shown as a card on the
+   review page, so a wrong rule is visible the first time it fires. A rule that is deliberately against some vocalizers
+   (`בְּשׁוּרָה N`, `מָה`) carries `"expectDissent": true` and is not listed. This is how the `אלה` rule was caught and
+   dropped: in the word problems אלה is the girl's name אֵלָה, and GPT and Claude said so.
+   Only words with one reading in kids' text are rules; the file's `about` lists the deliberately excluded ambiguous
+   words (את, אם, עם, למה, אילו, שני, היו, קראו, השלימו, …). The booklet settles **vowels** only: its font prints no
+   dagesh chazak (הַמִילָה, הַשְׁאֵלוֹת, שֶׁלִפְנֵיכֶם), and the project spec wants it, so the rules carry it.
 4. **Decisions** (`<work>/decisions.json`, filled by the planner's Opus adjudication pass):
    ```json
    { "w-140fbfb44722": { "form": "בַּבּוֹקֶר", "reason": "…the grammar rule…", "lintAllow": ["bare-yod"] } }
@@ -46,6 +68,28 @@ the run fails with `codex app-server connection closed`).
    across runs and vocalizer changes, and it changes when the sentence changes. A decision whose letters differ from the
    word is rejected. A decision may also override an agreed word (e.g. to fix a lint error) and may whitelist lint
    rules for that word with `lintAllow`. **Any unresolved id blocks the build.**
+   **Decisions are global per sentence**: the id does not include the file or the path, so the same sentence (a
+   repeated question stem, a repeated option) anywhere in src has the same id, appears once in `disagreements.json`
+   with every place under `occurrences`, and one decision resolves all of them (test: "global decisions" in
+   `test/house.test.mjs`). A rule that should hold for a word in *every* sentence is a house rule, not a decision.
+4a. **Groups and parallel adjudication** (`lib/adjudicate.mjs`, tests in `test/adjudicate.test.mjs`). Every
+   disagreement belongs to a **group** `g-…` = sha(bare word ␟ each vocalizer's form ␟ hint ␟ Dicta's top 3
+   alternatives): the same word split the same way in different sentences is one group. A ruling on the group id
+   resolves every member; `exceptions` give single members another form:
+   ```json
+   { "g-ac25bc97bafc": { "form": "הַדְּבוֹרוֹת", "reason": "…", "exceptions": { "w-…": { "form": "…", "reason": "…" } } } }
+   ```
+   Precedence for one word: its own `w-` decision > group exception > house rule > group ruling > vote (house-matched
+   words are never put in groups). **Every decision, ruling and exception needs a one-line grammatical reason**, or it
+   is a bad decision. Each run (not `--dry`) writes `<work>/groups.json` and regenerates
+   `<work>/adjudication/batch-NN.md`: ~60 OPEN groups per sheet (`--batch-size`), each with the three versions, the
+   hint, Dicta's alternatives and every member in its sentence (bare, and with the agreed words vocalized; passage lines
+   also show the whole paragraph), plus the answer format and the house style. Parallel adjudicators each take a sheet
+   and write `batch-NN.decisions.json` next to it; run.mjs merges `decisions.json` + every
+   `adjudication/*.decisions.json`. The same id with a different form in two files is a **conflict**: it stays
+   unresolved and blocks the build. Sheet numbers change between runs; the answers are keyed by group id, so that is
+   harmless. `--promote g-…` appends a group ruling to `house-rules.json` when the word is context-free: no exceptions,
+   and the last full run saw that bare word with that one final form everywhere (validated like every rule).
 5. **Build + lint** (`lib/lint.mjs`). The output is rebuilt from the source tokens with the chosen forms (so
    punctuation and spacing are the writers' own), staged, linted, and only then swapped into `content/build`
    (`--only` merges into the existing build). Lint errors block the build; warnings are listed in `lint-report.json`.
@@ -54,7 +98,7 @@ the run fails with `codex app-server connection closed`).
    note per item in localStorage, and a JSON export of the flagged items. Font: `--font` (default Noto Sans Hebrew via
    Google Fonts; switch to the app font once T1 picks it).
 
-Other outputs in `<work>`: `last-run.json` (stats, agreement, per-vocalizer accuracy against the final form, timing
+Other outputs in `<work>`: `groups.json`, `adjudication/`, `house-report.json`, `last-run.json` (stats, agreement, disagreement ids per 100 words, per-vocalizer accuracy against the final form, timing
 and cost), `lint-report.json`, `skeleton-errors.json`, `handoff/` (Claude handoff prompts and replies).
 
 ## Normalization (applied to every vocalizer, hint and decision)

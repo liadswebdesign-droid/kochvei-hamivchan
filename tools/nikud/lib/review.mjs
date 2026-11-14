@@ -40,7 +40,7 @@ function sentenceHtml(text, forms, highlight) {
 
 const VOC_LABEL = { dicta: 'Dicta (נקדן)', codex: 'GPT (Codex)', claude: 'Claude' };
 
-export function renderReview({ disagreements, finalsByKey, itemsByKey, vocIds, passages, stats, lintSummary, generatedAt, font }) {
+export function renderReview({ disagreements, finalsByKey, itemsByKey, vocIds, passages, stats, lintSummary, generatedAt, font, house }) {
   const fontFamily = font || 'Noto Sans Hebrew';
   const fontUrl = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontFamily).replace(/%20/g, '+')}:wght@400;700&display=swap`;
   const cards = disagreements.map((d, n) => {
@@ -71,6 +71,34 @@ export function renderReview({ disagreements, finalsByKey, itemsByKey, vocIds, p
   </footer>
 </article>`;
   }).join('\n');
+
+  // House rules: every place a rule REPLACED a unanimous vote gets a card; then a usage table of all rules.
+  const houseRules = house?.rules || [];
+  const ruleById = new Map(houseRules.map((r) => [r.id, r]));
+  const overrideCards = (house?.overrides || []).map((o, n) => {
+    const item = itemsByKey.get(`${o.file}#${o.path}`);
+    const fin = finalsByKey.get(`${o.file}#${o.path}`);
+    const wi = fin ? fin.ids.indexOf(o.id) : -1;
+    const sentence = item && wi >= 0 ? sentenceHtml(item.text, fin.forms, wi) : esc(o.sentence);
+    const r = ruleById.get(o.rule);
+    return `<article class="card" data-id="house:${esc(o.id)}" data-kind="house-override" data-label="${esc(o.word)}">
+  <header><span class="num">${n + 1}</span><span class="word heb">${esc(o.word)}</span><span class="where">${esc(o.file)} › ${esc(o.path)} · ${esc(o.rule)}</span></header>
+  <p class="sentence heb">${sentence}</p>
+  <div class="grid"><table class="versions">${o.unanimous ? `<tr><th>כל המנקדים</th><td class="heb">${esc(o.votes)}</td></tr>` : Object.entries(o.votesBy || {}).map(([v, f]) => `<tr class="${f === o.form ? 'match' : ''}"><th>${esc(VOC_LABEL[v] || v)}</th><td class="heb">${f ? esc(f) : '—'}</td></tr>`).join('') + `<tr><th colspan="2">רק ${o.agree} מתוך ${o.of} כתבו כמו הכלל</th></tr>`}</table>
+  <div class="decision"><div class="label">כלל הבית</div><div class="heb big">${esc(o.form)}</div><div class="reason" dir="auto">${esc(r?.reason || '')}</div></div></div>
+  <footer class="controls">
+    <label class="check"><input type="checkbox" data-role="checked"> בדקתי</label>
+    <label class="flag"><input type="checkbox" data-role="flagged"> יש כאן בעיה</label>
+    <textarea dir="auto" data-role="note" placeholder="הערה (לא חובה)" rows="1"></textarea>
+  </footer>
+</article>`;
+  }).join('\n');
+  const use = house?.use || {};
+  const ruleRows = houseRules.map((r) => `<tr><td class="heb sm">${[...r.forms.values()].map(esc).join(' · ')}</td><td class="num">${use[r.id] || 0}</td><td dir="auto" class="why">${esc(r.reason)}${r.before || r.after ? ` <span class="ctx" dir="ltr">[${r.before ? 'before /' + esc(r.before.source) + '/ ' : ''}${r.after ? 'after /' + esc(r.after.source) + '/' : ''}]</span>` : ''}</td></tr>`).join('');
+  const houseHtml = houseRules.length ? `<h2>כללי הבית (${houseRules.length})</h2>
+<p class="intro">מילים שכלל בית מכריע עליהן לא מגיעות למחלוקות. הכרטיסים כאן הם רק המקומות שבהם הכלל <b>הלך נגד רוב המנקדים</b>, ולכן כדאי להציץ בהם.</p>
+${overrideCards || '<p class="empty">אף כלל לא שינה ניקוד מוסכם.</p>'}
+<details><summary>כל הכללים וכמה מילים כל אחד הכריע</summary><table class="rules"><tr><th>ניקוד</th><th>מילים</th><th>נימוק</th></tr>${ruleRows}</table></details>` : '';
 
   const passageHtml = passages.map((p) => {
     let line = 0;
@@ -151,6 +179,11 @@ details { margin-top: 6px; } summary { cursor:pointer; color:var(--accent); font
 .export button.secondary { background: transparent; color: var(--accent); }
 #exportBox { display:none; width:100%; max-width: 980px; height: 160px; direction:ltr; font-family: ui-monospace, monospace; font-size: 14px; }
 .empty { color: var(--muted); }
+table.rules { border-collapse: collapse; width:100%; font-size:16px; }
+table.rules th { text-align:start; color:var(--muted); font-weight:400; }
+table.rules td { border-top:1px solid var(--line); padding: 2px 8px; vertical-align: top; }
+table.rules .sm { font-size: 24px; white-space: nowrap; }
+table.rules .why { unicode-bidi: plaintext; } table.rules .ctx { color: var(--muted); font-size: 13px; }
 </style>
 </head>
 <body>
@@ -162,6 +195,7 @@ details { margin-top: 6px; } summary { cursor:pointer; color:var(--accent); font
   <div class="stat"><b>${stats.words}</b>מילים</div>
   <div class="stat"><b>${stats.agreementPct ?? '—'}%</b>הסכמה מלאה</div>
   <div class="stat"><b>${disagreements.length}</b>מילים שהוכרעו</div>
+  ${stats.house !== undefined && houseRules.length ? `<div class="stat"><b>${stats.house}</b>מילים לפי כללי הבית</div>` : ''}
   <div class="stat"><b>${lintSummary.errors}</b>שגיאות בדיקה</div>
   <div class="stat"><b>${lintSummary.warnings}</b>אזהרות</div>
   <div class="stat"><b id="progress">0</b>סומנו כבדוקים</div>
@@ -169,6 +203,7 @@ details { margin-top: 6px; } summary { cursor:pointer; color:var(--accent); font
 <p class="intro" style="font-size:15px">נוצר ב־${esc(generatedAt)} · מנקדים: ${vocIds.map((v) => esc(VOC_LABEL[v] || v)).join(', ')}</p>
 <h2>מילים שהוכרעו (${disagreements.length})</h2>
 ${cards || '<p class="empty">אין מחלוקות.</p>'}
+${houseHtml}
 <h2>קטעים לקריאה מלאה (מדגם אקראי של 10%)</h2>
 ${passageHtml || '<p class="empty">אין קטעי קריאה בתוכן הזה.</p>'}
 </main>

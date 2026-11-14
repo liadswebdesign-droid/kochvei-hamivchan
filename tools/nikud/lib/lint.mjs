@@ -72,7 +72,8 @@ export function lintWord(word, { atPause = false } = {}) {
     if (c.letter === 'ש' && !has(c, CH.SHIN_DOT) && !has(c, CH.SIN_DOT)) add('shin-dot', 'error');
     // final forms
     if (FINALS[c.letter] && i < last) add('final-form', 'error', `final ${c.letter} inside the word`);
-    if (NON_FINAL_TO_FINAL[c.letter] && i === last && !c.geresh) add('final-form', 'error', `non-final ${c.letter} at the end of the word`);
+    // a one-letter word is a prefix before a maqaf (כְּ־10) or a letter name (כִּיתָּה כ), never a final form
+    if (NON_FINAL_TO_FINAL[c.letter] && i === last && last > 0 && !c.geresh) add('final-form', 'error', `non-final ${c.letter} at the end of the word`);
     if (c.letter === 'ך' && v !== CH.SHEVA && v !== CH.QAMATS) add('final-kaf', 'error');
     // gutturals and hatafs
     if (has(c, CH.DAGESH) && (['א', 'ח', 'ע', 'ר'].includes(c.letter) || (c.letter === 'ה' && i < last))) add('dagesh-guttural', 'warning');

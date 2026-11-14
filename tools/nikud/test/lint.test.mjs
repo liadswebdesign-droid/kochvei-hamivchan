@@ -36,6 +36,9 @@ test('final-form', () => {
   flags('מֶלֶךְְים', 'final-form', 'error');
   flags('סְפָרִים'.replace('ם', 'מ'), 'final-form', 'error');
   clean('צִ\'יפְּס', { atPause: true }); // geresh after a letter: no false alarm
+  // a one-letter word is a prefix before a maqaf (כְּ־10) or a letter name, never a final form
+  assert.ok(!rulesOf('כְּ').includes('final-form:error'));
+  assert.ok(!lintText('כְּ־10 מִילִּים').some((i) => i.rule === 'final-form'));
 });
 test('final-kaf', () => {
   flags('לְך', 'final-kaf', 'error');
