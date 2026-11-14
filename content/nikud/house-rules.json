@@ -110,6 +110,13 @@
     { "id": "ima-male", "word": "אימא", "form": "אִימָּא", "reason": "As in the booklet.", "source": "booklet p.5" },
     { "id": "aba", "word": "אבא", "form": "אַבָּא", "reason": "Only one reading.", "source": "booklet p.5" },
     { "id": "saba", "word": "סבא", "form": "סַבָּא", "reason": "Grandpa as children say it and children's books print it (saba: dagesh in ב; סָבָא would read sava). Pairs with סָבְתָא (savta). The vocalizers split by passage, so dissent is expected.", "source": "grammar", "expectDissent": true },
+    { "id": "savta", "word": "סבתא", "form": "סָבְתָא", "reason": "Grandma as children say it (savta, ב rafe); dictionary form, pairs with סַבָּא.", "source": "grammar", "expectDissent": true },
+    { "id": "shtil", "word": "שתיל", "form": "שְׁתִיל", "reason": "Academy form שְׁתִיל (like צְמִיג), as children say it; adjudication T7.", "source": "grammar", "expectDissent": true },
+    { "id": "sevev", "word": "סבב", "form": "סֶבֶב", "reason": "The noun 'round' (segolate, plural סְבָבִים); kids' text never has the verb סָבַב.", "source": "grammar", "expectDissent": true },
+    { "id": "name-adi", "word": "עדי", "form": "עֲדִי", "reason": "The name Adi (עֲדִי, hataf patach); one spelling of the name across the corpus.", "source": "grammar", "expectDissent": true },
+    { "id": "name-amit", "word": "עמית", "form": "עָמִית", "reason": "The name Amit (kamatz); one spelling of the name across the corpus.", "source": "grammar", "expectDissent": true },
+    { "id": "name-hadar", "word": "הדר", "form": "הָדָר", "reason": "The modern name Hadar (a sense of the noun הָדָר); one spelling across the corpus.", "source": "grammar", "expectDissent": true },
+    { "id": "magma", "word": "מאגמה", "form": "מַאגְמָה", "reason": "Loanword: patach before the silent א; one spelling across the corpus.", "source": "grammar", "expectDissent": true },
 
     { "id": "hateshuva", "word": "התשובה", "form": "הַתְּשׁוּבָה", "reason": "Instruction formula; dagesh after the article per spec (booklet font drops it).", "source": "booklet pp.3, 11" },
     { "id": "hanechona", "word": "הנכונה", "form": "הַנְּכוֹנָה", "reason": "Instruction formula; dagesh after the article per spec (booklet font drops it).", "source": "booklet pp.3, 11" },

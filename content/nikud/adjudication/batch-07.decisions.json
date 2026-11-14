@@ -1,0 +1,242 @@
+{
+  "g-54a28d47a80c": {
+    "form": "נִשְׁאָר",
+    "reason": "present tense (beinoni) in both: a standing description ('the other half stays dark') and a general question → נִשְׁאָר, not past נִשְׁאַר"
+  },
+  "g-c6625c03a3bb": {
+    "form": "נְתַרְגֵּל",
+    "reason": "'how shall we practise?' → future 1pl of pi'el תִּרְגֵּל: נְתַרְגֵּל (hitpael נִתְרַגֵּל = 'get used to' is the wrong verb)"
+  },
+  "g-30a6dc4452e9": {
+    "form": "סֶבֶב",
+    "reason": "noun 'round' is the segolate סֶבֶב (pl. סְבָבִים)"
+  },
+  "g-54da65bfb1ed": {
+    "form": "סָבְתָא",
+    "reason": "dictionary/Academy form of the Aramaic loan: סָבְתָא (kamatz, sheva nach, rafe ת), same as group g-9c2b23bfa6a8"
+  },
+  "g-9c2b23bfa6a8": {
+    "form": "סָבְתָא",
+    "reason": "dictionary/Academy form of the Aramaic loan: סָבְתָא, kept consistent with group g-54da65bfb1ed"
+  },
+  "g-2f3a12bb51b6": {
+    "form": "סוֹבְבוּ",
+    "reason": "polel imperative pl. of סבב; sheva under the first of two identical letters is vocal, so the second ב is rafe"
+  },
+  "g-b3463a62c0fe": {
+    "form": "סוּכָּרִיָּיה",
+    "reason": "from סוּכָּר (dagesh in כ); doubled consonantal יי: vowel+dagesh on the first, second bare"
+  },
+  "g-9877c5830377": {
+    "form": "סִיבּוּב",
+    "reason": "pi'el action noun (קִטּוּל) → dagesh chazak in ב"
+  },
+  "g-ae62817fbd6b": {
+    "form": "סִיבּוּבִים",
+    "reason": "pi'el action noun (קִטּוּל) plural → dagesh chazak in ב"
+  },
+  "g-46533d3ba1d5": {
+    "form": "עָבָה",
+    "reason": "feminine adjective agreeing with שִׁכְבָה (שכבת שומן עבה) → עָבָה; עֲבֵה is masculine construct"
+  },
+  "g-46ccdac1b21b": {
+    "form": "עַגְבָנִיּוֹת",
+    "reason": "standard dictionary form עַגְבָנִיָּה, pl. עַגְבָנִיּוֹת (ב rafe, pronounced agvaniyot)"
+  },
+  "g-ef2fa0fd4519": {
+    "form": "עֲדִי",
+    "reason": "the girl's name Adi = עֲדִי (hataf patach under the guttural)"
+  },
+  "g-7d8bfeb0fe7f": {
+    "form": "עוֹדֶף",
+    "reason": "noun 'change (money)' is the segolate עוֹדֶף; עוֹדֵף is the participle 'exceeding'"
+  },
+  "g-0581fc5a21ef": {
+    "form": "עוֹקֶץ",
+    "reason": "analogy option next to כוורת/דבש/פרח: the bee's stinger, noun עוֹקֶץ (not participle עוֹקֵץ)"
+  },
+  "g-7bfa1dafbfc6": {
+    "form": "עִיתּוֹן",
+    "reason": "dictionary עִתּוֹן with dagesh chazak in ת; ktiv male adds י"
+  },
+  "g-67512163dc21": {
+    "form": "עַכָּבִישׁ",
+    "reason": "dictionary form עַכָּבִישׁ (dagesh in כ, kamatz)"
+  },
+  "g-61c364472360": {
+    "form": "עַכָּבִישִׁים",
+    "reason": "plural of עַכָּבִישׁ keeps the doubled כּ and kamatz"
+  },
+  "g-2a05b72d0756": {
+    "form": "עָמִית",
+    "reason": "the boy's name Amit = the word עָמִית (kamatz, not hataf)"
+  },
+  "g-09a36d303c32": {
+    "form": "עֲנָק",
+    "reason": "noun/adjective 'giant, huge' = עֲנָק (pl. עֲנָקִים), in both the analogy option and מסע ענק"
+  },
+  "g-3e890f2b7693": {
+    "form": "עֶפְרוֹנוֹת",
+    "reason": "plural of עִפָּרוֹן is עֶפְרוֹנוֹת (Academy/dictionary)"
+  },
+  "g-d0a67de6de76": {
+    "form": "עֲקֵבוֹת",
+    "reason": "absolute plural of עָקֵב in every member (עקבות של נעליים / היו עקבות / משאירות עקבות) → עֲקֵבוֹת; עִקְבוֹת is construct only"
+  },
+  "g-c4b727384561": {
+    "form": "עֲקֵבוֹת",
+    "reason": "absolute plural followed by an adjective (עקבות זעירים) → עֲקֵבוֹת, not construct עִקְבוֹת"
+  },
+  "g-eae3d13f86de": {
+    "form": "עָקוֹם",
+    "reason": "adjective/adverb 'crooked' = עָקֹם, ktiv male עָקוֹם (not passive עָקוּם)"
+  },
+  "g-3d8bbbca523c": {
+    "form": "עִרְבְּבוּ",
+    "reason": "pi'el past 3pl of quadriliteral עִרְבֵּב: hiriq, dagesh kal in ב after closed syllable, second ב rafe after vocal sheva"
+  },
+  "g-1d9e102e7c9d": {
+    "form": "עֲשֶׂרֶת",
+    "reason": "math noun 'a ten' (pl. עֲשָׂרוֹת) = עֲשֶׂרֶת"
+  },
+  "g-0db768ffc98e": {
+    "form": "פּוֹף",
+    "reason": "Shira's failed attempt at פּוֹם ('pomme') keeps the o-vowel → פּוֹף"
+  },
+  "g-1337e6db8264": {
+    "form": "פְּנַס",
+    "reason": "construct before הָרְחוֹב (פנס הרחוב) → פְּנַס; absolute is פָּנָס"
+  },
+  "g-005caeb99ae6": {
+    "form": "פְּפְף",
+    "reason": "onomatopoeia 'pfff': first פ is p (dagesh), then f-sounds rafe; closing-letter sheva on the middle פ, final ף bare"
+  },
+  "g-a95f6b1e25d0": {
+    "form": "צֵיד",
+    "reason": "construct of צַיִד in צֵיד אוֹצָר ('treasure hunt') → צֵיד"
+  },
+  "g-056030a173c1": {
+    "form": "צִיפּוֹרִים",
+    "reason": "plural of צִיפּוֹר (dagesh chazak in פ)"
+  },
+  "g-58951cc2bcae": {
+    "form": "צְפַרְדְּעִים",
+    "reason": "plural of צְפַרְדֵּעַ reduces the tsere to sheva: צְפַרְדְּעִים"
+  },
+  "g-94f49b055022": {
+    "form": "קוּפְסָאוֹת",
+    "reason": "קֻפְסָה is pronounced kufsa: פ after the vowel u is rafe; plural קוּפְסָאוֹת"
+  },
+  "g-db0250f912ff": {
+    "form": "קוּפְסָה",
+    "reason": "pronounced kufsa: פ after the vowel u is rafe"
+  },
+  "g-dfc0b759ca48": {
+    "form": "קוֹרֶה",
+    "reason": "after וּמָה (children's-book מָה, no dagesh in the next word) the ק takes no dagesh: קוֹרֶה"
+  },
+  "g-d6861382bb99": {
+    "form": "קָטָן",
+    "reason": "'by how much is X smaller than Y' → predicate adjective קָטָן (parallel to בכמה גדול)"
+  },
+  "g-d0574c609e33": {
+    "form": "קְטַנָּה",
+    "reason": "the hump IS small after the journey → feminine adjective קְטַנָּה (the common reading; stative participle קְטֵנָה is rare and unfamiliar to children)"
+  },
+  "g-d3284cf3ce4f": {
+    "form": "קַלְמָר",
+    "reason": "dictionary form קַלְמָר (Wiktionary: קַלְמָר, pl. קַלְמָרִים)"
+  },
+  "g-c63c4d7dd984": {
+    "form": "קַשְׁתִּית",
+    "reason": "derived from קֶשֶׁת with its suffix base קַשְׁתּ־ (as in קַשְׁתִּי, and the word קַשְׁתִּית 'iris')"
+  },
+  "g-2993c9672142": {
+    "form": "רָהִיטִים",
+    "reason": "plural of רָהִיט keeps the kamatz: רָהִיטִים (Wiktionary inflection table)"
+  },
+  "g-b6f335e22645": {
+    "form": "שֶׁ",
+    "reason": "the relative prefix שֶׁ split from **גם** only by markdown bold; it is pronounced she, not a letter name"
+  },
+  "g-6ca029f2a2b6": {
+    "form": "שֶׁאֲפִילּוּ",
+    "reason": "שֶׁ + אֲפִילּוּ (dagesh chazak in ל)"
+  },
+  "g-d805a32ab803": {
+    "form": "שֶׁגַּלִּי",
+    "reason": "שֶׁ + the name Gali = גַּלִּי ('my wave'); ג takes dagesh (after שֶׁ)"
+  },
+  "g-4183731ab6f7": {
+    "form": "שֶׁהַדַּוְושׁוֹת",
+    "reason": "plural of דַּוְשָׁה; doubled consonantal וו: sheva nach on the first, second bare; dagesh in ד after the article"
+  },
+  "g-c6d1d8c0d102": {
+    "form": "שֶׁהָדָר",
+    "reason": "the modern name Hadar is הָדָר (a sense of the noun), consistent across all stories"
+  },
+  "g-795f0e4ceb12": {
+    "form": "שֶׁהַיְּלָדִים",
+    "reason": "project spec marks dagesh chazak after the article everywhere it is due, including יְ (as in הַמְּ, הַנְּ elsewhere)"
+  },
+  "g-d2fa78a4a8c5": {
+    "form": "שֶׁהֵם",
+    "reason": "after בְּכָל מָה (children's-book מָה) there is no dagesh in the next word; שֶׁ itself never takes dagesh at word start"
+  },
+  "g-98e1f399b0dc": {
+    "form": "שֶׁהַפִּינְגְּוִוין",
+    "reason": "פִּינְ-גְּוִין: נ closes a syllable so ג takes dagesh kal; doubled consonantal וו: hiriq on the first, second bare"
+  },
+  "g-a1743d2f54e7": {
+    "form": "שׁוֹאֲלִים",
+    "reason": "after וּמָה (children's-book מָה) no dagesh in the next word: שׁוֹאֲלִים"
+  },
+  "g-13203829e9a9": {
+    "form": "שׂוֹחֶה",
+    "reason": "'swims' is root שׂחה with sin: שׂוֹחֶה"
+  },
+  "g-38c541cc62cf": {
+    "form": "שׂוֹחִים",
+    "reason": "'swim' (pl. participle) is root שׂחה with sin: שׂוֹחִים"
+  },
+  "g-f519406a23cf": {
+    "form": "שׁוּמָּן",
+    "reason": "dictionary שֻׁמָּן with dagesh chazak in מ (pattern קֻטָּל)"
+  },
+  "g-0e5b992844ba": {
+    "form": "שׁוֹשִׁי",
+    "reason": "the name Shoshi (from שׁוֹשַׁנָּה) = שׁוֹשִׁי"
+  },
+  "g-427a04915d32": {
+    "form": "שֶׁחָסֵר",
+    "reason": "reported discovery 'they found that money is missing' keeps the present participle חָסֵר"
+  },
+  "g-d602564ad0f1": {
+    "form": "שַׁחֲרוּר",
+    "reason": "the bird (blackbird) is שַׁחֲרוּר; שִׁחְרוּר is 'release'"
+  },
+  "g-274837985064": {
+    "form": "שָׁטָה",
+    "reason": "a boat sails: root שוט with shin → שָׁטָה (שָׂטָה is not a word here)"
+  },
+  "g-ae9271c81bc5": {
+    "form": "שֶׁיְּגַלּוּ",
+    "reason": "'that they would discover' → pi'el future יְגַלּוּ (qal יִגְלוּ = 'go into exile'); dagesh chazak in י after שֶׁ per project spec"
+  },
+  "g-340856811a62": {
+    "form": "שֶׁיַּעֲרָה",
+    "reason": "שֶׁ + the name Ya'ara = יַעֲרָה (patach), dagesh in י after שֶׁ"
+  },
+  "g-3e1c88a4beef": {
+    "form": "שִׁישִּׁי",
+    "reason": "Friday/sixth = שִׁשִּׁי with dagesh chazak in the second ש; ktiv male adds י"
+  },
+  "g-1883cb399e8b": {
+    "form": "שֶׁיָּשֵׁן",
+    "reason": "'Mitzi, who was sleeping on it' → simultaneous state, present participle יָשֵׁן"
+  },
+  "g-6bef38372a13": {
+    "form": "שֶׁכְּשֶׁקַּר",
+    "reason": "שֶׁ + כְּשֶׁ + קַר: dagesh chazak in ק after שֶׁ"
+  }
+}

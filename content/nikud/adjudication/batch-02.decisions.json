@@ -1,0 +1,242 @@
+{
+  "g-5c02b624fd40": {
+    "form": "בַּקֶּצֶב",
+    "reason": "definite: 'at MY/YOUR pace' (הקצב שלי/שלכם) → בַּ + dagesh in ק"
+  },
+  "g-782b6f277cf2": {
+    "form": "בַּקָּצֶה",
+    "reason": "absolute and definite ('stands at the edge' of the group, no noun follows) → בַּקָּצֶה, not construct בִּקְצֵה"
+  },
+  "g-ba2706c69800": {
+    "form": "בְּקַרְקָעִית",
+    "reason": "noun קַרְקָעִית (construct unchanged) before הים; prefix בְּ before a construct; בִּקְרַקְעִית misreads the noun"
+  },
+  "g-8e9c132f478d": {
+    "form": "בָּר",
+    "reason": "חַיַּת בָּר: the noun בָּר (wild/field), kamatz; בַּר is 'son of / grain'"
+  },
+  "g-23033496a4ae": {
+    "form": "בָּרֶגֶל",
+    "reason": "fixed idiom הָלַךְ בָּרֶגֶל (dictionary form, definite)"
+  },
+  "g-810e8aeb509b": {
+    "form": "בָּרַגְלַיִים",
+    "reason": "body part used generically as the instrument ('with the legs', parallel to בָּעֵינַיִים) → definite בָּ"
+  },
+  "g-682b7bc822cc": {
+    "form": "בַּרְוָוזִים",
+    "reason": "plural of the noun בַּרְוָז (ב is a root letter, not a prefix); doubled ו: vowel on the first, second bare"
+  },
+  "g-d522d36ded54": {
+    "form": "בָּרֵיחַ",
+    "reason": "definite: 'the smell of Friday' (הָרֵיחַ שֶׁל…) → בָּ before ר; patach gnuva"
+  },
+  "g-da2942c7da3a": {
+    "form": "בְּרִיצָה",
+    "reason": "activity named generically ('trained in running') → indefinite בְּ"
+  },
+  "g-577505770b8a": {
+    "form": "בְּרֵירַת",
+    "reason": "construct of בְּרֵרָה (tsere, written with י in ktiv male) → בְּרֵירַת מֶחְדָּל"
+  },
+  "g-a73957d224f8": {
+    "form": "בִּרְצוּעוֹת",
+    "reason": "construct before הַתִּיק (definite by construct); בְּ before a sheva becomes בִּ"
+  },
+  "g-d9e893281c96": {
+    "form": "בְּרֶצֶף",
+    "reason": "adverbial idiom 'in a row' (ימים בְּרֶצֶף), indefinite"
+  },
+  "g-586610fb3624": {
+    "form": "בַּשָּׁבוּעַ",
+    "reason": "generic definite 'in a week' (ימים בַּשָּׁבוּעַ); contrast בְּשָׁבוּעַ אֶחָד elsewhere in the same problem"
+  },
+  "g-296f642808cf": {
+    "form": "בַּשְּׁבִיל",
+    "reason": "noun: on the path from the story (איתמר רכב מהר בַּשְּׁבִיל), sentence-final, not the preposition בִּשְׁבִיל; dagesh after the article"
+  },
+  "g-d7bb6624f2a2": {
+    "form": "בְּשַׁבָּת",
+    "reason": "'on Saturday morning', day of the week as a time adverb → indefinite בְּשַׁבָּת"
+  },
+  "g-b18da49a43d8": {
+    "form": "בַּשַּׁחֲרוּר",
+    "reason": "the bird שַׁחֲרוּר (hataf patach under ח), the specific bird of the story → definite בַּ + dagesh in ש"
+  },
+  "g-9ce187f86040": {
+    "form": "בַּשָּׁעָה",
+    "reason": "clock time is definite (הַשָּׁעָה 12 in the same explanation) → בַּשָּׁעָה 8"
+  },
+  "g-be13e1b5d35a": {
+    "form": "בְּשַׁעֲוָוה",
+    "reason": "material, indefinite ('seal it with wax'); doubled ו: vowel on the first, second bare"
+  },
+  "g-7857806e03ca": {
+    "form": "בְּתוֹפֶסֶת",
+    "reason": "name of a game after לְשַׂחֵק, indefinite: לְשַׂחֵק בְּתוֹפֶסֶת"
+  },
+  "g-769b3a3679f6": {
+    "form": "בְּתַחֲרוּת",
+    "reason": "construct before קְלִיעָה → indefinite prefix בְּ"
+  },
+  "g-8110aa5159b6": {
+    "form": "גִ׳ירָפָה",
+    "reason": "loanword jirafa: ג׳ without dagesh, hiriq on ג׳, kamatz on ר and פ (רָפָה, no dagesh after a vowel)"
+  },
+  "g-24812a53a74f": {
+    "form": "גֶ'לִי",
+    "reason": "loanword jeli: segol on ג' (no dagesh), hiriq on ל"
+  },
+  "g-960577938135": {
+    "form": "גּוּלּוֹת",
+    "reason": "plural of גֻּלָּה (marble) keeps dagesh chazak in ל"
+  },
+  "g-e649194b301f": {
+    "form": "גּוֹמֵר",
+    "reason": "dagesh kal in ג at the start of the word"
+  },
+  "g-c833bbf47556": {
+    "form": "גַּיְא",
+    "reason": "the boy's name Guy, גַּיְא (silent א); גַּיָּא would be a non-word"
+  },
+  "g-e2f56ca29efd": {
+    "form": "גַּיְא",
+    "reason": "the boy's name Guy, גַּיְא (silent א)"
+  },
+  "g-095c69732a13": {
+    "form": "גַּלִּי",
+    "reason": "the girl's name Gali = גַּל + י, printed גַּלִּי (as in גַּלִּי עֲטָרִי), dagesh chazak in ל as in גַּלִּים"
+  },
+  "g-85500bb3503e": {
+    "form": "דָּבִיק",
+    "reason": "adjective pattern קָטִיל: דָּבִיק (dictionary form), not דַּבִּיק"
+  },
+  "g-9af12c9cd59c": {
+    "form": "דֶּמֶה",
+    "reason": "the noun דֶּמֶה (dummy/mock, from Aramaic), as in בֻּבַּת דֶּמֶה; מִבְחַן דֶּמֶה"
+  },
+  "g-3f02fd78efda": {
+    "form": "דֶּמֶה",
+    "reason": "the noun דֶּמֶה (dummy/mock); דֻּמֶּה is a verb form"
+  },
+  "g-fd8a0c2c8e0c": {
+    "form": "דָּנִיֵּאל",
+    "reason": "the name דָּנִיֵּאל in its standard vocalization (consonantal י with dagesh and tsere, silent א)"
+  },
+  "g-9e0bbeb7c9f5": {
+    "form": "הָאֲדוּמָּה",
+    "reason": "fem. of אָדֹם is אֲדֻמָּה with dagesh chazak in מ; הָ before guttural א"
+  },
+  "g-4cde946af2eb": {
+    "form": "הָאֲחָדוֹת",
+    "reason": "the math term אֲחָדוֹת (units), hataf patach under א; article הָ before א"
+  },
+  "g-9a7d6d03addf": {
+    "form": "הָאֲרִי",
+    "reason": "שֵׁן הָאֲרִי: אֲרִי (lion) with hataf patach; article הָ before א"
+  },
+  "g-b27c071c1b26": {
+    "form": "הַבֵּיְיגָּלֶה",
+    "reason": "beigale: tsere, consonantal doubled yod with sheva on the first, kamatz under ג; consistent with batch-01"
+  },
+  "g-153f3beb476e": {
+    "form": "הַבַּרְוָוזִים",
+    "reason": "the noun בַּרְוָז, plural with article: dagesh chazak in ב"
+  },
+  "g-c4019d9ded38": {
+    "form": "הַדָּבִיק",
+    "reason": "adjective דָּבִיק with the article (dagesh in ד)"
+  },
+  "g-30b9e431e390": {
+    "form": "הַדַּוְושָׁה",
+    "reason": "noun דַּוְשָׁה (pedal): silent sheva on the first ו, second bare; dagesh in ד after the article"
+  },
+  "g-61da888c4afa": {
+    "form": "הַדַּוְושׁוֹת",
+    "reason": "plural דַּוְשׁוֹת keeps the patach and silent sheva of דַּוְשָׁה"
+  },
+  "g-59514588cc6f": {
+    "form": "הַדֶּמֶה",
+    "reason": "the noun דֶּמֶה with the article (dagesh in ד)"
+  },
+  "g-6c2bd785b146": {
+    "form": "הָדָר",
+    "reason": "the name Hadar is the noun הָדָר (splendour), the personal-name sense in Wiktionary; הֲדַר is the biblical king"
+  },
+  "g-bf1bfb20cce6": {
+    "form": "הַוַואי",
+    "reason": "place name Hawaii (the ה is part of the name, no article, no gemination); doubled consonantal ו: vowel on the first, second bare"
+  },
+  "g-38510df8d968": {
+    "form": "הַוְּורוּדָּה",
+    "reason": "fem. וְרֻדָּה with the article: dagesh chazak also under sheva (Academy/project spec), on the first of the doubled ו; dagesh in ד"
+  },
+  "g-b8719df1521c": {
+    "form": "הֶחֱזִיקָה",
+    "reason": "hif'il past of ח־ז־ק with a guttural first radical: הֶחֱזִיק, hataf segol"
+  },
+  "g-283dc206a19a": {
+    "form": "הֶחֱזִירָה",
+    "reason": "hif'il past of ח־ז־ר: הֶחֱזִיר, hataf segol (consistent with הֶחֱזִיקָה)"
+  },
+  "g-e1e29cc3f406": {
+    "form": "הֶחֱזִירוּ",
+    "reason": "hif'il past of ח־ז־ר: הֶחֱזִיר, hataf segol"
+  },
+  "g-25f1354ee6e7": {
+    "form": "הֶחֱזַרְתִּי",
+    "reason": "hif'il past 1sg of ח־ז־ר: הֶחֱזַרְתִּי, hataf segol"
+  },
+  "g-c5b8bc5995e9": {
+    "form": "הַחֲלָלִית",
+    "reason": "the only dictionary word is חֲלָלִית (hataf patach), so the article is הַ; הֶחָ is wrong in any reading, and the read-aloud sound is the same"
+  },
+  "g-c2cf925a72e6": {
+    "form": "הַחַסָּה",
+    "reason": "noun חַסָּה (patach under ח, dagesh in ס); article הַ before ח with patach"
+  },
+  "g-5a00650fb2fb": {
+    "form": "הַחְסִירוּ",
+    "reason": "hif'il imperative plural ('subtract!'), parallel to חַבְּרוּ: הַחְסִירוּ"
+  },
+  "g-751798f09bcb": {
+    "form": "הַטֶּלֶפוֹן",
+    "reason": "loanword טֶלֶפוֹן (segol–segol) with dagesh in ט after the article"
+  },
+  "g-324e00a4df70": {
+    "form": "הַיַּלְדָּה",
+    "reason": "dagesh chazak in י after the article (י with a full vowel)"
+  },
+  "g-bb78edf8f7f7": {
+    "form": "הַיְּלָדִים",
+    "reason": "dagesh chazak after the article also in a yod under sheva (Academy rule, project spec)"
+  },
+  "g-9ca03f747239": {
+    "form": "הַיְּמָנִי",
+    "reason": "dagesh chazak after the article also in a yod under sheva"
+  },
+  "g-6f080d7e91ee": {
+    "form": "הַיְּצוּרִים",
+    "reason": "dagesh chazak after the article also in a yod under sheva"
+  },
+  "g-77be1746125a": {
+    "form": "הַכְּחוּלָּה",
+    "reason": "fem. of כָּחֹל is כְּחֻלָּה with dagesh chazak in ל"
+  },
+  "g-31b69ee1a5ac": {
+    "form": "הַכִּיסֵּא",
+    "reason": "noun כִּסֵּא has dagesh chazak in ס"
+  },
+  "g-326ed3ee77dd": {
+    "form": "הַמַּאגְמָה",
+    "reason": "loanword מַאגְמָה (patach + silent א); article הַ + dagesh chazak in מ"
+  },
+  "g-d9149e37e540": {
+    "form": "הַמַּדְעָנִים",
+    "reason": "מַדְעָן: ד carries a silent sheva, so it takes no dagesh; dagesh chazak in מ after the article"
+  },
+  "g-1f31198086b5": {
+    "form": "הֲמוֹן",
+    "reason": "construct before מַיִם ('a great deal of water'): הָמוֹן → הֲמוֹן"
+  }
+}

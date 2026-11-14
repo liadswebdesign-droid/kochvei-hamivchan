@@ -1,0 +1,242 @@
+{
+  "g-de41e98c90fb": {
+    "form": "הַמְּסִילָּה",
+    "reason": "מְסִלָּה has dagesh chazak in ל (pattern מְקִטָּה, like מְגִלָּה); dagesh in מ after the article"
+  },
+  "g-c6791ce34565": {
+    "form": "הַמַּצְנֵחַ",
+    "reason": "noun מַצְנֵחַ (parachute), pattern מַקְטֵל with patach gnuva; dagesh in מ after the article"
+  },
+  "g-1bf56983b0ad": {
+    "form": "הִנִּיחַ",
+    "reason": "'put down' is hifil of נ־ו־ח with nun assimilation: הִנִּיחַ (Academy); הֵנִיחַ means 'allowed / let be'"
+  },
+  "g-70ec1c60ce81": {
+    "form": "הִנִּיחַ",
+    "reason": "both votes wrong: Uri PUT a stone on the box → הִנִּיחַ (hiriq + dagesh in נ), not הֵנִיחַ 'allowed'"
+  },
+  "g-901c9f0c2eb9": {
+    "form": "הִנִּיחָה",
+    "reason": "she put the bowl down → hifil הִנִּיחָה, not הֵנִיחָה 'allowed'"
+  },
+  "g-481276b3af20": {
+    "form": "הַנָּמֵס",
+    "reason": "nifal participle of מ־ס־ס: נָמֵס ('melting/molten'); הַנִּמָּס is not a form; dagesh in נ after the article"
+  },
+  "g-d62cb598ae5a": {
+    "form": "הַנַּעֲלַיִים",
+    "reason": "dual of נַעַל is נַעֲלַיִים (as the sentence's own נַעֲלַיִים); dagesh in נ after the article"
+  },
+  "g-474f9fcf98d8": {
+    "form": "הַסֶּבֶב",
+    "reason": "noun סֶבֶב (a round), segolate; dagesh in ס after the article"
+  },
+  "g-87679593cc37": {
+    "form": "הַסִּיבּוּב",
+    "reason": "piel verbal noun סִבּוּב has dagesh chazak in ב (ktiv male סיבוב → סִיבּוּב)"
+  },
+  "g-607686d99424": {
+    "form": "הַסַּפְרָנִית",
+    "reason": "librarian is סַפְרָנִית (pattern קַטְלָנִית); dagesh in ס after the article"
+  },
+  "g-b5353b77a6a5": {
+    "form": "הֵעִיפָה",
+    "reason": "hifil past of ע־ו־ף: הֵעִיף, הֵעִיפָה (tsere under ה in hollow-root hifil)"
+  },
+  "g-05249628fb19": {
+    "form": "הָעַכָּבִישׁ",
+    "reason": "noun עַכָּבִישׁ with dagesh in כ; article before ע → הָ"
+  },
+  "g-adf394f8377f": {
+    "form": "הֶעָנָף",
+    "reason": "article before an unstressed ָע becomes הֶ (הֶעָנָן, הֶעָפָר); עָנָף is stressed on the last syllable"
+  },
+  "g-33337722f0f3": {
+    "form": "הַפִּינְגְּוִוין",
+    "reason": "dagesh kal in ג after the closed syllable פִּינְ; doubled consonantal ו: vowel on the first, second bare"
+  },
+  "g-ab8fcd0e9201": {
+    "form": "הַפָּנָס",
+    "reason": "noun פָּנָס (pl. פְּנָסִים), no doubling of נ; פ keeps its dagesh after the article"
+  },
+  "g-db633a576b84": {
+    "form": "הַפְּנָסִים",
+    "reason": "plural of פָּנָס: pretonic kamatz reduces → פְּנָסִים"
+  },
+  "g-38af795aae57": {
+    "form": "הַקַּלָּה",
+    "reason": "adjective קַלָּה 'easy' (the easy job); dagesh chazak in ק after the article"
+  },
+  "g-cc5fa2d55437": {
+    "form": "הָרֵי",
+    "reason": "construct plural of הַר is הָרֵי (הָרֵי גַּעַשׁ, הָרֵי יְהוּדָה); ה is not reduced to hataf"
+  },
+  "g-354d56e6474b": {
+    "form": "הַשַּׁחֲרוּר",
+    "reason": "the bird (blackbird) is שַׁחֲרוּר with hataf patach under ח; שִׁחְרוּר is 'liberation'"
+  },
+  "g-c03e2ce402da": {
+    "form": "הַשֵּׁמוֹת",
+    "reason": "plural of שֵׁם is שֵׁמוֹת (tsere kept); dagesh in ש after the article"
+  },
+  "g-52252292c185": {
+    "form": "הַשְּׁתִיל",
+    "reason": "Academy form שְׁתִיל (pattern קְטִיל, like פְּרִיט, צְמִיג; singular unattested in sources); matches batch-08's ruling"
+  },
+  "g-ada0080f6b69": {
+    "form": "הִתְמַתַּח",
+    "reason": "option among past-tense verbs (התרחק, התכווץ, נרדם) → hitpael past 3ms; final ח takes patach in the past (הִתְמַתַּח vs present מִתְמַתֵּחַ)"
+  },
+  "g-2e0dfebbc39a": {
+    "form": "וּ",
+    "reason": "ו before a digit read aloud from a sheva: 2 → שְׁנֵי/שְׁתֵּי, 17 (line, feminine) → שְׁבַע עֶשְׂרֵה, so וּ־ by the וּ rule"
+  },
+  "g-edca22858590": {
+    "form": "וְ\"כָבֵד",
+    "reason": "conjunction וְ before כ; the quote mark does not change morphology, so כ is rafe after the vowel (Hebrew word, not a loanword)"
+  },
+  "g-3412c2dd8865": {
+    "form": "וּ\"לְהַדְבִּיק",
+    "reason": "ו before a letter with sheva becomes וּ"
+  },
+  "g-ffc21ac0a6c3": {
+    "form": "וְ\"לִשְׁתּוֹת",
+    "reason": "ל carries hiriq, not sheva, so the conjunction is וְ"
+  },
+  "g-59211a39729f": {
+    "form": "וְ\"נַעֲלַיִים",
+    "reason": "נַעֲלַיִים (dual of נַעַל); conjunction וְ before נ"
+  },
+  "g-5b89fc5391fe": {
+    "form": "וּ\"פִיהֵק",
+    "reason": "both votes wrong: ו before labial פ is וּ, and after the vowel וּ the native Hebrew פ is rafe (u-fihek), like וּפָרָה"
+  },
+  "g-de597d20962e": {
+    "form": "וְאַגָּס",
+    "reason": "noun אַגָּס (patach + dagesh in ג); conjunction וְ"
+  },
+  "g-77cc19ef5771": {
+    "form": "וְאִיטִּי",
+    "reason": "adjective אִטִּי with dagesh chazak in ט (ktiv male איטי)"
+  },
+  "g-0be5d5ddd322": {
+    "form": "וּבָאֲחֵרִים",
+    "reason": "definite: half vanished and 'in the others' (the rest) had holes → בָּ before guttural א"
+  },
+  "g-903cc1260253": {
+    "form": "וּבָאַף",
+    "reason": "generic body part 'with the nose (we smell)' is definite → בָּ before א"
+  },
+  "g-2857eff36e35": {
+    "form": "וּבַחֲרוּ",
+    "reason": "plural imperative of בָּחַר: בַּחֲרוּ; ו before ב is וּ"
+  },
+  "g-a60447bca2a7": {
+    "form": "וּבֵּיְיגָּלֶה",
+    "reason": "loanword béygale (Wiktionary בֵּיְגָּלֶה): ga with kamatz, dagesh kal in ג after the closed ey-syllable, doubled yod per house style; loanword ב keeps its b-dagesh after the prefix"
+  },
+  "g-e6527fefdfb3": {
+    "form": "וּבָעֵינַיִים",
+    "reason": "generic body part 'with the eyes (we see)' is definite → בָּ before ע"
+  },
+  "g-b8785e1790f3": {
+    "form": "וּבָעִיתּוֹן",
+    "reason": "עִתּוֹן has dagesh chazak in ת; definite like the parallel בַּסֵּפֶר, בַּמַּחְבֶּרֶת"
+  },
+  "g-4121b786b6a7": {
+    "form": "וּבְשׁוּרָה",
+    "reason": "'line N' is indefinite (house rule beshura-n: בְּשׁוּרָה 2 כָּתוּב); ו before ב is וּ"
+  },
+  "g-eea4340874c8": {
+    "form": "וּבְשׁוּרָה",
+    "reason": "'line N' is indefinite (house rule beshura-n), same as the other ובשורה N group"
+  },
+  "g-d80ed9dcabdc": {
+    "form": "וְגַיְא",
+    "reason": "the name Guy is גַּיְא; conjunction וְ, ג rafe after the vowel"
+  },
+  "g-280cd81c2864": {
+    "form": "וְגַלִּי",
+    "reason": "the girl's name Gali is גַּלִּי (גַּל + suffix, root ג־ל־ל, dagesh in ל); conjunction וְ"
+  },
+  "g-815ac712e571": {
+    "form": "וּגְעוּ",
+    "reason": "plural imperative of נגע is גְּעוּ; ו before sheva is וּ (and ג rafe after it)"
+  },
+  "g-64c8a98e8b45": {
+    "form": "וְדוֹד",
+    "reason": "conjunction וְ; ד takes no dagesh after the vowel"
+  },
+  "g-f56f27f5ab5a": {
+    "form": "וְדָנִיֵּאל",
+    "reason": "the name Daniel in its standard (biblical) vocalization דָּנִיֵּאל; ד rafe after וְ"
+  },
+  "g-cf5bc814959d": {
+    "form": "וְהֶחֱוִויר",
+    "reason": "hifil past of guttural-initial root ח־ו־ר: הֶחֱוִיר with hataf segol (like הֶחֱזִיק); doubled ו per house style"
+  },
+  "g-9eefbdf301a2": {
+    "form": "וְהֶחֱזִיקָה",
+    "reason": "hifil past of ח־ז־ק: הֶחֱזִיקָה, hataf segol under the guttural"
+  },
+  "g-94edabc7b9ed": {
+    "form": "וְהֶחֱזִיר",
+    "reason": "hifil past of ח־ז־ר: הֶחֱזִיר, hataf segol under the guttural"
+  },
+  "g-bd35126663e3": {
+    "form": "וְהֶחֱזִירָה",
+    "reason": "hifil past of ח־ז־ר: הֶחֱזִירָה, hataf segol under the guttural"
+  },
+  "g-e4491c2d9d7d": {
+    "form": "וְהַחֲטִיף",
+    "reason": "definite 'the drink and the snack'; article before חֲ is הַ; noun חֲטִיף"
+  },
+  "g-aad631d8ad6c": {
+    "form": "וַחֲבֶרְתּוֹ",
+    "reason": "possessive of חֲבֵרָה: חֲבֶרְתִּי, חֲבֶרְתּוֹ (feminine -ת base); ו before hataf patach → וַ"
+  },
+  "g-5b543c9e9c31": {
+    "form": "וַחֲטִיף",
+    "reason": "noun חֲטִיף (hataf patach); ו before hataf patach → וַ"
+  },
+  "g-6f6f738b5278": {
+    "form": "וְיַעֲרָה",
+    "reason": "the name יַעֲרָה (patach, hataf patach); conjunction וְ"
+  },
+  "g-47639d280e63": {
+    "form": "וּכְדַאי",
+    "reason": "כְּדַאי begins with sheva → וּ, and כ is rafe after it"
+  },
+  "g-9e6376fe17d2": {
+    "form": "וְכוֹבַע",
+    "reason": "conjunction וְ; כ rafe after the vowel"
+  },
+  "g-adf2b2dffdf7": {
+    "form": "וְכוֹעֵס",
+    "reason": "conjunction וְ; כ rafe after the vowel"
+  },
+  "g-90b372856520": {
+    "form": "וְכַלָּנִית",
+    "reason": "conjunction וְ; כ rafe after the vowel; dagesh chazak in ל of כַּלָּנִית"
+  },
+  "g-799f09607bca": {
+    "form": "וּכְשֶׁקַּר",
+    "reason": "'when it is cold': כְּשֶׁ + קַר, dagesh chazak in ק after שֶׁ; ו before sheva → וּ"
+  },
+  "g-943c9e3ba314": {
+    "form": "וּלְאוּרִי",
+    "reason": "the boy is Uri (אוּרִי) throughout the word problems and story-10; ו before sheva → וּ"
+  },
+  "g-525f290b96d5": {
+    "form": "וְלַאֲרִיאֵל",
+    "reason": "name, indefinite: לְ before hataf patach → לַ (like לַאֲבִיגַיִל in the same sentence); conjunction וְ"
+  },
+  "g-7e0b7f76dbec": {
+    "form": "וּלְגַדֵּל",
+    "reason": "transitive 'raise chicks' is piel לְגַדֵּל; ו before sheva → וּ"
+  },
+  "g-01a9146f68df": {
+    "form": "וְהָדָר",
+    "reason": "the name הָדָר (kamatz under ה, so וְ), consistent across all stories"
+  }
+}

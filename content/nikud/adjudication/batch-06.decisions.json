@@ -1,0 +1,242 @@
+{
+  "g-23d9bd14405f": {
+    "form": "לָרוֹב",
+    "reason": "fixed adverb לָרֹב 'usually' (definite-pattern ל with kamatz), ktiv male לָרוֹב"
+  },
+  "g-a777989072b5": {
+    "form": "לְשָׁלָב",
+    "reason": "'שלב {n}' is indefinite (like בשורה N): לְשָׁלָב, no article"
+  },
+  "g-2c814b29c218": {
+    "form": "לְתָאִים",
+    "reason": "indefinite 'into small cells' (לתאים קטנים, adjective without article) → לְ, no dagesh in ת after the vocal sheva"
+  },
+  "g-6e199972850d": {
+    "form": "מִ",
+    "reason": "prefix מ before a maqaf and a number keeps its vowel; project-wide uniform מִ־ (corpus: מִ־40, מִ־14, as בְּ־/לְ־ are uniform)"
+  },
+  "g-fae074c1cbdb": {
+    "form": "מִ",
+    "reason": "prefix before a digit: uniform מִ־ as everywhere else in the corpus (מִ־40, מִ־14 agreed by both voters), not read-aloud מֵ"
+  },
+  "g-c859b94c0228": {
+    "form": "מַאגְמָה",
+    "reason": "loanword magma: patach before silent א, consistent across the corpus"
+  },
+  "g-fc4cc8c09ea2": {
+    "form": "מֵאַגָּסִים",
+    "reason": "מִן + אַגָּסִים: compensatory tsere before the guttural א; the noun keeps patach and dagesh in ג (אַגָּס)"
+  },
+  "g-0281b4a9a69d": {
+    "form": "מָאיָה",
+    "reason": "the name Maya: kamatz before the quiescent א, consonantal י without dagesh (no gemination); matches the agreed corpus form מָאיָה"
+  },
+  "g-ce5c1fda1a52": {
+    "form": "מָאיָה",
+    "reason": "the name Maya, same form as everywhere else in the corpus (מָאיָה)"
+  },
+  "g-f2d8fde7f09c": {
+    "form": "מִבְחַן",
+    "reason": "construct state in the compound מִבְחַן סִינּוּן ('screening test')"
+  },
+  "g-2e30e6dc4ebb": {
+    "form": "מְגִינִּים",
+    "reason": "hif'il participle plural of the geminate root ג־נ־ן: מֵגֵן → מְגִנִּים, dagesh chazak in נ"
+  },
+  "g-41baec770230": {
+    "form": "מְגַמָּה",
+    "reason": "noun 'trend' is מְגַמָּה with dagesh chazak in מ"
+  },
+  "g-fcb9b8367196": {
+    "form": "מַדְּעָנִים",
+    "reason": "מַדְּעָן keeps the doubled ד of מַדָּע (Wiktionary he: מַדְּעָן, pl. מַדְּעָנִים)"
+  },
+  "g-4661c8448658": {
+    "form": "מַדָּף",
+    "reason": "noun 'shelf' is מַדָּף with dagesh chazak in ד"
+  },
+  "g-feff9bb99750": {
+    "form": "מַדָּפִים",
+    "reason": "plural of מַדָּף keeps the dagesh chazak"
+  },
+  "g-33756dc50a92": {
+    "form": "מֵהַיְּלָדִים",
+    "reason": "מִן + the article: dagesh after the article kept per project spec (corpus הַיְּלָדִים)"
+  },
+  "g-996a06d1efcf": {
+    "form": "מֵהַמּוֹרָה",
+    "reason": "the teacher is feminine throughout the project (הַמּוֹרָה ×42 in the corpus); מֵ + הַ + dagesh in מ"
+  },
+  "g-e79fec7809f4": {
+    "form": "מֵהָרֵי",
+    "reason": "construct plural of הַר is הָרֵי (kamatz under ה, no hataf); מֵ before the guttural ה"
+  },
+  "g-1518a91455d2": {
+    "form": "מֵהַתּוֹכְנִית",
+    "reason": "מִן + article + תָּכְנִית (ktiv male תוכנית, holam male), dagesh after the article"
+  },
+  "g-7173990d4fbf": {
+    "form": "מוֹרֶה",
+    "reason": "analogy parallels masculine רוֹפֵא, so masculine מוֹרֶה"
+  },
+  "g-874bf59c18aa": {
+    "form": "מַחֲזִיק",
+    "reason": "hif'il of ח־ז־ק: הֶחֱזִיק / מַחֲזִיק with hataf patach under ח"
+  },
+  "g-8361bdc4d2a3": {
+    "form": "מַחְזִירִים",
+    "reason": "hif'il of ח־ז־ר: הֶחְזִיר / מַחְזִיר with silent sheva under ח"
+  },
+  "g-aa2e5676728b": {
+    "form": "מֵטִיס",
+    "reason": "hif'il participle of hollow root ט־ו־ס: הֵטִיס / מֵטִיס (tsere, no dagesh)"
+  },
+  "g-f7ed81ab2315": {
+    "form": "מַטְּרַת",
+    "reason": "construct of מַטָּרָה: the dagesh chazak in ט stays under the sheva → מַטְּרַת"
+  },
+  "g-1ee1c6e449f6": {
+    "form": "מִיאָוּ",
+    "reason": "onomatopoeia mi-a-u: single י is a mater after hirik (a consonantal י would be doubled in ktiv male), א carries the a, וּ shuruk"
+  },
+  "g-9aef5fb22a2b": {
+    "form": "מִיַּם",
+    "reason": "מִן + construct יַם in the name יַם הַמֶּלַח → מִיַּם with dagesh chazak in י"
+  },
+  "g-68db850b89ee": {
+    "form": "מִלְּאוּרִי",
+    "reason": "מִן + לְ + אוּרִי ('than Uri has'): dagesh chazak in ל from the assimilated נ; the name is אוּרִי throughout the corpus"
+  },
+  "g-d0569a4bea92": {
+    "form": "מִלָּאָח",
+    "reason": "definite 'than her brother' (לָאָח שֶׁלָּהּ): מִ + לָ (article before guttural א) + dagesh in ל from מִן"
+  },
+  "g-509163ae302c": {
+    "form": "מִלְּאָחִיו",
+    "reason": "מִן + לְ + אָחִיו: dagesh chazak in ל from the assimilated נ"
+  },
+  "g-b54312a2bb1d": {
+    "form": "מִלְּהִילָה",
+    "reason": "מִן + לְ + the name הִילָה; dagesh chazak in ל"
+  },
+  "g-e05a70463815": {
+    "form": "מִלִּיָּה",
+    "reason": "מִן + לְ + the name לִיָּה (the form both voters agreed on elsewhere in the corpus); dagesh chazak in ל"
+  },
+  "g-17f3d1341861": {
+    "form": "מִלְּיוֹנָתָן",
+    "reason": "מִן + לְ + יוֹנָתָן: the yod has holam, so לְ stays sheva (no לִי contraction); dagesh in ל"
+  },
+  "g-ac878e449fdb": {
+    "form": "מִמָּה",
+    "reason": "מִן + מָה with dagesh; project rule מָה everywhere (here before ש)"
+  },
+  "g-13a7c946bbea": {
+    "form": "מַסּוֹק",
+    "reason": "noun 'helicopter' is מַסּוֹק with dagesh chazak in ס"
+  },
+  "g-cae5e132c037": {
+    "form": "מְסִילָּה",
+    "reason": "noun 'railway track' is מְסִלָּה with dagesh chazak in ל; ktiv male מְסִילָּה"
+  },
+  "g-c40cdabed5dd": {
+    "form": "מִסְפַּר",
+    "reason": "construct in אוֹתוֹ מִסְפַּר סְפָרִים ('the same number of books')"
+  },
+  "g-791d75016cea": {
+    "form": "מֵעָמִית",
+    "reason": "the name עָמִית (kamatz), consistent across the corpus; מֵ before a guttural"
+  },
+  "g-485c21be4f3e": {
+    "form": "מְפוֹאֶרֶת",
+    "reason": "pu'al participle feminine: מְפֹאָר → מְפֹאֶרֶת (segolate ending), ktiv male מְפוֹאֶרֶת"
+  },
+  "g-a3d5440a0904": {
+    "form": "מַצְנֵחַ",
+    "reason": "noun 'parachute' is מַצְנֵחַ with patach gnuva under the final ח"
+  },
+  "g-b72be6c3e786": {
+    "form": "מַקְדִּימָה",
+    "reason": "hif'il participle feminine of ק־ד־ם: תְּצוּגָה מַקְדִּימָה ('preview')"
+  },
+  "g-390fab13262e": {
+    "form": "מַקּוֹר",
+    "reason": "bird's beak (analogy דג:סנפיר = ציפור:? and 'ציפור עם מקור כתום') → מַקּוֹר, not מָקוֹר 'source'"
+  },
+  "g-a60ba81a1728": {
+    "form": "מְרִיחִים",
+    "reason": "hif'il participle plural of ר־י־ח: מֵרִיחַ → מְרִיחִים"
+  },
+  "g-b4b9d6ee9b29": {
+    "form": "נִבְהַל",
+    "reason": "past nif'al 3ms in 'עומר לא נבהל' → נִבְהַל (present would be נִבְהָל)"
+  },
+  "g-7390b357adfc": {
+    "form": "נֹגָה",
+    "reason": "the girl's name Noga, in the project's agreed form נֹגָה (as read aloud), not the biblical נֹגַהּ"
+  },
+  "g-e8f1e8655e1b": {
+    "form": "נִגְמָר",
+    "reason": "timetable told in the present (השיעורים מתחילים, כל שיעור נמשך, ואז מתחיל) → present participle נִגְמָר"
+  },
+  "g-031d2bfe255b": {
+    "form": "נֶהֶנְתָה",
+    "reason": "nif'al past 3fs of ה־נ־ה: hataf segol becomes full segol before the sheva → נֶהֶנְתָה"
+  },
+  "g-e4e42e444790": {
+    "form": "נוֹצָר",
+    "reason": "general process in the present (ההר גדל... הקצה מופיע... כך נוצר אי) → participle נוֹצָר"
+  },
+  "g-5c3b1a0d61f9": {
+    "form": "נֶחְלַשׁ",
+    "reason": "nif'al past 3ms of ח־ל־ש is נֶחְלַשׁ with silent sheva under ח (Milog, Pealim)"
+  },
+  "g-7ff3fc225afa": {
+    "form": "נִיצַּח",
+    "reason": "pi'el past 3ms of נ־צ־ח: Academy standard נִצַּח (patach before the final guttural), ktiv male נִיצַּח"
+  },
+  "g-624ee6970b15": {
+    "form": "נִיצַּח",
+    "reason": "pi'el past 3ms (בשלושה סבבים ניצח נדב): נִצַּח, ktiv male נִיצַּח; same form as the other ניצח group"
+  },
+  "g-bee0701606de": {
+    "form": "נִמְנֵם",
+    "reason": "pi'el (pilpel) past 3ms נִמְנֵם, parallel to פִּיהֵק in the same option"
+  },
+  "g-2022f567de43": {
+    "form": "נָמַס",
+    "reason": "'שעוד לא נמס' = has not melted yet → nif'al past of geminate מ־ס־ס, נָמַס"
+  },
+  "g-f20434880e83": {
+    "form": "נְמַסָּה",
+    "reason": "generic present 'ice cream left in the heat melts' → nif'al participle feminine נְמַסָּה"
+  },
+  "g-8685f2e49f43": {
+    "form": "נְמַסִּים",
+    "reason": "present 'even rocks melt' → nif'al participle plural of geminate מ־ס־ס, נְמַסִּים"
+  },
+  "g-3a7c90f6822c": {
+    "form": "נַעֲלַיִים",
+    "reason": "dual of נַעַל is נַעֲלַיִם; ktiv male doubled י: hirik on the first, second bare"
+  },
+  "g-965c1430ff96": {
+    "form": "נֶעֱלַם",
+    "reason": "'לאן הוא נעלם?' asks where it went → nif'al past 3ms נֶעֱלַם"
+  },
+  "g-2bb418ea9fb4": {
+    "form": "נַעֲשֶׂה",
+    "reason": "generic present 'when it rests on a grey rock its skin becomes grey' → nif'al participle נַעֲשֶׂה"
+  },
+  "g-f5c5db5305b8": {
+    "form": "נַעֲשֶׂה",
+    "reason": "ongoing process told in the present (זורמים, מאדה, עולים) and 'יותר ויותר' → participle נַעֲשֶׂה"
+  },
+  "g-557842189891": {
+    "form": "נִפְסַק",
+    "reason": "past narrative 'until the rain stopped' → nif'al past 3ms נִפְסַק"
+  },
+  "g-13e432da2983": {
+    "form": "נָצְצוּ",
+    "reason": "past qal of נ־צ־ץ 'her eyes sparkled': נָצְצוּ; the pi'el would be spelled ניצצו in ktiv male"
+  }
+}

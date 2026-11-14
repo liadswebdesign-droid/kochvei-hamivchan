@@ -1,62 +1,242 @@
 {
-  "g-96235b344c18": { "form": "וּלְגַיְא", "reason": "name גַּיְא; ל before it takes sheva (dagesh kal drops after vocal sheva), ו before sheva → וּ" },
-  "g-d3d860d93420": { "form": "וּלְהִילָה", "reason": "name הִילָה, indefinite (no article on a name) → לְ; ו before sheva → וּ" },
-  "g-9d90fc152304": { "form": "וּלְיַד", "reason": "preposition לְיַד; ו before sheva → וּ" },
-  "g-612a339e6713": { "form": "וְלִיָּה", "reason": "name לִיָּה (לִי + יָהּ, theophoric ending doubled after a full vowel, cf. עֻזִּיָּה); ו before a hiriq letter → וְ" },
-  "g-cf75b810688a": { "form": "וּלְכַרְסֵם", "reason": "infinitive לְכַרְסֵם (piel); ו before sheva → וּ" },
-  "g-532f2bcdfb40": { "form": "וְלָמָּה", "reason": "interrogative לָמָּה with dagesh chazak in מ (standard form, milra)" },
-  "g-0a6adc9cc936": { "form": "וּלְסוּס", "reason": "generic, parallel to indefinite לברווז ('a duck has 2 legs and a horse has 4') → indefinite לְ; ו before sheva → וּ" },
-  "g-9dd31f110a48": { "form": "וּלְעָדִי", "reason": "name עָדִי, indefinite לְ; ו before sheva → וּ" },
-  "g-5c10966c0772": { "form": "וּלְרָז", "reason": "name רָז, indefinite לְ; ו before sheva → וּ" },
-  "g-bcdde10097a6": { "form": "וּמַפְחִיד", "reason": "hif'il participle מַפְחִיד ('scary'); ו before מ → וּ" },
-  "g-249421bdbfc5": { "form": "וְנִיסְּתָה", "reason": "piel past 3fs נִסְּתָה (dagesh chazak in ס, vocal sheva, so ת takes no dagesh kal)" },
-  "g-b2376cd4accc": { "form": "וְעָבָה", "reason": "adjective עָבֶה, fem. עָבָה (kamatz under ע, like יָפָה); ו before a full vowel → וְ" },
-  "g-bc95dc905d58": { "form": "וְעָדִי", "reason": "the girl's name עָדִי (kamatz), not עֲדִי; ו before a full vowel → וְ" },
-  "g-7a2f7977661d": { "form": "וְעֵיטִים", "reason": "plural of עַיִט is עֵיטִים (tsere)" },
-  "g-1c5be0d831a8": { "form": "וְעָמִית", "reason": "the name עָמִית (pattern קָטִיל, full kamatz); ו before a full vowel → וְ" },
-  "g-ec3d2a2a7f51": { "form": "וַעֲנוּ", "reason": "imperative pl. עֲנוּ; ו before hataf patach → וַ" },
-  "g-fb0f2dd0a177": { "form": "וְעָפוֹת", "reason": "participle fem. pl. עָפוֹת; ו before a full vowel → וְ" },
-  "g-cbdfc5b55396": { "form": "וְעֶפְרוֹנוֹת", "reason": "plural of עִפָּרוֹן is עֶפְרוֹנוֹת (Academy/dictionary form)" },
-  "g-03cf9514c480": { "form": "וְצָרִים", "reason": "adjective צָרִים; צ is not a labial and has a full vowel → וְ" },
-  "g-7adf41e2e8f8": { "form": "וּקְלִיפּוֹת", "reason": "ו before sheva → וּ; קְלִיפּוֹת" },
-  "g-3ea036c20d0d": { "form": "וְקַלְמָר", "reason": "noun קַלְמָר (pencil case); ו before a full vowel → וְ" },
-  "g-0943a53d0860": { "form": "וֶרֶד", "reason": "the teacher's name וֶרֶד (segolate), not the conjunction" },
-  "g-4c8ffad74361": { "form": "וְשֶׁהַסַּפְרָנִית", "reason": "סַפְרָנִית (librarian, pattern of סַפְרָן); dagesh chazak in ס after the article" },
-  "g-9d2439a31248": { "form": "וָשׁוּב", "reason": "fixed pair שׁוּב וָשׁוּב (וָ before a stressed monosyllable, like עוֹד וָעוֹד); שׁוּב has shuruk, not holam" },
-  "g-f54c2abad487": { "form": "וְשׂוֹחֶה", "reason": "participle שׂוֹחֶה 'swims' (root שׂח״ה, sin dot)" },
-  "g-9bdb5843deb6": { "form": "וְשִׁכְבַת", "reason": "construct of שִׁכְבָה → שִׁכְבַת (שכבת שומן); ו before a full vowel → וְ" },
-  "g-4bcd0119e6c4": { "form": "וּשְׁתֵּיהֶן", "reason": "ו before sheva → וּ; שְׁתֵּיהֶן" },
-  "g-8bb8f27b7134": { "form": "וְשָׁתִיל", "reason": "distributive כָּל שָׁתִיל וְשָׁתִיל; וָ is used only before a stressed first syllable, שָׁתִיל is milra → וְ" },
-  "g-c30c85366e1a": { "form": "וְתוּכִּי", "reason": "noun תּוּכִּי (dagesh in כ); after וְ the ת loses dagesh kal" },
-  "g-f4eb7521af07": { "form": "וְתוֹם", "reason": "name תּוֹם; after וְ the ת loses dagesh kal" },
-  "g-24802f2c6850": { "form": "וְתוֹף", "reason": "noun תּוֹף; after וְ the ת loses dagesh kal" },
-  "g-587f30827cf3": { "form": "זִרְמֵי", "reason": "construct plural of the segolate זֶרֶם → זִרְמֵי (זרמי אוויר)" },
-  "g-130b1dde354a": { "form": "זִרְמֵי", "reason": "construct plural of the segolate זֶרֶם → זִרְמֵי (זרמי אוויר)" },
-  "g-0d79e225b3b4": { "form": "חֶדֶק", "reason": "noun חֶדֶק (elephant's trunk), segolate" },
-  "g-3fe80683f669": { "form": "חִיְּיכָה", "reason": "piel past 3fs חִיְּכָה; doubled yod in ktiv male: hiriq on ח, sheva+dagesh on first י, second bare" },
-  "g-a350589c9e52": { "form": "חֶלְזוֹנוֹת", "reason": "plural of חִלָּזוֹן is חֶלְזוֹנוֹת (Wiktionary inflection table; cf. עֶפְרוֹנוֹת); both votes wrong" },
-  "g-2303d49a86e4": { "form": "חַסָּה", "reason": "noun חַסָּה (lettuce), dagesh chazak in ס" },
-  "g-2797f59a92c7": { "form": "חָסַר", "reason": "narrative past (בערב שוב חסר כסף / לא חסר אפילו שקל) → past 3ms חָסַר, not present/adjective חָסֵר" },
-  "g-e9e646c03b18": { "form": "חֵצִי", "reason": "absolute form (חצי מהן / חצי מ־20 / מה זה חצי?), not in construct → חֵצִי" },
-  "g-7499cbd25d50": { "form": "חֵצִי", "reason": "absolute form (חצי מהם / חצי מ־40 / נתן חצי לאחיו), not in construct → חֵצִי" },
-  "g-bfba4d806373": { "form": "טוֹבִים", "reason": "adjective plural טוֹבִים" },
-  "g-4bc0baffece7": { "form": "יַם", "reason": "construct of יָם in the name יַם הַמֶּלַח → יַם" },
-  "g-8908ae2206e2": { "form": "יָעֵל", "reason": "the name יָעֵל" },
-  "g-70973d782650": { "form": "יַעֲרָה", "reason": "the name יַעֲרָה (patach before hataf patach)" },
-  "g-91ea571e70a3": { "form": "יָרָק", "reason": "vegetable = יָרָק (יֶרֶק is greenery)" },
-  "g-9ddaf506c8a1": { "form": "יָשַׁן", "reason": "past verb: option for 'ולכן הוא ___ על העץ' (past narrative) and 'נמנם פירושו ישן' parallel to פָּתַח → יָשַׁן" },
-  "g-bbbd6ac19700": { "form": "יָשַׁן", "reason": "writer's hint and the question 'איפה ישן הכלב?' read as past → יָשַׁן" },
-  "g-7b852ecb0eb9": { "form": "כַּדּוּרֶגֶל", "reason": "Academy form of the compound כַּדּוּר + רֶגֶל → כַּדּוּרֶגֶל" },
-  "g-16448484ec37": { "form": "כְּחוּלָּה", "reason": "color adjective כָּחֹל, fem. כְּחֻלָּה with dagesh chazak in ל (like אֲדֻמָּה, כְּתֻמָּה)" },
-  "g-618fd6e19441": { "form": "כְּחוּלָּה", "reason": "color adjective כָּחֹל, fem. כְּחֻלָּה with dagesh chazak in ל (like אֲדֻמָּה, כְּתֻמָּה)" },
-  "g-eee173fbf9bd": { "form": "כְּחוּלִּים", "reason": "color adjective כָּחֹל, pl. כְּחֻלִּים with dagesh chazak in ל" },
-  "g-e302f48813a0": { "form": "כְּלַבְלַב", "reason": "diminutive כְּלַבְלַב (Academy/dictionary form)" },
-  "g-6a8105af3503": { "form": "כֵּן", "reason": "dagesh kal in כ at word start (modern rule, no biblical spirantization after לִפְנֵי)" },
-  "g-b0174a835c61": { "form": "כַּנִּרְאֶה", "reason": "כְּ + article + נִרְאֶה → כַּנִּרְאֶה, dagesh chazak in נ" },
-  "g-76baf19880aa": { "form": "כַּעֲבוֹר", "reason": "כְּ + עֲבוֹר; sheva before hataf patach becomes patach → כַּעֲבוֹר" },
-  "g-67f1d2539ba0": { "form": "כַּעֲבוֹר", "reason": "כְּ + עֲבוֹר; sheva before hataf patach becomes patach → כַּעֲבוֹר" },
-  "g-41f8095dd93f": { "form": "כִּשְׁבוּעַיִים", "reason": "כְּ before sheva → כִּ; שְׁבוּעַיִים dual (doubled י per house style)" },
-  "g-0880604d2a58": { "form": "כְּשֶׁהַיְּלָדִים", "reason": "dagesh chazak in sheva-bearing י after the article (Academy: הַיְּלָדִים; project spec keeps dagesh chazak everywhere)" },
-  "g-17a7899ac5c6": { "form": "כְּשֶׁהַמָּאגְמָה", "reason": "loanword מָאגְמָה (kamatz before mater א, as in מָאיָה); dagesh chazak in מ after the article" },
-  "g-0de46c987446": { "form": "כְּשֶׁיּוֹנָתָן", "reason": "dagesh chazak in י after שֶׁ (י with holam, not sheva)" }
+  "g-96235b344c18": {
+    "form": "וּלְגַיְא",
+    "reason": "name גַּיְא; ל before it takes sheva (dagesh kal drops after vocal sheva), ו before sheva → וּ"
+  },
+  "g-d3d860d93420": {
+    "form": "וּלְהִילָה",
+    "reason": "name הִילָה, indefinite (no article on a name) → לְ; ו before sheva → וּ"
+  },
+  "g-9d90fc152304": {
+    "form": "וּלְיַד",
+    "reason": "preposition לְיַד; ו before sheva → וּ"
+  },
+  "g-612a339e6713": {
+    "form": "וְלִיָּה",
+    "reason": "name לִיָּה (לִי + יָהּ, theophoric ending doubled after a full vowel, cf. עֻזִּיָּה); ו before a hiriq letter → וְ"
+  },
+  "g-cf75b810688a": {
+    "form": "וּלְכַרְסֵם",
+    "reason": "infinitive לְכַרְסֵם (piel); ו before sheva → וּ"
+  },
+  "g-532f2bcdfb40": {
+    "form": "וְלָמָּה",
+    "reason": "interrogative לָמָּה with dagesh chazak in מ (standard form, milra)"
+  },
+  "g-0a6adc9cc936": {
+    "form": "וּלְסוּס",
+    "reason": "generic, parallel to indefinite לברווז ('a duck has 2 legs and a horse has 4') → indefinite לְ; ו before sheva → וּ"
+  },
+  "g-9dd31f110a48": {
+    "form": "וְלַעֲדִי",
+    "reason": "לְ before hataf patach becomes לַ (לַעֲדִי); ו before a letter with a full vowel stays וְ"
+  },
+  "g-5c10966c0772": {
+    "form": "וּלְרָז",
+    "reason": "name רָז, indefinite לְ; ו before sheva → וּ"
+  },
+  "g-bcdde10097a6": {
+    "form": "וּמַפְחִיד",
+    "reason": "hif'il participle מַפְחִיד ('scary'); ו before מ → וּ"
+  },
+  "g-249421bdbfc5": {
+    "form": "וְנִיסְּתָה",
+    "reason": "piel past 3fs נִסְּתָה (dagesh chazak in ס, vocal sheva, so ת takes no dagesh kal)"
+  },
+  "g-b2376cd4accc": {
+    "form": "וְעָבָה",
+    "reason": "adjective עָבֶה, fem. עָבָה (kamatz under ע, like יָפָה); ו before a full vowel → וְ"
+  },
+  "g-bc95dc905d58": {
+    "form": "וַעֲדִי",
+    "reason": "the name עֲדִי (hataf patach), ו before hataf patach takes patach"
+  },
+  "g-7a2f7977661d": {
+    "form": "וְעֵיטִים",
+    "reason": "plural of עַיִט is עֵיטִים (tsere)"
+  },
+  "g-1c5be0d831a8": {
+    "form": "וְעָמִית",
+    "reason": "the name עָמִית (pattern קָטִיל, full kamatz); ו before a full vowel → וְ"
+  },
+  "g-ec3d2a2a7f51": {
+    "form": "וַעֲנוּ",
+    "reason": "imperative pl. עֲנוּ; ו before hataf patach → וַ"
+  },
+  "g-fb0f2dd0a177": {
+    "form": "וְעָפוֹת",
+    "reason": "participle fem. pl. עָפוֹת; ו before a full vowel → וְ"
+  },
+  "g-cbdfc5b55396": {
+    "form": "וְעֶפְרוֹנוֹת",
+    "reason": "plural of עִפָּרוֹן is עֶפְרוֹנוֹת (Academy/dictionary form)"
+  },
+  "g-03cf9514c480": {
+    "form": "וְצָרִים",
+    "reason": "adjective צָרִים; צ is not a labial and has a full vowel → וְ"
+  },
+  "g-7adf41e2e8f8": {
+    "form": "וּקְלִיפּוֹת",
+    "reason": "ו before sheva → וּ; קְלִיפּוֹת"
+  },
+  "g-3ea036c20d0d": {
+    "form": "וְקַלְמָר",
+    "reason": "noun קַלְמָר (pencil case); ו before a full vowel → וְ"
+  },
+  "g-0943a53d0860": {
+    "form": "וֶרֶד",
+    "reason": "the teacher's name וֶרֶד (segolate), not the conjunction"
+  },
+  "g-4c8ffad74361": {
+    "form": "וְשֶׁהַסַּפְרָנִית",
+    "reason": "סַפְרָנִית (librarian, pattern of סַפְרָן); dagesh chazak in ס after the article"
+  },
+  "g-9d2439a31248": {
+    "form": "וָשׁוּב",
+    "reason": "fixed pair שׁוּב וָשׁוּב (וָ before a stressed monosyllable, like עוֹד וָעוֹד); שׁוּב has shuruk, not holam"
+  },
+  "g-f54c2abad487": {
+    "form": "וְשׂוֹחֶה",
+    "reason": "participle שׂוֹחֶה 'swims' (root שׂח״ה, sin dot)"
+  },
+  "g-9bdb5843deb6": {
+    "form": "וְשִׁכְבַת",
+    "reason": "construct of שִׁכְבָה → שִׁכְבַת (שכבת שומן); ו before a full vowel → וְ"
+  },
+  "g-4bcd0119e6c4": {
+    "form": "וּשְׁתֵּיהֶן",
+    "reason": "ו before sheva → וּ; שְׁתֵּיהֶן"
+  },
+  "g-8bb8f27b7134": {
+    "form": "וּשְׁתִיל",
+    "reason": "וּ before a sheva; the noun is שְׁתִיל (Academy)"
+  },
+  "g-c30c85366e1a": {
+    "form": "וְתוּכִּי",
+    "reason": "noun תּוּכִּי (dagesh in כ); after וְ the ת loses dagesh kal"
+  },
+  "g-f4eb7521af07": {
+    "form": "וְתוֹם",
+    "reason": "name תּוֹם; after וְ the ת loses dagesh kal"
+  },
+  "g-24802f2c6850": {
+    "form": "וְתוֹף",
+    "reason": "noun תּוֹף; after וְ the ת loses dagesh kal"
+  },
+  "g-587f30827cf3": {
+    "form": "זִרְמֵי",
+    "reason": "construct plural of the segolate זֶרֶם → זִרְמֵי (זרמי אוויר)"
+  },
+  "g-130b1dde354a": {
+    "form": "זִרְמֵי",
+    "reason": "construct plural of the segolate זֶרֶם → זִרְמֵי (זרמי אוויר)"
+  },
+  "g-0d79e225b3b4": {
+    "form": "חֶדֶק",
+    "reason": "noun חֶדֶק (elephant's trunk), segolate"
+  },
+  "g-3fe80683f669": {
+    "form": "חִיְּיכָה",
+    "reason": "piel past 3fs חִיְּכָה; doubled yod in ktiv male: hiriq on ח, sheva+dagesh on first י, second bare"
+  },
+  "g-a350589c9e52": {
+    "form": "חֶלְזוֹנוֹת",
+    "reason": "plural of חִלָּזוֹן is חֶלְזוֹנוֹת (Wiktionary inflection table; cf. עֶפְרוֹנוֹת); both votes wrong"
+  },
+  "g-2303d49a86e4": {
+    "form": "חַסָּה",
+    "reason": "noun חַסָּה (lettuce), dagesh chazak in ס"
+  },
+  "g-2797f59a92c7": {
+    "form": "חָסַר",
+    "reason": "narrative past (בערב שוב חסר כסף / לא חסר אפילו שקל) → past 3ms חָסַר, not present/adjective חָסֵר"
+  },
+  "g-e9e646c03b18": {
+    "form": "חֵצִי",
+    "reason": "absolute form (חצי מהן / חצי מ־20 / מה זה חצי?), not in construct → חֵצִי"
+  },
+  "g-7499cbd25d50": {
+    "form": "חֵצִי",
+    "reason": "absolute form (חצי מהם / חצי מ־40 / נתן חצי לאחיו), not in construct → חֵצִי"
+  },
+  "g-bfba4d806373": {
+    "form": "טוֹבִים",
+    "reason": "adjective plural טוֹבִים"
+  },
+  "g-4bc0baffece7": {
+    "form": "יַם",
+    "reason": "construct of יָם in the name יַם הַמֶּלַח → יַם"
+  },
+  "g-8908ae2206e2": {
+    "form": "יָעֵל",
+    "reason": "the name יָעֵל"
+  },
+  "g-70973d782650": {
+    "form": "יַעֲרָה",
+    "reason": "the name יַעֲרָה (patach before hataf patach)"
+  },
+  "g-91ea571e70a3": {
+    "form": "יָרָק",
+    "reason": "vegetable = יָרָק (יֶרֶק is greenery)"
+  },
+  "g-9ddaf506c8a1": {
+    "form": "יָשַׁן",
+    "reason": "past verb: option for 'ולכן הוא ___ על העץ' (past narrative) and 'נמנם פירושו ישן' parallel to פָּתַח → יָשַׁן"
+  },
+  "g-bbbd6ac19700": {
+    "form": "יָשַׁן",
+    "reason": "writer's hint and the question 'איפה ישן הכלב?' read as past → יָשַׁן"
+  },
+  "g-7b852ecb0eb9": {
+    "form": "כַּדּוּרֶגֶל",
+    "reason": "Academy form of the compound כַּדּוּר + רֶגֶל → כַּדּוּרֶגֶל"
+  },
+  "g-16448484ec37": {
+    "form": "כְּחוּלָּה",
+    "reason": "color adjective כָּחֹל, fem. כְּחֻלָּה with dagesh chazak in ל (like אֲדֻמָּה, כְּתֻמָּה)"
+  },
+  "g-618fd6e19441": {
+    "form": "כְּחוּלָּה",
+    "reason": "color adjective כָּחֹל, fem. כְּחֻלָּה with dagesh chazak in ל (like אֲדֻמָּה, כְּתֻמָּה)"
+  },
+  "g-eee173fbf9bd": {
+    "form": "כְּחוּלִּים",
+    "reason": "color adjective כָּחֹל, pl. כְּחֻלִּים with dagesh chazak in ל"
+  },
+  "g-e302f48813a0": {
+    "form": "כְּלַבְלַב",
+    "reason": "diminutive כְּלַבְלַב (Academy/dictionary form)"
+  },
+  "g-6a8105af3503": {
+    "form": "כֵּן",
+    "reason": "dagesh kal in כ at word start (modern rule, no biblical spirantization after לִפְנֵי)"
+  },
+  "g-b0174a835c61": {
+    "form": "כַּנִּרְאֶה",
+    "reason": "כְּ + article + נִרְאֶה → כַּנִּרְאֶה, dagesh chazak in נ"
+  },
+  "g-76baf19880aa": {
+    "form": "כַּעֲבוֹר",
+    "reason": "כְּ + עֲבוֹר; sheva before hataf patach becomes patach → כַּעֲבוֹר"
+  },
+  "g-67f1d2539ba0": {
+    "form": "כַּעֲבוֹר",
+    "reason": "כְּ + עֲבוֹר; sheva before hataf patach becomes patach → כַּעֲבוֹר"
+  },
+  "g-41f8095dd93f": {
+    "form": "כִּשְׁבוּעַיִים",
+    "reason": "כְּ before sheva → כִּ; שְׁבוּעַיִים dual (doubled י per house style)"
+  },
+  "g-0880604d2a58": {
+    "form": "כְּשֶׁהַיְּלָדִים",
+    "reason": "dagesh chazak in sheva-bearing י after the article (Academy: הַיְּלָדִים; project spec keeps dagesh chazak everywhere)"
+  },
+  "g-17a7899ac5c6": {
+    "form": "כְּשֶׁהַמַּאגְמָה",
+    "reason": "loanword magma: patach before silent א, consistent across the corpus"
+  },
+  "g-0de46c987446": {
+    "form": "כְּשֶׁיּוֹנָתָן",
+    "reason": "dagesh chazak in י after שֶׁ (י with holam, not sheva)"
+  }
 }

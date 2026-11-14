@@ -1,3 +1,153 @@
 {
-  "w-a03bffd2d92b": { "form": "מֵי", "reason": "construct of מַיִם (מֵי נְהַר הַיַּרְדֵּן, 'the waters of the Jordan'), not the question word מִי" }
+  "w-a03bffd2d92b": {
+    "form": "מֵי",
+    "reason": "construct of מַיִם (מֵי נְהַר הַיַּרְדֵּן, 'the waters of the Jordan'), not the question word מִי"
+  },
+  "w-6c6820f7c03a": {
+    "form": "טְרֶמְפּ",
+    "reason": "loanword ending in a p sound: the source spells it with a non-final פ (as Hebrew Wikipedia prints מִיקְרוֹסְקוֹפְּ), so a non-final letter at the word end is intended",
+    "lintAllow": [
+      "final-form"
+    ]
+  },
+  "w-686d9e490f9e": {
+    "form": "בְּמִיקְרוֹסְקוֹפּ",
+    "reason": "loanword ending in a p sound: the source spells it with a non-final פ (as Hebrew Wikipedia prints מִיקְרוֹסְקוֹפְּ), so a non-final letter at the word end is intended",
+    "lintAllow": [
+      "final-form"
+    ]
+  },
+  "w-e4fdeb58d994": {
+    "form": "בְּמִיקְרוֹסְקוֹפּ",
+    "reason": "loanword ending in a p sound: the source spells it with a non-final פ (as Hebrew Wikipedia prints מִיקְרוֹסְקוֹפְּ), so a non-final letter at the word end is intended",
+    "lintAllow": [
+      "final-form"
+    ]
+  },
+  "w-5cbaf05b72be": {
+    "form": "ד",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  },
+  "w-94c39d8fc2f1": {
+    "form": "כ",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  },
+  "w-c7883bdaa477": {
+    "form": "ד",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  },
+  "w-3deb8e410833": {
+    "form": "כ",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  },
+  "w-eecb1763dd3f": {
+    "form": "ב",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  },
+  "w-f95ef83df393": {
+    "form": "ב",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  },
+  "w-b8b23e0b6e2e": {
+    "form": "ד",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  },
+  "w-5dce0efc59bb": {
+    "form": "כ",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  },
+  "w-c1291cb027ef": {
+    "form": "ב",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  },
+  "w-3c3756a6a54e": {
+    "form": "ב",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  },
+  "w-b6a9720de19c": {
+    "form": "א",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  },
+  "w-9905ebd059a0": {
+    "form": "ב",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  },
+  "w-7cad73d3d947": {
+    "form": "ג",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  },
+  "w-643cd40a7cf5": {
+    "form": "ד",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  },
+  "w-a2bb310ade71": {
+    "form": "ב",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  },
+  "w-0df511242524": {
+    "form": "ג",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  },
+  "w-e9f1dc7deaf6": {
+    "form": "ג",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  },
+  "w-93322622788b": {
+    "form": "ג",
+    "reason": "a letter used as a name (class letter, initials or letter-numeral), printed bare as in the booklet",
+    "lintAllow": [
+      "unvocalized-word"
+    ]
+  }
 }
