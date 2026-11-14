@@ -99,9 +99,10 @@ export function StopDog() {
 }
 
 // ---- the paper page -----------------------------------------------------------------------------------------------
-export function Sheet({ pageNo, showNext, dir, children, kind = '' }) {
+// `scroll`: one question alone is taller than the page (see paginate() in lib/sim.js), so this page scrolls.
+export function Sheet({ pageNo, showNext, dir, children, kind = '', scroll }) {
   return (
-    <article class={`sheet ${kind} ${dir ? 'turn-' + dir : ''}`}>
+    <article class={`sheet ${kind} ${dir ? 'turn-' + dir : ''} ${scroll ? 'is-scroll' : ''}`}>
       <div class="sheet-body">{children}</div>
       {pageNo != null && (
         <footer class="sheet-foot">
@@ -153,7 +154,7 @@ export function BkItem({ item, answer, onAnswer, active, onActivate, readOnly, d
   if (written) {
     const val = answer == null ? '' : String(answer);
     return (
-      <div class={`bk-item bk-written ${active ? 'is-active' : ''} ${readOnly ? 'is-example' : ''}`} onClick={onActivate} role="group">
+      <div class={`bk-item bk-written ${active ? 'is-active' : ''} ${readOnly ? 'is-example' : ''}`} onClick={onActivate} role="group" data-item={item.id}>
         {no}
         <div class="bk-math">
           <MathLine expr={item.expr} value={val} active={!!active && !readOnly} size="md" />
@@ -164,7 +165,7 @@ export function BkItem({ item, answer, onAnswer, active, onActivate, readOnly, d
   const numericOpts = item.options.every(isNumeric);
   const layout = numericOpts ? 'row' : item.options.every((o) => stripBold(o).replace(/[\u0591-\u05C7]/g, '').length <= 30) ? 'grid' : 'list';
   return (
-    <div class="bk-item bk-mc" role="group">
+    <div class="bk-item bk-mc" role="group" data-item={item.id}>
       <div class="bk-qhead">
         {no}
         <div class="bk-qbody">

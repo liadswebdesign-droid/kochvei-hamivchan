@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {
   planFixed, planSim, planEndless, layoutSim, scoreSim, isCorrect, canGoBack, chunk, historyEntry, defValid,
-  FIXED_SIM_COUNT, DIGIT_SIM, TASKS, rankPassages, ENDLESS,
+  FIXED_SIM_COUNT, DIGIT_SIM, TASKS, rankPassages, ENDLESS, paginate, placeOf, pageFor,
 } from './sim.js';
 import { itemFromId, checkInequality, solveRiddle } from '../gen/index.js';
 
@@ -132,6 +132,40 @@ describe('booklet layout', () => {
     expect(chunk([1, 2, 3, 4, 5], 2, true).map((g) => g.length)).toEqual([2, 3]);
     expect(chunk([1, 2, 3, 4, 5, 6, 7], 2, true).map((g) => g.length)).toEqual([2, 2, 3]);
     expect(chunk([1, 2, 3, 4, 5, 6], 2, true).map((g) => g.length)).toEqual([2, 2, 2]);
+  });
+  it('paginate() with everything fitting gives back the estimated layout', () => {
+    const p = paginate(sim.pages, () => true);
+    const shape = (pages) => pages.map((x) => [x.key, x.type, x.pageNo, x.first, (x.items || []).map((i) => i.id).join()]);
+    expect(shape(p)).toEqual(shape(sim.pages));
+    expect(p.some((x) => x.scroll)).toBe(false);
+    expect(new Set(p.map((x) => x.key)).size).toBe(p.length);
+  });
+  it('paginate() moves trailing questions on until a page fits, never splits one, and lets a lone giant scroll', () => {
+    const giant = sim.items.find((i) => i.task === 'reading' && i.no === 3).id;
+    // a page "fits" when it holds one question, except the giant which never fits
+    const fits = (pg) => pg.items.length === 1 && pg.items[0].id !== giant;
+    const p = paginate(sim.pages, fits);
+    const itemPages = p.filter((x) => x.type === 'items');
+    expect(itemPages.every((x) => x.items.length === 1)).toBe(true);
+    expect(itemPages.flatMap((x) => x.items.map((i) => i.id))).toEqual(sim.items.map((i) => i.id)); // same order, none lost
+    expect(p.filter((x) => x.scroll).map((x) => x.items[0].id)).toEqual([giant]);
+    expect(p.every((x, i) => i === 0 || x.pageNo === i)).toBe(true);
+    // only the first page of each passage's questions carries the "answer the questions" instruction
+    const firsts = itemPages.filter((x) => x.task === 'reading' && x.first).map((x) => x.passageId);
+    expect(firsts).toEqual(def.passageIds);
+    // the inequalities stay on their own page(s), after the missing numbers
+    expect(itemPages.filter((x) => x.ineq).every((x) => x.items.every((i) => i.kind === 'inequality'))).toBe(true);
+  });
+  it('a place in the booklet survives re-paging (by item, or by page key)', () => {
+    const wide = paginate(sim.pages, () => true);
+    const narrow = paginate(sim.pages, (pg) => pg.items.length === 1);
+    const at = wide.findIndex((x) => x.type === 'items' && x.items.length > 1);
+    const second = wide[at].items[1].id;
+    const to = pageFor(narrow, placeOf(wide[at], second));
+    expect(narrow[to].items.map((i) => i.id)).toEqual([second]);
+    expect(narrow[pageFor(narrow, placeOf(wide[at], null))].items[0].id).toBe(wide[at].items[0].id);
+    const stop = wide.findIndex((x) => x.type === 'stop');
+    expect(narrow[pageFor(narrow, placeOf(wide[stop]))].type).toBe('stop');
   });
   it('you can page back inside a part but never into Part 1 after the stop page, nor to the cover', () => {
     const stop = sim.pages.findIndex((p) => p.type === 'stop');

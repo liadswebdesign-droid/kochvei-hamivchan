@@ -1,4 +1,5 @@
 // The simulated test: a paper booklet you page through. No right/wrong feedback until the end.
+import { render } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { t, tx, loadPassage } from '../lib/content.js';
 import { STOP_PAUSE_MS } from '../config.js';
@@ -6,7 +7,7 @@ import { logAttempt, getProgress, skillState } from '../lib/storage.js';
 import { recordForReview } from '../lib/session.js';
 import { newSeed } from '../gen/rng.js';
 import {
-  ENDLESS, TIME_LIMIT_MS, simNumber, planEndless, loadSim, canGoBack, scoreSim, isAnswered, historyEntry,
+  ENDLESS, TIME_LIMIT_MS, simNumber, planEndless, loadSim, canGoBack, scoreSim, isAnswered, historyEntry, paginate, placeOf, pageFor,
 } from '../lib/sim.js';
 import { defFor, addSim, saveRun, clearRun } from '../lib/simStore.js';
 import { onMockComplete } from '../lib/rewards.js';
@@ -119,69 +120,220 @@ function StopPage({ companion, ready, onReady, onContinue }) {
   );
 }
 
+// ---- one page's content -------------------------------------------------------------------------------------------------
+// Shared by the real booklet and the hidden measuring copy, so what is measured is exactly what is shown.
+function PageBody({ cur, sim, profile, mode, answers, onAnswer, active, setActive, stopOk, setStopOk, go, page, finish }) {
+  switch (cur.type) {
+    case 'cover':
+      return (
+        <div class="bk-cover">
+          <p class="cover-kicker">{sim.endless ? t('sim.cover.endless') : t('sim.cover.name', { n: sim.n })}</p>
+          <h1 class="cover-title">{t('sim.cover.title')}</h1>
+          <Say companion={profile.companion} mood="happy">{t('sim.cover.hello', { name: profile.name })}</Say>
+          <p class="cover-note">{mode === 'timed' ? t('sim.cover.timed') : t('sim.cover.free')}</p>
+          <Btn kind="primary" onClick={() => go(1)}>{t('sim.cover.open')}</Btn>
+        </div>
+      );
+    case 'example':
+      return <ExamplePage task={cur.task} companion={profile.companion} />;
+    case 'passage':
+      return (
+        <>
+          <p class="bk-instr"><Rich text={tx(cur.story ? 'sim.part1.storyInstr' : 'sim.part1.instr')} /></p>
+          <PassageView passage={cur.passage} />
+        </>
+      );
+    case 'stop':
+      return <StopPage companion={profile.companion} ready={stopOk} onReady={() => setStopOk(true)} onContinue={() => go(page + 1)} />;
+    case 'end':
+      return (
+        <div class="bk-end">
+          <h1 class="bk-part">{t('sim.end.title')}</h1>
+          <Say companion={profile.companion} mood="happy">{tx('sim.end.text')}</Say>
+          <Btn kind="primary" onClick={() => finish(false)}>{t('sim.end.finish')}</Btn>
+        </div>
+      );
+    default: {
+      const reading = cur.task === 'reading';
+      const digit = cur.items.some((it) => it.digit);
+      const instrKey = cur.ineq ? 'sim.taskB.ineq' : reading ? (cur.first ? 'sim.part1.questions' : null) : cur.task === 'D' ? (digit ? 'instr.digit' : 'instr.riddles') : INSTR[cur.task];
+      return (
+        <>
+          {reading ? <p class="bk-ctx">{cur.ctxTitle}</p> : <h2 class="bk-task">{t(TITLE[cur.task])}</h2>}
+          {instrKey && <p class="bk-instr"><Rich text={tx(instrKey)} /></p>}
+          <div class="bk-items">
+            {cur.items.map((it) => (
+              <BkItem
+                key={it.id}
+                item={it}
+                answer={answers[it.id]}
+                onAnswer={(v) => onAnswer(it, v)}
+                active={active === it.id}
+                onActivate={() => setActive(it.id)}
+              />
+            ))}
+          </div>
+        </>
+      );
+    }
+  }
+}
+
+// ---- measuring --------------------------------------------------------------------------------------------------------------------
+// An invisible full-size copy of the exam screen (same header height, page box, nav bar and number pad), so a candidate
+// page is measured in exactly the box it will be shown in. Rendered synchronously into a detached host by `fitsIn`.
+const noop = () => {};
+function MeasureFrame({ cur, sim, profile, mode }) {
+  const pad = cur.type === 'items' && cur.items.some(isWritten);
+  return (
+    <div class={`screen exam page-${cur.type} task-${cur.task || 'none'}`}>
+      <header class="etop" />
+      <main class="exam-stage">
+        <Sheet pageNo={cur.pageNo || 1} showNext kind={`sheet-${cur.type}`}>
+          <PageBody cur={cur} sim={sim} profile={profile} mode={mode} answers={{}} onAnswer={noop} active={null} setActive={noop} stopOk setStopOk={noop} go={noop} page={0} finish={noop} />
+        </Sheet>
+      </main>
+      <nav class="enav">
+        <div class="enav-prev"><span class="btn btn-ghost"><UiIcon id="back" size={28} /><span>{t('sim.nav.prev')}</span></span></div>
+        <div class="enav-pad">{pad && <NumPad value="" onChange={noop} />}</div>
+        <div class="enav-next"><span class="btn btn-primary"><span>{t('sim.nav.next')}</span>{flip('back')}</span></div>
+      </nav>
+    </div>
+  );
+}
+// true when the page's content fits its sheet without scrolling
+const fitsIn = (host, props) => (cur) => {
+  render(<MeasureFrame {...props} cur={cur} />, host);
+  const body = host.querySelector('.sheet-body');
+  return !body || body.scrollHeight <= body.clientHeight;
+};
+
+// Pages the booklet for the current screen size, and again whenever it changes (rotation). The child's place (the
+// question she is on) is carried over to the new paging; answers are untouched. Until the first paging: null.
+function useBookletPages(sim, props, onPaged) {
+  const [pages, setPages] = useState(null);
+  const latest = useRef();
+  latest.current = { pages, onPaged };
+  useEffect(() => {
+    if (!sim) return;
+    let alive = true;
+    let timer = 0;
+    let size = '';
+    const host = document.createElement('div');
+    host.className = 'exam-measure';
+    host.setAttribute('aria-hidden', 'true');
+    host.inert = true;
+    document.body.appendChild(host);
+    const measure = (force) => {
+      const now = innerWidth + 'x' + innerHeight;
+      if (!alive || (now === size && !force)) return;
+      size = now;
+      const next = paginate(sim.pages, fitsIn(host, { ...props, sim }));
+      render(null, host);
+      // a webfont that was first needed while measuring changes line widths: measure again once it has arrived
+      if (document.fonts && document.fonts.status === 'loading') document.fonts.ready.then(() => measure(true));
+      const { pages: prev, onPaged: paged } = latest.current;
+      setPages(next);
+      paged(next, prev);
+    };
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => measure());
+    const onResize = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => measure(), 120);
+    };
+    addEventListener('resize', onResize);
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+      removeEventListener('resize', onResize);
+      render(null, host);
+      host.remove();
+    };
+  }, [sim]);
+  return pages;
+}
+
 // ---- the exam -------------------------------------------------------------------------------------------------------------------------
 export function MockExam({ profile, content, simId: id, mode, resume, onQuit, onFinish }) {
   const pid = profile.id;
   const [sim, setSim] = useState(null);
   const [answers, setAnswers] = useState((resume && resume.answers) || {});
-  const [page, setPage] = useState((resume && resume.pageIdx) || 0);
+  const [page, setPage] = useState(0);
   const [dir, setDir] = useState('next');
   const [active, setActive] = useState(null);
   const [stopOk, setStopOk] = useState(false);
   const [ask, setAsk] = useState(null); // 'quit' | { unanswered }
   const [t0, setT0] = useState(resume && resume.pageIdx >= 1 ? Date.now() - (resume.elapsed || 0) : null);
   const seed = useRef(resume && resume.seed != null ? resume.seed : id === ENDLESS ? newSeed() : null);
+  const here = useRef({ page, active });
+  here.current = { page, active };
+  const touched = useRef(null); // the question she last answered or tapped: what must stay in view after a rotation
 
   useEffect(() => {
     let alive = true;
-    const def = id === ENDLESS ? planEndless(content, seed.current) : defFor(simNumber(id), content);
+    let def = id === ENDLESS ? planEndless(content, seed.current) : defFor(simNumber(id), content);
+    // dev-only QA hook: replace parts of the plan (qa-sim.mjs pages a booklet holding EVERY passage and word problem)
+    if (import.meta.env.DEV && window.__khSimOverride) def = { ...def, ...window.__khSimOverride(content) };
     loadSim(def, content, loadPassage).then((s) => alive && setSim(s));
     return () => (alive = false);
   }, []);
+
+  // (Re-)paging: stay on the same question. The first time, that is where a resumed run stopped.
+  const pages = useBookletPages(sim, { profile, mode }, (next, prev) => {
+    const { page: at, active: act } = here.current;
+    const place = prev ? placeOf(prev[at], touched.current, act) : resume && (resume.place || null);
+    let to = pageFor(next, place);
+    if (to < 0) to = Math.min(prev ? at : (resume && resume.pageIdx) || 0, next.length - 1);
+    if (place && place.item) setActive((a) => (next[to].items.some((it) => it.id === a) ? a : place.item));
+    setPage(to);
+  });
 
   // the clock starts when the booklet is opened
   useEffect(() => {
     if (page >= 1 && t0 == null) setT0(Date.now());
   }, [page]);
 
-  // keep the run so a tablet restart mid-test can resume
+  const cur = pages && pages[page];
+
+  // keep the run so a tablet restart mid-test can resume (the place survives a different paging after a rotation)
   useEffect(() => {
-    if (!sim) return;
-    saveRun(pid, { simId: id, seed: seed.current, mode, elapsed: t0 ? Date.now() - t0 : 0, answers, pageIdx: page, saved: Date.now() });
-  }, [sim, answers, page, t0]);
+    if (!cur) return;
+    saveRun(pid, { simId: id, seed: seed.current, mode, elapsed: t0 ? Date.now() - t0 : 0, answers, pageIdx: page, place: placeOf(cur, touched.current, active), saved: Date.now() });
+  }, [cur, answers, page, t0, active]);
 
-  const cur = sim && sim.pages[page];
-
-  // On a new page the first unanswered written item gets the pencil
+  // On a new page the first unanswered written item gets the pencil (unless the item she was on is on it)
   useEffect(() => {
     if (!cur || cur.type !== 'items') return setActive(null);
     const written = cur.items.filter(isWritten);
+    if (written.some((it) => it.id === here.current.active)) return;
     const first = written.find((it) => !isAnswered(answers[it.id])) || written[0];
     setActive(first ? first.id : null);
-  }, [page, !!sim]);
+  }, [cur && cur.key, cur && cur.items && cur.items.length]);
 
-  if (import.meta.env.DEV && sim) window.__khExam = { sim, page, setPage, answers, setAnswers, setT0, setStopOk, active };
+  if (import.meta.env.DEV && sim && pages) window.__khExam = { sim: { ...sim, pages }, pages, page, setPage, answers, setAnswers, setT0, setStopOk, active };
 
-  if (!sim) return <div class="screen center"><div class="loader" aria-busy="true" /></div>;
+  if (!cur) return <div class="screen center"><div class="loader" aria-busy="true" /></div>;
 
   const go = (to) => {
     setDir(to > page ? 'next' : 'prev');
     setPage(to);
   };
-  const back = canGoBack(sim.pages, page);
-  const last = page === sim.pages.length - 1;
+  const back = canGoBack(pages, page);
+  const last = page === pages.length - 1;
   const canNext = !last && cur.type !== 'cover' && cur.type !== 'stop';
   const showPad = cur.type === 'items' && cur.items.some(isWritten);
   const pageNo = cur.pageNo;
   const showNext = canNext && cur.type !== 'example';
 
-  const setAnswer = (item, v) =>
+  const setAnswer = (item, v) => {
+    touched.current = item.id;
     setAnswers((a) => {
       const n = { ...a };
       if (v == null || v === '') delete n[item.id];
       else n[item.id] = v;
       return n;
     });
+  };
 
   function finish(force) {
     const missing = sim.items.filter((it) => !isAnswered(answers[it.id])).length;
@@ -208,64 +360,6 @@ export function MockExam({ profile, content, simId: id, mode, resume, onQuit, on
     onQuit();
   }
 
-  const body = (() => {
-    switch (cur.type) {
-      case 'cover':
-        return (
-          <div class="bk-cover">
-            <p class="cover-kicker">{sim.endless ? t('sim.cover.endless') : t('sim.cover.name', { n: sim.n })}</p>
-            <h1 class="cover-title">{t('sim.cover.title')}</h1>
-            <Say companion={profile.companion} mood="happy">{t('sim.cover.hello', { name: profile.name })}</Say>
-            <p class="cover-note">{mode === 'timed' ? t('sim.cover.timed') : t('sim.cover.free')}</p>
-            <Btn kind="primary" onClick={() => go(1)}>{t('sim.cover.open')}</Btn>
-          </div>
-        );
-      case 'example':
-        return <ExamplePage task={cur.task} companion={profile.companion} />;
-      case 'passage':
-        return (
-          <>
-            <p class="bk-instr"><Rich text={tx(cur.story ? 'sim.part1.storyInstr' : 'sim.part1.instr')} /></p>
-            <PassageView passage={cur.passage} />
-          </>
-        );
-      case 'stop':
-        return <StopPage companion={profile.companion} ready={stopOk} onReady={() => setStopOk(true)} onContinue={() => go(page + 1)} />;
-      case 'end': {
-        return (
-          <div class="bk-end">
-            <h1 class="bk-part">{t('sim.end.title')}</h1>
-            <Say companion={profile.companion} mood="happy">{tx('sim.end.text')}</Say>
-            <Btn kind="primary" onClick={() => finish(false)}>{t('sim.end.finish')}</Btn>
-          </div>
-        );
-      }
-      default: {
-        const reading = cur.task === 'reading';
-        const digit = cur.items.some((it) => it.digit);
-        const instrKey = cur.ineq ? 'sim.taskB.ineq' : reading ? (cur.first ? 'sim.part1.questions' : null) : cur.task === 'D' ? (digit ? 'instr.digit' : 'instr.riddles') : INSTR[cur.task];
-        return (
-          <>
-            {reading ? <p class="bk-ctx">{cur.ctxTitle}</p> : <h2 class="bk-task">{t(TITLE[cur.task])}</h2>}
-            {instrKey && <p class="bk-instr"><Rich text={tx(instrKey)} /></p>}
-            <div class="bk-items">
-              {cur.items.map((it, i) => (
-                <BkItem
-                  key={it.id}
-                  item={it}
-                  answer={answers[it.id]}
-                  onAnswer={(v) => setAnswer(it, v)}
-                  active={active === it.id}
-                  onActivate={() => setActive(it.id)}
-                />
-              ))}
-            </div>
-          </>
-        );
-      }
-    }
-  })();
-
   const activeItem = showPad && cur.items.find((it) => it.id === active);
 
   return (
@@ -280,11 +374,27 @@ export function MockExam({ profile, content, simId: id, mode, resume, onQuit, on
       </header>
 
       <main class="exam-stage">
-        <Sheet key={cur.key} pageNo={pageNo} showNext={showNext} dir={dir} kind={`sheet-${cur.type}`}>
-          {body}
+        <Sheet key={cur.key} pageNo={pageNo} showNext={showNext} dir={dir} kind={`sheet-${cur.type}`} scroll={cur.scroll}>
+          <PageBody
+            cur={cur}
+            sim={sim}
+            profile={profile}
+            mode={mode}
+            answers={answers}
+            onAnswer={setAnswer}
+            active={active}
+            setActive={(itemId) => {
+              touched.current = itemId;
+              setActive(itemId);
+            }}
+            stopOk={stopOk}
+            setStopOk={setStopOk}
+            go={go}
+            page={page}
+            finish={finish}
+          />
         </Sheet>
       </main>
-
       <nav class="enav" aria-label={t('sim.nav.next')}>
         <div class="enav-prev">
           {back && (

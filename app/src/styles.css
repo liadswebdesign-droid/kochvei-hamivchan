@@ -1901,6 +1901,29 @@ bdi.n {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  /* Scroll shadows: only when the page really scrolls (a question taller than a page, a long passage in landscape)
+     a soft shadow shows at the edge that has more below/above it; the white covers hide it at the ends. */
+  background:
+    linear-gradient(#fff 30%, rgba(255, 255, 255, 0)) top / 100% 30px no-repeat local,
+    linear-gradient(rgba(255, 255, 255, 0), #fff 70%) bottom / 100% 30px no-repeat local,
+    radial-gradient(farthest-side at 50% 0, rgba(45, 36, 66, 0.2), transparent) top / 100% 14px no-repeat scroll,
+    radial-gradient(farthest-side at 50% 100%, rgba(45, 36, 66, 0.2), transparent) bottom / 100% 14px no-repeat scroll;
+  background-color: #fff;
+  border-radius: 8px 8px 0 0;
+}
+/* the hidden copy of the exam screen the booklet is paged in (MockExam.jsx: useBookletPages) */
+.exam-measure {
+  position: fixed;
+  inset: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+  contain: strict;
+}
+.exam-measure * {
+  animation: none !important;
+  transition: none !important;
 }
 .sheet-foot {
   flex: none;

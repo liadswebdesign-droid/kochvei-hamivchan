@@ -186,16 +186,22 @@ export function chunk(arr, size, merge = false) {
 // The booklet as a list of pages. `part` drives paging rules: you may page back only inside the same part, so after
 // the "stop" page Part 1 is closed (as in the real test).
 //   cover → [example, passage, questions…] ×2 → stop → [example, items…] for tasks A–D → end
+//
+// Every page has a stable `key` (it does not depend on how the questions were paged), so the app can find "the same
+// place" again after re-paging. Item pages belong to a `run` (the questions of one passage, or of one task) with a
+// preferred grouping `per` / `merge` (the chunk rule); this layout is that ESTIMATE. The app then re-pages each run by
+// MEASURING with paginate() below, because how much fits depends on the screen and on the real text.
 export function layoutSim(def, content, passages) {
   const items = [];
   const pages = [{ key: 'cover', type: 'cover', part: 0 }];
-  const add = (p) => pages.push({ key: `${p.type}-${pages.length}`, ...p });
+  const add = (p) => pages.push({ key: p.type === 'items' ? itemsKey(p.items) : [p.type, p.task, p.passage && p.passage.id].filter(Boolean).join('-'), ...p });
+  const addRun = (base, list, per, merge) => chunk(list, per, merge).forEach((group, gi) => add({ ...base, type: 'items', items: group, first: gi === 0, per, merge }));
   add({ type: 'example', task: 'reading', part: 1 });
   passages.forEach((p, pi) => {
     const qs = tag(p.questions.map((q) => passageQ(p, q)), 'reading');
     items.push(...qs);
     add({ type: 'passage', part: 1, passage: p, first: pi === 0, story: p.kind === 'story' });
-    chunk(qs, 2, true).forEach((group, gi) => add({ type: 'items', task: 'reading', part: 1, items: group, first: gi === 0, passageId: p.id, ctxTitle: p.title }));
+    addRun({ task: 'reading', part: 1, run: 'reading:' + p.id, passageId: p.id, ctxTitle: p.title }, qs, 2, true);
   });
   add({ type: 'stop', part: 1 });
 
@@ -207,22 +213,79 @@ export function layoutSim(def, content, passages) {
   items.push(...A, ...B, ...Q, ...C, ...D);
 
   add({ type: 'example', task: 'A', part: 2 });
-  add({ type: 'items', task: 'A', part: 2, items: A, first: true });
+  addRun({ task: 'A', part: 2, run: 'A' }, A, Math.max(1, A.length));
   add({ type: 'example', task: 'B', part: 2 });
-  add({ type: 'items', task: 'B', part: 2, items: B, first: true });
-  if (Q.length) add({ type: 'items', task: 'B', part: 2, items: Q, first: false, ineq: true });
+  addRun({ task: 'B', part: 2, run: 'B' }, B, Math.max(1, B.length));
+  // the inequalities have their own instruction, so they are their own run (never `first`)
+  if (Q.length) chunk(Q, Q.length).forEach((g) => add({ type: 'items', task: 'B', part: 2, items: g, first: false, ineq: true, run: 'B:ineq', per: Q.length }));
   add({ type: 'example', task: 'C', part: 2 });
-  chunk(C, 2).forEach((g, i) => add({ type: 'items', task: 'C', part: 2, items: g, first: i === 0 }));
+  addRun({ task: 'C', part: 2, run: 'C' }, C, 2);
   add({ type: 'example', task: 'D', part: 2 });
-  D.forEach((it, i) => add({ type: 'items', task: 'D', part: 2, items: [it], first: i === 0 }));
+  addRun({ task: 'D', part: 2, run: 'D' }, D, 1);
   add({ type: 'end', part: 2 });
 
-  // printed page numbers: the cover is not numbered
+  number(pages);
+  return { id: simId(def.n), n: def.n, endless: def.n === ENDLESS, seed: def.seed, def, pages, items, total: items.length };
+}
+
+const itemsKey = (items) => 'items-' + items[0].id;
+
+// printed page numbers: the cover is not numbered
+function number(pages) {
   let no = 0;
   pages.forEach((p) => {
     if (p.type !== 'cover') p.pageNo = ++no;
   });
-  return { id: simId(def.n), n: def.n, endless: def.n === ENDLESS, seed: def.seed, def, pages, items, total: items.length };
+  return pages;
+}
+
+// Re-page the booklet by measurement. `fits(page)` renders a candidate page in the real page box and says whether its
+// content fits without scrolling (the app does this in a hidden copy of the exam screen, per orientation).
+// Each run is rebuilt from its questions: a page takes the preferred number (the chunk rule) and hands trailing
+// questions on to the next page until it fits. A question is never split; if one question alone is taller than the
+// page, that page gets `scroll: true` (it scrolls vertically instead of clipping). With `fits = () => true` this gives
+// back exactly the estimated layout. Other pages are kept as they are.
+export function paginate(pages, fits) {
+  const out = [];
+  for (let i = 0; i < pages.length; ) {
+    const p = pages[i];
+    if (p.type !== 'items' || !p.run) {
+      out.push({ ...p });
+      i += 1;
+      continue;
+    }
+    let j = i;
+    let rest = [];
+    while (j < pages.length && pages[j].type === 'items' && pages[j].run === p.run) rest = rest.concat(pages[j++].items);
+    const per = p.per || 2;
+    let first = p.first;
+    while (rest.length) {
+      const make = (n) => ({ ...p, key: itemsKey(rest), items: rest.slice(0, n), first, scroll: false });
+      let n = chunk(rest, per, p.merge)[0].length;
+      while (n > 1 && !fits(make(n))) n -= 1;
+      const page = make(n);
+      if (n === 1 && !fits(page)) page.scroll = true;
+      out.push(page);
+      rest = rest.slice(n);
+      first = false;
+    }
+    i = j;
+  }
+  return number(out);
+}
+
+// Where the child is, as something that survives re-paging: on an item page, the first of `ids` (the item she last
+// touched, the one with the pencil…) that is on the page, else the page's first item; on other pages, the page's own
+// key. pageFor() finds that place in a (re-paged) list; -1 when it is not there.
+export function placeOf(page, ...ids) {
+  if (!page) return null;
+  if (page.type === 'items') return { item: ids.find((id) => id && page.items.some((it) => it.id === id)) || page.items[0].id };
+  return { key: page.key };
+}
+export function pageFor(pages, place) {
+  if (!place) return -1;
+  if (place.item) return pages.findIndex((p) => p.type === 'items' && p.items.some((it) => it.id === place.item));
+  return pages.findIndex((p) => p.key === place.key);
 }
 
 // Load the passages a plan names and lay the booklet out.
