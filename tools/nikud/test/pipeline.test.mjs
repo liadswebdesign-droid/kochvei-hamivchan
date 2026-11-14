@@ -164,3 +164,11 @@ test('LLM driver: restorable ktiv-haser drops are kept without a retry; real let
   assert.equal(done.a, N('חֹרֶף קַר'));
   assert.equal(done.b, N('סֵפֶר טוֹב'));
 });
+
+test('extract: one-letter answer labels (א, ד׳) stay bare and are not extracted', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'nikud-test-'));
+  fs.writeFileSync(path.join(dir, 'ui.json'), JSON.stringify({ 'mc.1': 'א', 'mc.4': 'ד', 't.D': 'ד׳', 'w': 'אם' }));
+  const { items, errors } = extract(dir, ['ui.json']);
+  assert.deepEqual(errors, []);
+  assert.deepEqual(items.map((i) => i.pathStr), ['w']);
+});

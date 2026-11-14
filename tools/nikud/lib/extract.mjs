@@ -9,6 +9,9 @@ import { hasHebrew, hasMarks, parseHints, hintsToWordIndex, words, looseSkeleton
 
 // Keys whose string values are never vocalized even if they contained Hebrew (ids, enums, code).
 const SKIP_KEYS = new Set(['id', 'type', 'kind', 'topic', 'image', 'check', 'ask', 'icon', 'key']);
+// A whole string that is one letter (optionally with a geresh) is an answer label (א ב ג ד, א׳), never a word: the
+// booklet prints labels bare, so it is copied to the build unvocalized.
+const LETTER_LABEL = /^[א-ת][׳']?$/;
 
 export const sha = (s, n = 16) => crypto.createHash('sha256').update(s).digest('hex').slice(0, n);
 
@@ -43,7 +46,7 @@ export const pathToString = (p) => p.map((k, i) => (typeof k === 'number' ? `[${
 
 function walkStrings(node, p, out) {
   if (typeof node === 'string') {
-    if (hasHebrew(node)) out.push({ path: p, value: node });
+    if (hasHebrew(node) && !LETTER_LABEL.test(node.trim())) out.push({ path: p, value: node });
   } else if (Array.isArray(node)) node.forEach((v, i) => walkStrings(v, [...p, i], out));
   else if (node && typeof node === 'object') {
     for (const [k, v] of Object.entries(node)) if (!SKIP_KEYS.has(k)) walkStrings(v, [...p, k], out);
