@@ -3,6 +3,7 @@ import { companions, companionId } from '../config.js';
 import { t } from '../lib/content.js';
 import { boldParts, hasBold } from '../lib/rich.js';
 import { Shape, RiddleIcon, StarIcon, UiIcon } from './Icons.jsx';
+import { ShapeSeries } from './Shapes.jsx';
 
 // ---- companion ---------------------------------------------------------------
 // Small sizes (≤ 72px, chips and feedback bubbles) show the head crop in a coloured disc; larger ones show the full
@@ -164,6 +165,14 @@ export function StemText({ text }) {
 // out RTL like the booklet (first number on the right). Analogy stems ("ציפור : קן = דבורה : ?") get a large line.
 export function BonusStem({ item }) {
   const s = String(item.stem);
+  if (item.type === 'shape-series' && Array.isArray(item.seq)) {
+    return (
+      <>
+        <p class="stem"><StemText text={s} /></p>
+        <ShapeSeries seq={item.seq} />
+      </>
+    );
+  }
   const series = item.type === 'series' && /^(.*?\?)\s*((?:[\d]+|\?)(?:\s*,\s*(?:[\d]+|\?))+)\s*$/.exec(s);
   if (series) {
     const list = series[2].split(',').map((x) => x.trim());

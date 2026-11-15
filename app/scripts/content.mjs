@@ -22,7 +22,7 @@ const OUT = path.join(APP, 'public/content');
 const REQUIRED_FILES = ['ui.json', 'word-problems.json'];
 const OPTIONAL_FILES = [
   'picture-riddles.json',
-  'bonus/analogies.json', 'bonus/series.json', 'bonus/sentences.json', 'bonus/odd-one-out.json',
+  'bonus/analogies.json', 'bonus/series.json', 'bonus/shape-series.json', 'bonus/sentences.json', 'bonus/odd-one-out.json',
 ];
 
 const mode = process.argv.includes('--preview') ? 'preview' : process.argv.includes('--dev') ? 'dev' : 'strict';

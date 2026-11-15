@@ -29,7 +29,7 @@ export async function loadCore() {
   const has = (f) => manifest.optional.includes(f);
   const [pictureRiddles, ...bonus] = await Promise.all([
     has('picture-riddles.json') ? getJSON('picture-riddles.json') : [],
-    ...['analogies', 'series', 'sentences', 'odd-one-out'].map((b) => (has(`bonus/${b}.json`) ? getJSON(`bonus/${b}.json`) : [])),
+    ...['analogies', 'series', 'shape-series', 'sentences', 'odd-one-out'].map((b) => (has(`bonus/${b}.json`) ? getJSON(`bonus/${b}.json`) : [])),
   ]);
   return { manifest, passages, wordProblems, pictureRiddles, bonus: bonus.flat() };
 }

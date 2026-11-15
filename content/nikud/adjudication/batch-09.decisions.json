@@ -1,0 +1,10 @@
+{
+  "g-258d9d222b18": { "form": "בְּצֶבַע", "reason": "generic attribute (they alternate in colour), indefinite → בְּ" },
+  "g-7a9a8b1f16f4": { "form": "גַּלּוּ", "reason": "imperative pl. of גִּלָּה; dagesh kal at word start, as in instr.bonus.analogy" },
+  "g-124b1ccd90ae": { "form": "וְהַמְּעוּיָּנִים", "reason": "מְעֻיָּן is a pual-pattern noun with dagesh chazak in the yod; ktiv male מעוין" },
+  "g-24d0bd77faac": { "form": "כְּחוּלִּים", "reason": "plural of כָּחֹל: כְּחֻלִּים with dagesh in lamed, as already decided in g-eee173fbf9bd" },
+  "g-8b87fd9b4af0": { "form": "מְחוֹגֵי", "reason": "construct plural of מָחוֹג: מְחוֹגֵי" },
+  "g-f9dae45f5304": { "form": "מְעוּיָּן", "reason": "pual-pattern noun מְעֻיָּן, dagesh chazak in the yod" },
+  "g-d9cc8be2abb0": { "form": "מְעוּיָּנִים", "reason": "plural of מְעֻיָּן keeps the dagesh in the yod" },
+  "g-9a8bc7461274": { "form": "מְשׁוּשִּׁים", "reason": "plural of מְשֻׁשֶּׁה: מְשֻׁשִּׁים with dagesh in the second shin" }
+}

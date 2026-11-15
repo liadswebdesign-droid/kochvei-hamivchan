@@ -9,6 +9,7 @@ import { Companion, MathLine, DigitEquation, RiddleRows, Btn, StemText, BonusSte
 import { Choices } from '../components/Choices.jsx';
 import { NumPad } from '../components/NumPad.jsx';
 import { PassageView } from '../components/PassageView.jsx';
+import { ShapeSeries, ShapeTile } from '../components/Shapes.jsx';
 import { RiddleIcon, StarIcon, UiIcon } from '../components/Icons.jsx';
 import { onPracticeComplete } from '../lib/rewards.js'; // T5
 import { sfx } from '../lib/sound.js'; // T5
@@ -133,7 +134,16 @@ function Explanation({ item }) {
           <DigitEquation digit={item.digit} reveal={item.options[item.answer]} />
         </>
       )}
-      {item.kind === 'mc' && !item.riddle && !item.digit && (
+      {item.seq && (
+        <>
+          <p class="explain-lead">
+            {t('feedback.answerWas')} <strong>{t('mc.label.' + (item.answer + 1))}</strong>
+          </p>
+          <ShapeSeries seq={item.seq} reveal={right} size="sm" />
+          {item.explain && <p class="explain-text"><StemText text={item.explain} /></p>}
+        </>
+      )}
+      {item.kind === 'mc' && !item.riddle && !item.digit && !item.seq && (
         <>
           <p class="explain-lead">
             {t('feedback.answerWas')} <strong>{t('mc.label.' + (item.answer + 1))}. <StemText text={right} /></strong>
@@ -366,8 +376,9 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
                 onSelect={(i) => (phase === 'answer' || phase === 'hint') && setChoice(i)}
                 marks={marks}
                 locked={phase === 'correct' || phase === 'explain'}
-                layout={numericOptions ? 'row' : !passage && item.options.every((o) => stripBold(o).length <= 18) ? 'grid' : 'list'}
-                render={numericOptions ? null : (o) => <StemText text={o} />}
+                layout={numericOptions || item.seq ? 'row' : !passage && item.options.every((o) => stripBold(o).length <= 18) ? 'grid' : 'list'}
+                variant={item.seq ? 'shapes' : null}
+                render={item.seq ? (o) => <span class="stile"><ShapeTile tok={o} /></span> : numericOptions ? null : (o) => <StemText text={o} />}
               />
             ) : null}
           </div>

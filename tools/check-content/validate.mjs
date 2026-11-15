@@ -23,12 +23,20 @@
 //  - passages: structure, line numbering, lineRef in range, quoted text in a stem appears in the cited line(s),
 //    line numbers named in a stem ("בשורה 5") are in range and inside lineRef
 //  - bonus: id/type/level/stem/options/answer/explain
+//  - bonus/series.json: the stem ends in the numbers with one "?"; options are digits; every whole number 0–200 is tried in
+//    the gap against simple rules (constant step, growing step, doubling/halving, alternating steps, two interleaved
+//    series): the answer must fit, no other option may fit (unrecomputable series: warning only)
+//  - bonus/shape-series.json: tiles use only the app's vocabulary (app/src/lib/shapes.js); 4 options that all look
+//    different; the item's "rule" recomputes options[answer]; each distractor changes exactly one attribute; colour is
+//    never the only difference unless the rule is about colour (then once at most); no distractor completes the sequence
+//    by any other simple rule (same / cycle 2–3 / step, whole or interleaved)
 //  - ui.json: flat { key: Hebrew string }
 //  - stats: counts per level and answer-position balance per bank
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import * as SH from '../../app/src/lib/shapes.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const args = process.argv.slice(2);
@@ -402,8 +410,131 @@ function validateBonus(data, name) {
     checkText(b.stem, `${w}.stem`);
     checkText(b.explain, `${w}.explain`);
     checkOptions(b.options, b.answer, w);
+    if (b.type === 'series') checkNumberSeries(b, w);
   });
   pushStats(`bonus/${name}`, data, ` | types ${Object.entries(types).map(([k, v]) => `${k}=${v}`).join(' ')}`);
+}
+
+// ---------------------------------------------------------------- number series (bonus/series.json)
+// Recompute the answer by brute force: every whole number 0–200 is tried in the gap, and kept when the completed
+// sequence fits one of the simple rules a grade-2 series uses. The answer must be among the fits and no other option may
+// fit. A series outside these families only gets a warning (it can't be recomputed here).
+const SERIES_STEM = /^(.*?\?)\s*((?:\d+|\?)(?:\s*,\s*(?:\d+|\?))+)\s*$/;
+const diffs = (a) => a.slice(1).map((x, i) => x - a[i]);
+const allEq = (a) => a.every((x) => x === a[0]);
+const isArith = (a, allowZero = false) => a.length >= 3 && allEq(diffs(a)) && (allowZero || diffs(a)[0] !== 0);
+export const SERIES_FAMILIES = {
+  'constant step': (a) => a.length >= 4 && isArith(a),
+  'growing step': (a) => a.length >= 5 && isArith(diffs(a)),
+  'doubling/halving': (a) => a.length >= 4 && a.every((x) => x > 0) && [2, 3, 1 / 2, 1 / 3].some((q) => a.slice(1).every((x, i) => x === a[i] * q)),
+  'alternating steps': (a) => { const d = diffs(a); return a.length >= 5 && d[0] !== d[1] && d.every((x, i) => x === d[i % 2]); },
+  'two interleaved series': (a) => a.length >= 6 && isArith(a.filter((_, i) => i % 2 === 0), true) && isArith(a.filter((_, i) => i % 2 === 1), true),
+};
+export function seriesFits(seq) {
+  const g = seq.indexOf('?');
+  const fits = new Map(); // value -> [family names]
+  for (let v = 0; v <= 200; v++) {
+    const a = seq.map((x) => (x === '?' ? v : x));
+    const names = Object.entries(SERIES_FAMILIES).filter(([, f]) => f(a)).map(([n]) => n);
+    if (names.length && g >= 0) fits.set(v, names);
+  }
+  return fits;
+}
+function checkNumberSeries(b, w) {
+  if (typeof b.stem !== 'string') return;
+  const m = SERIES_STEM.exec(b.stem);
+  if (!m) { err(w, 'series stem must be the question then the numbers: "…? 2, 4, 6, ?"'); return; }
+  const seq = m[2].split(',').map((x) => x.trim()).map((x) => (x === '?' ? x : Number(x)));
+  if (seq.filter((x) => x === '?').length !== 1) { err(w, 'series needs exactly one "?"'); return; }
+  if (!Array.isArray(b.options) || !b.options.every((o) => /^\d+$/.test(String(o)))) { err(w, 'series options must be whole numbers written as digits'); return; }
+  const opts = b.options.map(Number);
+  const big = seq.concat(opts).filter((x) => x !== '?' && x > 100);
+  if (big.length) warn(w, `number(s) above 100 for grade 2: ${big.join(', ')}`);
+  const fits = seriesFits(seq);
+  const right = opts[b.answer];
+  if (!fits.size) { warn(w, 'answer not recomputed: the series fits none of the checked rules'); return; }
+  if (!fits.has(right)) err(w, `answer ${right} does not fit; the rule gives ${[...fits.keys()].join(' or ')} (${[...fits.values()][0].join(', ')})`);
+  opts.forEach((o, k) => { if (k !== b.answer && fits.has(o)) err(w, `option ${o} also completes the series (${fits.get(o).join(', ')})`); });
+  const others = [...fits.keys()].filter((v) => v !== right && !opts.includes(v));
+  if (others.length) warn(w, `the series could also continue with ${others.join(', ')} (${others.map((v) => fits.get(v).join('/')).join('; ')})`);
+}
+
+// ---------------------------------------------------------------- shape series (bonus/shape-series.json)
+// Token vocabulary, equality and the rule engine are the app's own (app/src/lib/shapes.js), so the validator and the
+// renderer can never disagree on what a tile is.
+const SHAPE_STEMS = { end: 'איזו צורה ממשיכה את הסדרה?', middle: 'מה חסר בסדרה?' };
+function validateShapeSeries(data) {
+  if (!Array.isArray(data)) { err('', 'must be a JSON array'); return; }
+  data.forEach((b, i) => {
+    const w = `[${i}] ${b && b.id ? b.id : ''}`.trim();
+    if (!b || typeof b !== 'object') { err(w, 'not an object'); return; }
+    claimId(b.id, w);
+    checkLevel(b.level, w);
+    if (b.type !== 'shape-series') err(w, `type must be "shape-series" (got ${JSON.stringify(b.type)})`);
+    const known = new Set(['id', 'type', 'level', 'stem', 'seq', 'options', 'answer', 'rule', 'explain']);
+    const extra = Object.keys(b).filter((k) => !known.has(k));
+    if (extra.length) err(w, `unknown field(s) ${extra.join(', ')}`);
+    checkText(b.stem, `${w}.stem`);
+    checkText(b.explain, `${w}.explain`);
+
+    // the sequence
+    const seq = b.seq;
+    if (!Array.isArray(seq) || seq.length < 4 || seq.length > 8) { err(w, `seq must be an array of 4–8 tiles (got ${Array.isArray(seq) ? seq.length : typeof seq})`); return; }
+    const g = seq.indexOf(SH.GAP);
+    if (seq.filter(SH.isGap).length !== 1) { err(w, 'seq needs exactly one "?"'); return; }
+    let bad = false;
+    seq.forEach((t, k) => { if (!SH.isGap(t)) for (const p of SH.tokenProblems(t)) { err(`${w}.seq[${k}]`, p); bad = true; } });
+    if (typeof b.stem === 'string') {
+      const want = g === seq.length - 1 ? SHAPE_STEMS.end : SHAPE_STEMS.middle;
+      if (Object.values(SHAPE_STEMS).includes(b.stem) && b.stem !== want) err(w, `the gap is ${g === seq.length - 1 ? 'last' : 'in the middle'}, so the stem should be "${want}"`);
+      else if (b.stem !== want) warn(w, `stem is not one of the fixed stems ("${want}")`);
+    }
+
+    // the options
+    if (!Array.isArray(b.options) || b.options.length !== 4) { err(w, `options must be an array of exactly 4 tiles (got ${Array.isArray(b.options) ? b.options.length : typeof b.options})`); return; }
+    b.options.forEach((t, k) => { for (const p of SH.tokenProblems(t)) { err(`${w}.options[${k}]`, p); bad = true; } });
+    if (!Number.isInteger(b.answer) || b.answer < 0 || b.answer > 3) { err(w, `answer must be an integer 0–3 (got ${JSON.stringify(b.answer)})`); return; }
+    if (bad) return;
+    for (let x = 0; x < 4; x++) for (let y = x + 1; y < 4; y++) if (SH.sameTile(b.options[x], b.options[y])) err(w, `options[${x}] and options[${y}] look the same`);
+
+    // the rule recomputes the answer
+    const exp = SH.expectedTile(b.rule, seq);
+    if (!exp.ok) { err(w, `rule: ${exp.why}`); return; }
+    const right = b.options[b.answer];
+    if (!SH.sameTile(exp.value, right)) err(w, `the rule gives ${SH.tokenKey(exp.value)}, but options[${b.answer}] is ${SH.tokenKey(right)}`);
+
+    // distractors: each changes exactly one attribute of the answer; colour is never the only difference unless the item
+    // is about colour, and then for one distractor at most
+    const colourItem = SH.ruleUsesColour(b.rule);
+    let colourOnly = 0;
+    b.options.forEach((d, k) => {
+      if (k === b.answer) return;
+      const dd = SH.diffAttrs(right, d);
+      if (dd.length !== 1) err(w, `options[${k}] must change exactly one thing about the answer (changes ${dd.join(', ') || 'nothing'})`);
+    });
+    for (let x = 0; x < 4; x++) for (let y = x + 1; y < 4; y++) {
+      const dd = SH.diffAttrs(b.options[x], b.options[y]);
+      if (dd.length === 1 && dd[0] === 'c') {
+        if (!colourItem) err(w, `options[${x}] and options[${y}] differ only in colour, and this item is not about colour`);
+        colourOnly++;
+      }
+    }
+    if (colourOnly > 1) err(w, `${colourOnly} pairs of options differ only in colour (at most one, and only in a colour item)`);
+
+    // ambiguity: no distractor may complete the sequence by some other simple rule
+    b.options.forEach((d, k) => {
+      if (k === b.answer) return;
+      const ex = SH.explainSequence(seq.map((t) => (SH.isGap(t) ? d : t)), g, { interleaved: !!(b.rule && b.rule.interleave) });
+      if (ex) err(w, `options[${k}] also completes the sequence (rule ${JSON.stringify(ex)}): two defensible answers`);
+    });
+  });
+  const kinds = {};
+  for (const b of data) {
+    const r = (b && b.rule) || {};
+    const k = r.interleave ? 'interleave' : Object.entries(r).map(([a, s]) => `${a}:${Object.keys(s)[0] || s}`).sort().join('+') || 'same';
+    kinds[k] = (kinds[k] || 0) + 1;
+  }
+  pushStats('bonus/shape-series.json', data, ` | rules ${Object.entries(kinds).map(([k, v]) => `${k}=${v}`).join(' ')}`);
 }
 
 // ---------------------------------------------------------------- ui.json
@@ -445,6 +576,7 @@ for (const file of files) {
   else if (rel === 'picture-riddles.json') validatePictureRiddles(data, raw);
   else if (rel === 'ui.json') validateUi(data);
   else if (rel.startsWith('passages/')) validatePassage(data, path.basename(rel, '.json'));
+  else if (rel === 'bonus/shape-series.json') validateShapeSeries(data);
   else if (rel.startsWith('bonus/')) validateBonus(data, path.basename(rel));
   else warn('', 'unknown file (not in SCHEMA.md); skipped');
 }

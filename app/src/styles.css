@@ -1599,6 +1599,65 @@ bdi.n {
   vertical-align: middle;
   margin-inline-start: 8px;
 }
+/* shape patterns (bonus shape-series): big rounded tiles like the number chips, sized so a whole row fits the card */
+.sseries {
+  --tile: clamp(54px, calc((100cqi - (var(--len) - 1) * 10px) / var(--len)), 104px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  direction: rtl;
+}
+.stile {
+  width: var(--tile);
+  height: var(--tile);
+  flex: none;
+  box-sizing: border-box;
+  padding: 5px;
+  border-radius: 20px;
+  background: #fff;
+  border: 3px solid var(--line);
+  display: inline-grid;
+  place-items: center;
+}
+.stile-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.stile.ask {
+  border: 3px dashed var(--coral);
+  color: var(--coral-deep);
+  background: var(--coral-soft);
+  font: 600 calc(var(--tile) * 0.48) / 1 var(--f-display);
+}
+.stile.filled {
+  border: 3px solid var(--green);
+  background: var(--green-soft);
+}
+.sseries-sm {
+  --tile: 60px;
+  gap: 6px;
+  justify-content: flex-start;
+  margin: 6px 0;
+}
+.sseries-sm .stile {
+  border-radius: 12px;
+  padding: 3px;
+}
+.choices-shapes .choice {
+  min-height: 0;
+}
+.choices-shapes .choice-text {
+  display: grid;
+  place-items: center;
+}
+.choices-shapes .stile {
+  --tile: clamp(72px, 15cqi, 112px);
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
 .choices-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }

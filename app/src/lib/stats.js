@@ -1,6 +1,7 @@
 // Aggregations for the parent screen. Pure: they read the per-profile log (storage.js shape
 // { t, skill, id, correct, tries, ms, [sim], [task], [type] }) and the simulation history.
 import { itemFromId } from '../gen/index.js';
+import { seqText } from './shapes.js';
 
 export const READING_TYPES = ['detail', 'vocab', 'reference', 'purpose', 'not-answered', 'synonyms', 'inference', 'why', 'title', 'sequence'];
 const SKILL_ORDER = ['exercises', 'missing', 'inequality', 'wordProblems', 'riddles', 'bonus'];
@@ -130,6 +131,7 @@ export function describeItem(id, ctx) {
   const pr = ctx.pictureRiddles.find((x) => x.id === id);
   if (pr) return { text: riddleText(pr.rows, pr.ask), math: true };
   const b = ctx.bonus.find((x) => x.id === id);
+  if (b && Array.isArray(b.seq)) return { text: `${b.stem} ${seqText(b.seq)}` }; // shape pattern: the tiles as symbols
   if (b) return { text: b.stem };
   if (ctx.questions[id]) return { text: ctx.questions[id] };
   return { text: String(id), math: true };

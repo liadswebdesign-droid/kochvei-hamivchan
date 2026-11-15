@@ -18,7 +18,8 @@ const shuffle = (a) => {
 export const wpItem = (w) => ({ id: w.id, skill: 'wordProblems', kind: 'mc', level: w.level, stem: w.stem, options: w.options, answer: w.answer, explain: w.explain, hintText: w.hint });
 export const passageQ = (p, q) => ({ id: q.id, skill: 'reading', kind: 'mc', type: q.type, passageId: p.id, passage: p, stem: q.stem, options: q.options, answer: q.answer, explain: q.explain, lineRef: q.lineRef || [] });
 export const prItem = (r) => ({ id: r.id, skill: 'riddles', kind: 'mc', level: r.level, riddle: { rows: r.rows, ask: r.ask }, solution: solveRiddle(r.rows)[0] || null, options: r.options, answer: r.answer, hint: { key: 'hint.riddle' } });
-const bonusItem = (b) => ({ id: b.id, skill: 'bonus', kind: 'mc', type: b.type, level: b.level, stem: b.stem, options: b.options, answer: b.answer, explain: b.explain });
+// `seq` = the tiles of a shape-pattern item (bonus/shape-series.json); absent for the word/number bonus banks.
+const bonusItem = (b) => ({ id: b.id, skill: 'bonus', kind: 'mc', type: b.type, level: b.level, stem: b.stem, options: b.options, answer: b.answer, explain: b.explain, ...(b.seq ? { seq: b.seq } : {}) });
 
 // Fill `n` generated items with distinct signatures.
 function generate(n, makers, level, taken) {

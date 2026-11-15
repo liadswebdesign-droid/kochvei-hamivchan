@@ -6,6 +6,7 @@ import path from 'node:path';
 import { companions, games } from './config.js';
 import { SHAPES } from './gen/riddles.js';
 import { REASONS } from './lib/rewards.js';
+import { SHAPE_UI_KEYS } from './lib/shapes.js';
 
 const ui = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../dev-fixtures/ui.json'), 'utf8'));
 const master = Object.keys(ui).filter((k) => !k.startsWith('_'));
@@ -18,14 +19,15 @@ function sources(dir) {
   });
 }
 const code = sources(__dirname).join('\n');
-const PREFIX = '(?:app|common|profile|companion|map|island|instr|mc|numpad|practice|feedback|hint|results|sim|parent|album|sticker|games|game)';
+const PREFIX = '(?:app|common|profile|companion|map|island|instr|mc|numpad|practice|feedback|hint|results|sim|parent|album|sticker|games|game|shape)';
 const literal = [...code.matchAll(new RegExp(`'(${PREFIX}\\.[\\w.-]+)'`, 'g'))].map((m) => m[1]).filter((k) => !k.endsWith('.'));
 const dynamic = [
   ...companions.map((c) => 'companion.' + c.id),
   ...[1, 2, 3, 4].map((n) => 'mc.label.' + n),
   ...[1, 2, 3, 4].map((n) => 'feedback.correct.' + n),
   ...SHAPES.map((s) => 'instr.digit.ask.' + s),
-  ...['analogy', 'sentence', 'series', 'odd-one-out'].map((b) => 'instr.bonus.' + b),
+  ...['analogy', 'sentence', 'series', 'shape-series', 'odd-one-out'].map((b) => 'instr.bonus.' + b),
+  ...SHAPE_UI_KEYS,
   ...games.flatMap((g) => ['games.' + g.id + '.title', 'games.' + g.id + '.how']),
   ...REASONS.map((r) => 'sticker.reason.' + r),
 ];

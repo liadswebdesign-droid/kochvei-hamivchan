@@ -8,7 +8,7 @@ and the nikud pipeline vocalizes it into `content/build/ui.json`.
   exactly as written (Latin, curly braces). A number placeholder after a one-letter prefix takes the real maqaf: `מ־{bound}`.
 - Addressing the child: plural in instructions ("קראו", "פתרו"), gender-neutral or plural in companion lines.
 - `npm run build` fails if `content/build/ui.json` lacks any key in this list (scripts/content.mjs).
-- Total: 325 keys. Regenerate this file with `npm run ui-keys`.
+- Total: 362 keys. Regenerate this file with `npm run ui-keys`.
 
 ## App
 
@@ -103,6 +103,7 @@ and the nikud pipeline vocalizes it into `content/build/ui.json`.
 | `instr.bonus.sentence` | השלימו את המשפט |
 | `instr.bonus.series` | מצאו את המספר הבא בסדרה |
 | `instr.bonus.odd-one-out` | איזו מילה לא שייכת? |
+| `instr.bonus.shape-series` | גלו מה החוק של הסדרה, ובחרו את הצורה המתאימה |
 
 ## Answer labels
 
@@ -180,6 +181,47 @@ and the nikud pipeline vocalizes it into `content/build/ui.json`.
 | `results.again` | עוד סבב |
 | `results.toMap` | חזרה למפה |
 | `results.reviewAdded` | {n} שאלות יחזרו בסבב הבא |
+
+## Shape-pattern tiles (screen-reader labels built by src/lib/shapes.js tileLabel)
+
+| Key | Placeholder (unvocalized) |
+|---|---|
+| `shape.name.circle` | עיגול |
+| `shape.names.circle` | עיגולים |
+| `shape.name.square` | ריבוע |
+| `shape.names.square` | ריבועים |
+| `shape.name.triangle` | משולש |
+| `shape.names.triangle` | משולשים |
+| `shape.name.star` | כוכב |
+| `shape.names.star` | כוכבים |
+| `shape.name.heart` | לב |
+| `shape.names.heart` | לבבות |
+| `shape.name.diamond` | מעוין |
+| `shape.names.diamond` | מעוינים |
+| `shape.name.arrow` | חץ |
+| `shape.names.arrow` | חצים |
+| `shape.name.hexagon` | משושה |
+| `shape.names.hexagon` | משושים |
+| `shape.color.blue` | כחול |
+| `shape.colors.blue` | כחולים |
+| `shape.color.yellow` | צהוב |
+| `shape.colors.yellow` | צהובים |
+| `shape.color.red` | אדום |
+| `shape.colors.red` | אדומים |
+| `shape.dir.0` | למעלה |
+| `shape.dir.45` | למעלה וימינה |
+| `shape.dir.90` | ימינה |
+| `shape.dir.135` | למטה וימינה |
+| `shape.dir.180` | למטה |
+| `shape.dir.225` | למטה ושמאלה |
+| `shape.dir.270` | שמאלה |
+| `shape.dir.315` | למעלה ושמאלה |
+| `shape.empty` | ריק |
+| `shape.empty.pl` | ריקים |
+| `shape.points` | מצביע {dir} |
+| `shape.points.pl` | מצביעים {dir} |
+| `shape.half` | החצי הצבוע {dir} |
+| `shape.gap` | צורה חסרה |
 
 ## Test simulation (booklet, examples, stop page, results and mistakes review)
 

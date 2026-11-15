@@ -111,6 +111,11 @@ describe('mistakes and trend', () => {
     expect(describeItem('inf-01-q1', ctx).text).toBe('מה?');
     expect(describeItem('g:ex:2:123', ctx).text).toMatch(/^\d+ [+−×] \d+ = __$/);
   });
+  it('describes a shape-pattern item by its stem and the tiles as symbols', () => {
+    const tok = (s, o = {}) => ({ s, c: 'blue', r: 0, n: 1, f: 'full', ...o });
+    const ctx = { wordProblems: [], pictureRiddles: [], bonus: [{ id: 'sh-1', stem: 'שאלה?', seq: [tok('circle'), tok('arrow', { r: 90 }), tok('star', { n: 2, f: 'empty' }), '?'] }], questions: {} };
+    expect(describeItem('sh-1', ctx).text).toBe('שאלה? ● → ☆☆ ?');
+  });
 });
 
 describe('parent data (memory storage)', () => {

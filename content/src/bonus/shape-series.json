@@ -1,0 +1,679 @@
+[
+  {
+    "id": "sh-01",
+    "type": "shape-series",
+    "level": 1,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"blue","r":0,"n":1,"f":"empty"},
+      {"s":"square","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"blue","r":0,"n":2,"f":"full"}
+    ],
+    "answer": 2,
+    "rule": {"s":{"cycle":2}},
+    "explain": "עיגול וריבוע מתחלפים. אחרי עיגול בא ריבוע."
+  },
+  {
+    "id": "sh-02",
+    "type": "shape-series",
+    "level": 1,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"star","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"star","c":"yellow","r":0,"n":1,"f":"full"},
+      {"s":"star","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"star","c":"yellow","r":0,"n":1,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"star","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"star","c":"yellow","r":0,"n":1,"f":"full"},
+      {"s":"heart","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"star","c":"red","r":0,"n":1,"f":"empty"}
+    ],
+    "answer": 0,
+    "rule": {"c":{"cycle":2}},
+    "explain": "הצבעים מתחלפים: אדום, צהוב, אדום, צהוב. עכשיו בא כוכב אדום."
+  },
+  {
+    "id": "sh-03",
+    "type": "shape-series",
+    "level": 1,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"triangle","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"triangle","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"blue","r":0,"n":1,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"triangle","c":"blue","r":180,"n":1,"f":"full"},
+      {"s":"triangle","c":"blue","r":0,"n":1,"f":"full"}
+    ],
+    "answer": 3,
+    "rule": {"s":{"cycle":3}},
+    "explain": "שלוש צורות חוזרות לפי הסדר: משולש, עיגול, ריבוע. אחרי ריבוע בא משולש."
+  },
+  {
+    "id": "sh-04",
+    "type": "shape-series",
+    "level": 1,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"heart","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"heart","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"heart","c":"yellow","r":0,"n":1,"f":"full"},
+      {"s":"heart","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"heart","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"heart","c":"yellow","r":0,"n":1,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"heart","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"heart","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"heart","c":"red","r":0,"n":1,"f":"empty"},
+      {"s":"circle","c":"red","r":0,"n":1,"f":"full"}
+    ],
+    "answer": 1,
+    "rule": {"c":{"cycle":3}},
+    "explain": "הצבעים חוזרים לפי הסדר: אדום, כחול, צהוב. אחרי צהוב בא אדום."
+  },
+  {
+    "id": "sh-05",
+    "type": "shape-series",
+    "level": 1,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"star","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"star","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"star","c":"blue","r":0,"n":1,"f":"empty"},
+      {"s":"star","c":"blue","r":0,"n":2,"f":"full"}
+    ],
+    "answer": 1,
+    "rule": {"s":{"cycle":3}},
+    "explain": "שני עיגולים ואז כוכב, ושוב שני עיגולים. עכשיו בא כוכב."
+  },
+  {
+    "id": "sh-06",
+    "type": "shape-series",
+    "level": 1,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"square","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"red","r":0,"n":1,"f":"empty"},
+      {"s":"square","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"red","r":0,"n":1,"f":"empty"},
+      "?"
+    ],
+    "options": [
+      {"s":"square","c":"red","r":0,"n":1,"f":"empty"},
+      {"s":"circle","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"red","r":0,"n":2,"f":"full"},
+      {"s":"square","c":"red","r":0,"n":1,"f":"full"}
+    ],
+    "answer": 3,
+    "rule": {"f":{"cycle":2}},
+    "explain": "ריבוע מלא וריבוע ריק מתחלפים. עכשיו בא ריבוע מלא."
+  },
+  {
+    "id": "sh-07",
+    "type": "shape-series",
+    "level": 1,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"heart","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"heart","c":"red","r":0,"n":2,"f":"full"},
+      {"s":"heart","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"heart","c":"red","r":0,"n":2,"f":"full"},
+      {"s":"heart","c":"red","r":0,"n":1,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"heart","c":"red","r":0,"n":2,"f":"full"},
+      {"s":"heart","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"heart","c":"red","r":0,"n":3,"f":"full"},
+      {"s":"star","c":"red","r":0,"n":2,"f":"full"}
+    ],
+    "answer": 0,
+    "rule": {"n":{"cycle":2}},
+    "explain": "לב אחד ושני לבבות מתחלפים. עכשיו באים שני לבבות."
+  },
+  {
+    "id": "sh-08",
+    "type": "shape-series",
+    "level": 1,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"arrow","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":180,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":180,"n":1,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"arrow","c":"blue","r":180,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":90,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":0,"n":2,"f":"full"}
+    ],
+    "answer": 2,
+    "rule": {"r":{"cycle":2}},
+    "explain": "החץ מצביע למעלה ואז למטה, שוב ושוב. עכשיו הוא מצביע למעלה."
+  },
+  {
+    "id": "sh-09",
+    "type": "shape-series",
+    "level": 1,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"diamond","c":"yellow","r":0,"n":1,"f":"full"},
+      {"s":"hexagon","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"diamond","c":"yellow","r":0,"n":1,"f":"full"},
+      {"s":"hexagon","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"diamond","c":"yellow","r":0,"n":1,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"hexagon","c":"yellow","r":0,"n":1,"f":"full"},
+      {"s":"diamond","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"hexagon","c":"blue","r":0,"n":1,"f":"empty"},
+      {"s":"hexagon","c":"blue","r":0,"n":1,"f":"full"}
+    ],
+    "answer": 3,
+    "rule": {"s":{"cycle":2},"c":{"cycle":2}},
+    "explain": "מעוין צהוב ומשושה כחול מתחלפים. עכשיו בא משושה כחול."
+  },
+  {
+    "id": "sh-10",
+    "type": "shape-series",
+    "level": 1,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"triangle","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"triangle","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"red","r":0,"n":1,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"square","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"triangle","c":"red","r":180,"n":1,"f":"full"},
+      {"s":"triangle","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"triangle","c":"red","r":0,"n":1,"f":"empty"}
+    ],
+    "answer": 2,
+    "rule": {"s":{"cycle":3}},
+    "explain": "משולש ואחריו שני ריבועים, שוב ושוב. עכשיו בא משולש."
+  },
+  {
+    "id": "sh-11",
+    "type": "shape-series",
+    "level": 2,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"arrow","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":90,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":180,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":270,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":0,"n":1,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"arrow","c":"blue","r":270,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":90,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":90,"n":1,"f":"empty"}
+    ],
+    "answer": 1,
+    "rule": {"r":{"step":90}},
+    "explain": "החץ מסתובב בכל פעם רבע סיבוב, כמו מחוגי השעון. אחרי למעלה הוא מצביע ימינה."
+  },
+  {
+    "id": "sh-12",
+    "type": "shape-series",
+    "level": 2,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"circle","c":"blue","r":0,"n":2,"f":"full"},
+      {"s":"circle","c":"blue","r":0,"n":3,"f":"full"},
+      {"s":"circle","c":"blue","r":0,"n":4,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"circle","c":"blue","r":0,"n":4,"f":"full"},
+      {"s":"square","c":"blue","r":0,"n":5,"f":"full"},
+      {"s":"circle","c":"blue","r":0,"n":5,"f":"empty"},
+      {"s":"circle","c":"blue","r":0,"n":5,"f":"full"}
+    ],
+    "answer": 3,
+    "rule": {"n":{"step":1}},
+    "explain": "בכל פעם יש עוד עיגול אחד: 1, 2, 3, 4, ועכשיו 5."
+  },
+  {
+    "id": "sh-13",
+    "type": "shape-series",
+    "level": 2,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"star","c":"yellow","r":0,"n":5,"f":"full"},
+      {"s":"star","c":"yellow","r":0,"n":4,"f":"full"},
+      {"s":"star","c":"yellow","r":0,"n":3,"f":"full"},
+      {"s":"star","c":"yellow","r":0,"n":2,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"star","c":"yellow","r":0,"n":1,"f":"full"},
+      {"s":"star","c":"yellow","r":0,"n":2,"f":"full"},
+      {"s":"heart","c":"yellow","r":0,"n":1,"f":"full"},
+      {"s":"star","c":"yellow","r":0,"n":1,"f":"empty"}
+    ],
+    "answer": 0,
+    "rule": {"n":{"step":-1}},
+    "explain": "בכל פעם יש כוכב אחד פחות. אחרי שני כוכבים בא כוכב אחד."
+  },
+  {
+    "id": "sh-14",
+    "type": "shape-series",
+    "level": 2,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"square","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"yellow","r":0,"n":2,"f":"full"},
+      {"s":"square","c":"blue","r":0,"n":3,"f":"full"},
+      {"s":"square","c":"yellow","r":0,"n":4,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"square","c":"yellow","r":0,"n":5,"f":"full"},
+      {"s":"square","c":"blue","r":0,"n":4,"f":"full"},
+      {"s":"square","c":"blue","r":0,"n":5,"f":"full"},
+      {"s":"circle","c":"blue","r":0,"n":5,"f":"full"}
+    ],
+    "answer": 2,
+    "rule": {"n":{"step":1},"c":{"cycle":2}},
+    "explain": "בכל פעם יש עוד ריבוע, והצבע מתחלף: כחול, צהוב. עכשיו 5 ריבועים כחולים."
+  },
+  {
+    "id": "sh-15",
+    "type": "shape-series",
+    "level": 2,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"triangle","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"triangle","c":"red","r":90,"n":1,"f":"empty"},
+      {"s":"triangle","c":"red","r":180,"n":1,"f":"full"},
+      {"s":"triangle","c":"red","r":270,"n":1,"f":"empty"},
+      "?"
+    ],
+    "options": [
+      {"s":"triangle","c":"red","r":0,"n":1,"f":"empty"},
+      {"s":"triangle","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"triangle","c":"red","r":270,"n":1,"f":"full"},
+      {"s":"triangle","c":"red","r":0,"n":2,"f":"full"}
+    ],
+    "answer": 1,
+    "rule": {"r":{"step":90},"f":{"cycle":2}},
+    "explain": "המשולש מסתובב רבע סיבוב כמו מחוגי השעון, ומתחלף בין מלא לריק."
+  },
+  {
+    "id": "sh-16",
+    "type": "shape-series",
+    "level": 2,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"half"},
+      {"s":"circle","c":"blue","r":90,"n":1,"f":"half"},
+      {"s":"circle","c":"blue","r":180,"n":1,"f":"half"},
+      {"s":"circle","c":"blue","r":270,"n":1,"f":"half"},
+      "?"
+    ],
+    "options": [
+      {"s":"circle","c":"blue","r":270,"n":1,"f":"half"},
+      {"s":"circle","c":"blue","r":180,"n":1,"f":"half"},
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"half"}
+    ],
+    "answer": 3,
+    "rule": {"r":{"step":90}},
+    "explain": "החצי הצבוע זז בכל פעם רבע סיבוב, כמו מחוגי השעון. עכשיו הוא שוב למטה."
+  },
+  {
+    "id": "sh-17",
+    "type": "shape-series",
+    "level": 2,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"circle","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"red","r":0,"n":2,"f":"full"},
+      {"s":"circle","c":"red","r":0,"n":3,"f":"full"},
+      {"s":"square","c":"red","r":0,"n":4,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"circle","c":"red","r":0,"n":5,"f":"full"},
+      {"s":"square","c":"red","r":0,"n":5,"f":"full"},
+      {"s":"circle","c":"red","r":0,"n":4,"f":"full"},
+      {"s":"circle","c":"red","r":0,"n":5,"f":"empty"}
+    ],
+    "answer": 0,
+    "rule": {"n":{"step":1},"s":{"cycle":2}},
+    "explain": "בכל פעם יש עוד צורה אחת, ועיגולים וריבועים מתחלפים. עכשיו 5 עיגולים."
+  },
+  {
+    "id": "sh-18",
+    "type": "shape-series",
+    "level": 2,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"square","c":"blue","r":0,"n":1,"f":"empty"},
+      {"s":"square","c":"blue","r":0,"n":1,"f":"half"},
+      {"s":"square","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"blue","r":0,"n":1,"f":"empty"},
+      {"s":"square","c":"blue","r":0,"n":1,"f":"half"},
+      "?"
+    ],
+    "options": [
+      {"s":"square","c":"blue","r":0,"n":1,"f":"empty"},
+      {"s":"square","c":"blue","r":0,"n":1,"f":"half"},
+      {"s":"square","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"full"}
+    ],
+    "answer": 2,
+    "rule": {"f":{"cycle":3}},
+    "explain": "הריבוע מתמלא: ריק, חצי, מלא, ושוב מההתחלה. עכשיו בא ריבוע מלא."
+  },
+  {
+    "id": "sh-19",
+    "type": "shape-series",
+    "level": 2,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"arrow","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"arrow","c":"red","r":180,"n":2,"f":"full"},
+      {"s":"arrow","c":"red","r":0,"n":3,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"arrow","c":"red","r":0,"n":4,"f":"full"},
+      {"s":"arrow","c":"red","r":180,"n":4,"f":"full"},
+      {"s":"arrow","c":"red","r":180,"n":3,"f":"full"},
+      {"s":"triangle","c":"red","r":180,"n":4,"f":"full"}
+    ],
+    "answer": 1,
+    "rule": {"n":{"step":1},"r":{"cycle":2}},
+    "explain": "בכל פעם יש עוד חץ, והחצים מתחלפים: למעלה, למטה. עכשיו 4 חצים למטה."
+  },
+  {
+    "id": "sh-20",
+    "type": "shape-series",
+    "level": 2,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"hexagon","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"hexagon","c":"yellow","r":0,"n":1,"f":"empty"},
+      {"s":"hexagon","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"hexagon","c":"yellow","r":0,"n":1,"f":"empty"},
+      "?"
+    ],
+    "options": [
+      {"s":"hexagon","c":"yellow","r":0,"n":1,"f":"full"},
+      {"s":"hexagon","c":"red","r":0,"n":1,"f":"empty"},
+      {"s":"star","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"hexagon","c":"red","r":0,"n":1,"f":"full"}
+    ],
+    "answer": 3,
+    "rule": {"c":{"cycle":2},"f":{"cycle":2}},
+    "explain": "משושה אדום מלא ומשושה צהוב ריק מתחלפים. עכשיו בא משושה אדום מלא."
+  },
+  {
+    "id": "sh-21",
+    "type": "shape-series",
+    "level": 3,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"arrow","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"circle","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":90,"n":1,"f":"full"},
+      {"s":"circle","c":"red","r":0,"n":2,"f":"full"},
+      {"s":"arrow","c":"blue","r":180,"n":1,"f":"full"},
+      {"s":"circle","c":"red","r":0,"n":3,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"arrow","c":"blue","r":270,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":180,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":90,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":270,"n":1,"f":"empty"}
+    ],
+    "answer": 0,
+    "rule": {"interleave":[{"r":{"step":90}},{"n":{"step":1}}]},
+    "explain": "שתי סדרות לסירוגין: החץ מסתובב רבע סיבוב, ובכל פעם יש עוד עיגול. עכשיו תור החץ."
+  },
+  {
+    "id": "sh-22",
+    "type": "shape-series",
+    "level": 3,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"triangle","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"triangle","c":"red","r":90,"n":2,"f":"full"},
+      {"s":"triangle","c":"red","r":180,"n":3,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"triangle","c":"red","r":180,"n":4,"f":"full"},
+      {"s":"triangle","c":"red","r":270,"n":3,"f":"full"},
+      {"s":"triangle","c":"red","r":270,"n":4,"f":"full"},
+      {"s":"triangle","c":"red","r":270,"n":4,"f":"empty"}
+    ],
+    "answer": 2,
+    "rule": {"n":{"step":1},"r":{"step":90}},
+    "explain": "בכל פעם יש עוד משולש, והמשולשים מסתובבים רבע סיבוב, כמו מחוגי השעון."
+  },
+  {
+    "id": "sh-23",
+    "type": "shape-series",
+    "level": 3,
+    "stem": "מה חסר בסדרה?",
+    "seq": [
+      {"s":"arrow","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"arrow","c":"red","r":90,"n":1,"f":"full"},
+      "?",
+      {"s":"arrow","c":"red","r":270,"n":1,"f":"full"},
+      {"s":"arrow","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"arrow","c":"red","r":90,"n":1,"f":"full"}
+    ],
+    "options": [
+      {"s":"arrow","c":"red","r":90,"n":1,"f":"full"},
+      {"s":"arrow","c":"red","r":270,"n":1,"f":"full"},
+      {"s":"arrow","c":"red","r":180,"n":1,"f":"empty"},
+      {"s":"arrow","c":"red","r":180,"n":1,"f":"full"}
+    ],
+    "answer": 3,
+    "rule": {"r":{"step":90}},
+    "explain": "החץ מסתובב בכל פעם רבע סיבוב. בין ימינה לשמאלה הוא מצביע למטה."
+  },
+  {
+    "id": "sh-24",
+    "type": "shape-series",
+    "level": 3,
+    "stem": "מה חסר בסדרה?",
+    "seq": [
+      {"s":"heart","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"heart","c":"yellow","r":0,"n":2,"f":"full"},
+      {"s":"heart","c":"red","r":0,"n":3,"f":"full"},
+      {"s":"heart","c":"blue","r":0,"n":1,"f":"full"},
+      "?",
+      {"s":"heart","c":"red","r":0,"n":3,"f":"full"}
+    ],
+    "options": [
+      {"s":"heart","c":"blue","r":0,"n":2,"f":"full"},
+      {"s":"heart","c":"yellow","r":0,"n":2,"f":"full"},
+      {"s":"heart","c":"yellow","r":0,"n":3,"f":"full"},
+      {"s":"star","c":"yellow","r":0,"n":2,"f":"full"}
+    ],
+    "answer": 1,
+    "rule": {"n":{"cycle":3},"c":{"cycle":3}},
+    "explain": "שלוש קבוצות חוזרות: לב כחול אחד, שני לבבות צהובים ושלושה לבבות אדומים."
+  },
+  {
+    "id": "sh-25",
+    "type": "shape-series",
+    "level": 3,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"triangle","c":"blue","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"triangle","c":"blue","r":0,"n":2,"f":"full"},
+      {"s":"square","c":"red","r":0,"n":1,"f":"empty"},
+      {"s":"triangle","c":"blue","r":0,"n":3,"f":"full"},
+      {"s":"square","c":"red","r":0,"n":1,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"triangle","c":"blue","r":0,"n":3,"f":"full"},
+      {"s":"triangle","c":"blue","r":180,"n":4,"f":"full"},
+      {"s":"triangle","c":"blue","r":0,"n":4,"f":"full"},
+      {"s":"triangle","c":"blue","r":0,"n":4,"f":"empty"}
+    ],
+    "answer": 2,
+    "rule": {"interleave":[{"n":{"step":1}},{"f":{"cycle":2}}]},
+    "explain": "שתי סדרות לסירוגין: בכל פעם יש עוד משולש, והריבוע מתחלף בין מלא לריק. עכשיו 4 משולשים."
+  },
+  {
+    "id": "sh-26",
+    "type": "shape-series",
+    "level": 3,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"arrow","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"arrow","c":"red","r":45,"n":1,"f":"full"},
+      {"s":"arrow","c":"red","r":90,"n":1,"f":"full"},
+      {"s":"arrow","c":"red","r":135,"n":1,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"arrow","c":"red","r":180,"n":1,"f":"full"},
+      {"s":"arrow","c":"red","r":135,"n":1,"f":"full"},
+      {"s":"arrow","c":"red","r":225,"n":1,"f":"full"},
+      {"s":"arrow","c":"red","r":180,"n":2,"f":"full"}
+    ],
+    "answer": 0,
+    "rule": {"r":{"step":45}},
+    "explain": "החץ מסתובב בכל פעם קצת, כמו מחוגי השעון. עכשיו הוא מצביע למטה."
+  },
+  {
+    "id": "sh-27",
+    "type": "shape-series",
+    "level": 3,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"circle","c":"blue","r":0,"n":1,"f":"half"},
+      {"s":"circle","c":"blue","r":90,"n":2,"f":"half"},
+      {"s":"circle","c":"blue","r":180,"n":3,"f":"half"},
+      "?"
+    ],
+    "options": [
+      {"s":"circle","c":"blue","r":180,"n":4,"f":"half"},
+      {"s":"circle","c":"blue","r":270,"n":3,"f":"half"},
+      {"s":"circle","c":"blue","r":0,"n":4,"f":"full"},
+      {"s":"circle","c":"blue","r":270,"n":4,"f":"half"}
+    ],
+    "answer": 3,
+    "rule": {"n":{"step":1},"r":{"step":90}},
+    "explain": "בכל פעם יש עוד עיגול, והחצי הצבוע זז רבע סיבוב, כמו מחוגי השעון."
+  },
+  {
+    "id": "sh-28",
+    "type": "shape-series",
+    "level": 3,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"hexagon","c":"blue","r":0,"n":5,"f":"full"},
+      {"s":"diamond","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"hexagon","c":"blue","r":0,"n":4,"f":"full"},
+      {"s":"diamond","c":"yellow","r":0,"n":1,"f":"full"},
+      {"s":"hexagon","c":"blue","r":0,"n":3,"f":"full"},
+      {"s":"diamond","c":"red","r":0,"n":1,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"hexagon","c":"blue","r":0,"n":3,"f":"full"},
+      {"s":"hexagon","c":"blue","r":0,"n":2,"f":"full"},
+      {"s":"hexagon","c":"blue","r":0,"n":2,"f":"empty"},
+      {"s":"diamond","c":"blue","r":0,"n":2,"f":"full"}
+    ],
+    "answer": 1,
+    "rule": {"interleave":[{"n":{"step":-1}},{"c":{"cycle":2}}]},
+    "explain": "שתי סדרות לסירוגין: בכל פעם יש משושה אחד פחות, והמעוינים מתחלפים בצבע. עכשיו 2 משושים."
+  },
+  {
+    "id": "sh-29",
+    "type": "shape-series",
+    "level": 3,
+    "stem": "מה חסר בסדרה?",
+    "seq": [
+      {"s":"triangle","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"circle","c":"red","r":0,"n":1,"f":"empty"},
+      {"s":"square","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"triangle","c":"red","r":0,"n":1,"f":"full"},
+      "?",
+      {"s":"square","c":"red","r":0,"n":1,"f":"full"}
+    ],
+    "options": [
+      {"s":"circle","c":"red","r":0,"n":1,"f":"empty"},
+      {"s":"circle","c":"red","r":0,"n":1,"f":"full"},
+      {"s":"square","c":"red","r":0,"n":1,"f":"empty"},
+      {"s":"circle","c":"red","r":0,"n":2,"f":"empty"}
+    ],
+    "answer": 0,
+    "rule": {"s":{"cycle":3},"f":{"cycle":3}},
+    "explain": "שלוש צורות חוזרות: משולש, עיגול ריק וריבוע. באמצע חסר עיגול ריק."
+  },
+  {
+    "id": "sh-30",
+    "type": "shape-series",
+    "level": 3,
+    "stem": "איזו צורה ממשיכה את הסדרה?",
+    "seq": [
+      {"s":"arrow","c":"blue","r":0,"n":4,"f":"full"},
+      {"s":"arrow","c":"blue","r":90,"n":3,"f":"full"},
+      {"s":"arrow","c":"blue","r":180,"n":2,"f":"full"},
+      "?"
+    ],
+    "options": [
+      {"s":"arrow","c":"blue","r":90,"n":1,"f":"full"},
+      {"s":"arrow","c":"blue","r":270,"n":2,"f":"full"},
+      {"s":"arrow","c":"blue","r":270,"n":1,"f":"full"},
+      {"s":"triangle","c":"blue","r":270,"n":1,"f":"full"}
+    ],
+    "answer": 2,
+    "rule": {"n":{"step":-1},"r":{"step":90}},
+    "explain": "בכל פעם יש חץ אחד פחות, והחצים מסתובבים רבע סיבוב, כמו מחוגי השעון."
+  }
+]
