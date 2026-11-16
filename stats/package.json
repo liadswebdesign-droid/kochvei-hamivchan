@@ -1,0 +1,20 @@
+{
+  "name": "kochvei-stats",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Anonymous device-usage counter and private owner dashboard for the כוכבי המבחן PWA (Cloudflare Worker + D1).",
+  "scripts": {
+    "bundle": "node scripts/bundle-dashboard.mjs",
+    "pretest": "node scripts/bundle-dashboard.mjs",
+    "test": "vitest run",
+    "dev": "wrangler dev --local",
+    "db:init:local": "wrangler d1 execute kochvei-stats --local --file=schema.sql",
+    "db:init:remote": "wrangler d1 execute kochvei-stats --remote --file=schema.sql",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "vitest": "^5.1.0",
+    "wrangler": "^4.163.0"
+  }
+}

@@ -1,0 +1,36 @@
+# kochvei-stats: anonymous usage counter + owner dashboard for the כוכבי המבחן PWA. Deploy steps: README.md.
+name = "kochvei-stats"
+main = "src/worker.js"
+compatibility_date = "2026-11-01"
+workers_dev = true
+preview_urls = false
+
+# Inlines dashboard/* into src/dashboard.gen.js (git-ignored). wrangler dev and wrangler deploy both run it.
+[build]
+command = "node scripts/bundle-dashboard.mjs"
+watch_dir = "dashboard" # src/ is watched by the bundler itself; the generated file lives there
+
+[vars]
+# The only origin whose pages may POST /ping. A local check overrides it in .dev.vars (README).
+ALLOWED_ORIGIN = "https://liadswebdesign-droid.github.io"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "kochvei-stats"
+database_id = "16c055de-9287-4af0-9461-99edc13afcc4" # printed by `npx wrangler d1 create kochvei-stats`
+
+# Per-IP rate limits, kept by Cloudflare in memory (the Worker never stores or logs an IP). namespace_id is any
+# number unique within the account.
+[[ratelimits]]
+name = "PING_LIMIT"
+namespace_id = "41871"
+simple = { limit = 30, period = 60 }
+
+[[ratelimits]]
+name = "API_LIMIT"
+namespace_id = "41872"
+simple = { limit = 60, period = 60 }
+
+# Off on purpose: invocation logs would record request metadata (incl. the client IP) for every ping.
+[observability]
+enabled = false

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>מי משתמש בכוכבי המבחן</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="שימוש">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#f5f6fa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111318" media="(prefers-color-scheme: dark)">
+  <meta name="color-scheme" content="light dark">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="icon" href="/icon.png" type="image/png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/app.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="top">
+    <h1>מי משתמש באפליקציה</h1>
+    <button type="button" class="icon-btn" id="refresh" aria-label="רענון" hidden>
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </header>
+  <p class="updated" id="updated" aria-live="polite"></p>
+
+  <main id="main">
+    <section id="login" class="login" hidden>
+      <h2>חסר מפתח גישה</h2>
+      <p>פתחו את הקישור עם המפתח (הוא נראה כך: <bdi dir="ltr">…/#k=…</bdi>), או הדביקו אותו כאן.</p>
+      <form id="login-form" class="login-form" autocomplete="off">
+        <label for="key-input" class="sr">קישור או מפתח</label>
+        <input id="key-input" type="password" dir="ltr" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="קישור או מפתח">
+        <button type="submit" class="btn primary">כניסה</button>
+      </form>
+      <p class="err" id="login-err" role="alert"></p>
+    </section>
+
+    <section id="loading" class="loading" aria-busy="true"><span class="spinner" aria-hidden="true"></span></section>
+    <p class="err banner" id="error" role="alert" hidden></p>
+
+    <section id="dash" hidden>
+      <div class="cards">
+        <div class="card stat"><span class="num" id="s-week">0</span><span class="lbl">מכשירים פעילים ב־7 ימים</span></div>
+        <div class="card stat"><span class="num" id="s-new">0</span><span class="lbl">מכשירים חדשים השבוע</span></div>
+        <div class="card stat"><span class="num" id="s-today">0</span><span class="lbl">דקות שימוש היום</span></div>
+      </div>
+
+      <div id="empty" class="card empty" hidden>
+        <h2>עוד אין נתונים</h2>
+        <p>ברגע שמישהו יפתח את האפליקציה, המכשיר יופיע כאן.</p>
+      </div>
+
+      <h2 class="sec" id="devices-h">מכשירים</h2>
+      <ul class="devices" id="devices" aria-labelledby="devices-h"></ul>
+
+      <h2 class="sec">מכשירים פעילים ביום, 30 ימים</h2>
+      <div class="card chart-card"><div id="chart"></div></div>
+
+      <p class="foot"><button type="button" class="linkbtn" id="forget">שכחו את המפתח במכשיר הזה</button></p>
+    </section>
+  </main>
+
+  <dialog id="name-dlg" class="dlg">
+    <form id="name-form" class="dlg-form" autocomplete="off">
+      <h2 id="name-title">שם למכשיר</h2>
+      <p class="dlg-sub" id="name-sub"></p>
+      <label for="name-input" class="sr">שם</label>
+      <input id="name-input" type="text" maxlength="40" dir="auto" enterkeyhint="done" placeholder="למשל: הטאבלט בסלון">
+      <p class="hint">עד 40 תווים. שדה ריק מוחק את השם.</p>
+      <p class="err" id="name-err" role="alert"></p>
+      <div class="dlg-btns">
+        <button type="submit" class="btn primary">שמירה</button>
+        <button type="button" class="btn" id="name-cancel">ביטול</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>

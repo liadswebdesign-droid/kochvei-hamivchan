@@ -8,7 +8,7 @@ and the nikud pipeline vocalizes it into `content/build/ui.json`.
   exactly as written (Latin, curly braces). A number placeholder after a one-letter prefix takes the real maqaf: `מ־{bound}`.
 - Addressing the child: plural in instructions ("קראו", "פתרו"), gender-neutral or plural in companion lines.
 - `npm run build` fails if `content/build/ui.json` lacks any key in this list (scripts/content.mjs).
-- Total: 362 keys. Regenerate this file with `npm run ui-keys`.
+- Total: 366 keys. Regenerate this file with `npm run ui-keys`.
 
 ## App
 
@@ -402,6 +402,10 @@ and the nikud pipeline vocalizes it into `content/build/ui.json`.
 | `parent.set.delete` | מחיקת הפרופיל של {name} |
 | `parent.set.deleteConfirm` | למחוק את הפרופיל של {name} ואת כל הנתונים שלו? אי אפשר לשחזר. |
 | `parent.set.deleteYes` | כן, למחוק |
+| `parent.device.title` | המכשיר הזה |
+| `parent.device.code` | קוד המכשיר |
+| `parent.device.note` | האפליקציה שולחת נתוני שימוש אנונימיים בלבד (כמה דקות בשימוש), בלי שמות ובלי תשובות. |
+| `parent.device.send` | שליחת נתוני שימוש |
 
 ## Sticker album (T5)
 

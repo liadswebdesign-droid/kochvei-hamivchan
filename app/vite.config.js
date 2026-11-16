@@ -1,8 +1,9 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import preact from '@preact/preset-vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import fs from 'node:fs';
 import path from 'node:path';
+import { statsOrigin } from './src/lib/statsOrigin.js';
 
 // GitHub Pages serves the repo at /kochvei-hamivchan/. Dev runs at /.
 const PAGES_BASE = '/kochvei-hamivchan/';
@@ -26,13 +27,15 @@ function noFixturesInBuild() {
 // Content-Security-Policy for the built app: everything is self-hosted (fonts, art, content JSON) and nothing is
 // inline, so 'self' covers it all. Build only: the dev server injects <style> tags and the HMR client, which this
 // policy would block. Inline style attributes set from JS (Preact's style={…}) go through the CSSOM and are allowed.
-const CSP = [
+// connect-src also allows the stats Worker's origin, only when the build has VITE_STATS_URL (src/lib/telemetry.js).
+const cspFor = (origin) => [
   "default-src 'self'", "script-src 'self'", "style-src 'self'", "img-src 'self'", "font-src 'self'",
-  "connect-src 'self'", "manifest-src 'self'", "worker-src 'self'", "media-src 'self'", "object-src 'none'",
-  "base-uri 'self'", "form-action 'none'",
+  origin ? `connect-src 'self' ${origin}` : "connect-src 'self'", "manifest-src 'self'", "worker-src 'self'",
+  "media-src 'self'", "object-src 'none'", "base-uri 'self'", "form-action 'none'",
 ].join('; ');
 // Placed right after <meta charset>, ahead of every script and stylesheet (a CSP meta covers only what follows it).
-function cspMeta() {
+function cspMeta(origin) {
+  const CSP = cspFor(origin);
   const CHARSET = '<meta charset="utf-8" />';
   return {
     name: 'csp-meta',
@@ -44,51 +47,58 @@ function cspMeta() {
   };
 }
 
-export default defineConfig(({ command, isPreview }) => ({
-  base: command === 'build' || isPreview ? PAGES_BASE : '/',
-  plugins: [
-    preact(),
-    noFixturesInBuild(),
-    cspMeta(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      injectRegister: false, // registered in src/main.jsx
-      includeAssets: ['icons/*.png', 'icons/*.svg'],
-      manifest: {
-        name: 'כוכבי המבחן',
-        short_name: 'כוכבי המבחן',
-        lang: 'he',
-        dir: 'rtl',
-        start_url: '.',
-        scope: '.',
-        display: 'fullscreen',
-        display_override: ['fullscreen', 'standalone'],
-        orientation: 'any',
-        background_color: '#fff6e8',
-        theme_color: '#4fb3d9',
-        icons: [
-          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-          { src: 'icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
-        ],
-      },
-      workbox: {
-        // Precache the app shell, fonts and every content JSON so the app works fully offline.
-        globPatterns: ['**/*.{js,css,html,woff2,png,svg,webp,json,webmanifest}'],
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-        navigateFallback: 'index.html',
-        cleanupOutdatedCaches: true,
-        // A new deploy takes over at once (no waiting for every tab to close); src/lib/swUpdate.js then reloads the
-        // page onto it at a safe moment. Without these a fullscreen PWA kept the old build for days.
-        skipWaiting: true,
-        clientsClaim: true,
-      },
-    }),
-  ],
-  build: {
-    target: 'es2020',
-    rollupOptions: { input: 'index.html' }, // dev/ (font test) is never part of the build
-  },
-  server: { host: true },
-  test: { include: ['src/**/*.test.js'] },
-}));
+export default defineConfig(({ command, mode, isPreview }) => {
+  const env = loadEnv(mode, process.cwd(), 'VITE_');
+  const stats = statsOrigin(env.VITE_STATS_URL); // throws on a bad value: the build fails loudly
+  // App build id sent with usage pings: the commit in CI, otherwise "local".
+  const build = (process.env.GITHUB_SHA || '').slice(0, 7) || 'local';
+  return {
+    define: { __KH_BUILD__: JSON.stringify(build) },
+    base: command === 'build' || isPreview ? PAGES_BASE : '/',
+    plugins: [
+      preact(),
+      noFixturesInBuild(),
+      cspMeta(stats),
+      VitePWA({
+        registerType: 'autoUpdate',
+        injectRegister: false, // registered in src/main.jsx
+        includeAssets: ['icons/*.png', 'icons/*.svg'],
+        manifest: {
+          name: 'כוכבי המבחן',
+          short_name: 'כוכבי המבחן',
+          lang: 'he',
+          dir: 'rtl',
+          start_url: '.',
+          scope: '.',
+          display: 'fullscreen',
+          display_override: ['fullscreen', 'standalone'],
+          orientation: 'any',
+          background_color: '#fff6e8',
+          theme_color: '#4fb3d9',
+          icons: [
+            { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+            { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+            { src: 'icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          ],
+        },
+        workbox: {
+          // Precache the app shell, fonts and every content JSON so the app works fully offline.
+          globPatterns: ['**/*.{js,css,html,woff2,png,svg,webp,json,webmanifest}'],
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+          navigateFallback: 'index.html',
+          cleanupOutdatedCaches: true,
+          // A new deploy takes over at once (no waiting for every tab to close); src/lib/swUpdate.js then reloads the
+          // page onto it at a safe moment. Without these a fullscreen PWA kept the old build for days.
+          skipWaiting: true,
+          clientsClaim: true,
+        },
+      }),
+    ],
+    build: {
+      target: 'es2020',
+      rollupOptions: { input: 'index.html' }, // dev/ (font test) is never part of the build
+    },
+    server: { host: true },
+    test: { include: ['src/**/*.test.js'] },
+  };
+});

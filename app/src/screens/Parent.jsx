@@ -11,6 +11,7 @@ import { accuracy, minutesPerDay, sessionsOn, recentMistakes, withTrend, describ
 import { Companion, Btn, Rich } from '../components/Bits.jsx';
 import { NumPad } from '../components/NumPad.jsx';
 import { UiIcon } from '../components/Icons.jsx';
+import { telemetryConfigured, deviceCode, isTelemetryOff, setTelemetryOff } from '../lib/telemetry.js';
 
 const SKILL_LABEL = {
   exercises: 'parent.skill.exercises', missing: 'parent.skill.missing', inequality: 'parent.skill.inequality',
@@ -277,6 +278,35 @@ function Stepper({ value, min, max, onChange }) {
   );
 }
 
+// This device (not per profile): its short code, so the parent can match it to a row on the owner's usage dashboard,
+// and the switch for the anonymous usage pings (lib/telemetry.js). Shown only when the build has a stats endpoint.
+function DeviceCard() {
+  const [off, setOff] = useState(isTelemetryOff());
+  const code = deviceCode();
+  const set = (v) => {
+    setTelemetryOff(v);
+    setOff(isTelemetryOff());
+  };
+  return (
+    <Card title={t('parent.device.title')} cls="devc">
+      <p class="pdev-code">
+        {t('parent.device.code')}: <bdi dir="ltr" class="pdev-id">{code}</bdi>
+      </p>
+      <p class="pdev-note">{t('parent.device.note')}</p>
+      <div class="prow last">
+        <span class="prow-lbl">{t('parent.device.send')}</span>
+        <span class="seg" role="radiogroup" aria-label={t('parent.device.send')}>
+          {[true, false].map((on) => (
+            <button type="button" role="radio" aria-checked={off !== on} class={`seg-btn ${off !== on ? 'on' : ''}`} onClick={() => set(!on)} key={String(on)}>
+              {t(on ? 'parent.set.on' : 'parent.set.off')}
+            </button>
+          ))}
+        </span>
+      </div>
+    </Card>
+  );
+}
+
 // ---- dashboard --------------------------------------------------------------------------------------------------------------------
 function Dashboard({ profiles, activeId, content, onClose, onChanged }) {
   const [pid, setPid] = useState(profiles.some((p) => p.id === activeId) ? activeId : profiles[0] && profiles[0].id);
@@ -404,6 +434,7 @@ function Dashboard({ profiles, activeId, content, onClose, onChanged }) {
             </div>
             {notice && <p class="pnotice" role="status">{notice}</p>}
           </Card>
+          {telemetryConfigured() && <DeviceCard />}
         </div>
       )}
 
