@@ -5,8 +5,10 @@ import './fun.css'; // T5: companions, album, celebrations, mini-games
 import { App } from './App.jsx';
 import { initSound } from './lib/sound.js';
 import { initServiceWorker } from './lib/swUpdate.js';
+import { initWakeLock } from './lib/wakeLock.js';
 
 initSound(); // T5: unlock WebAudio on the first touch; soft tap sound on buttons
+initWakeLock(); // screen stays on while the app is in use; released after 10 idle minutes
 
 render(<App />, document.getElementById('app'));
 
