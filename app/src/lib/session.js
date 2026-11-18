@@ -117,6 +117,7 @@ export function islandAvailable(skill, content) {
 }
 
 export async function buildSession({ pid, skill, level, sessions, content, readingDone = [] }) {
+  if (skill === 'reading') return buildReading({ pid, level, sessions, content, readingDone });
   const review = await dueReview(pid, skill, sessions, content);
   const taken = new Set(review.map((r) => r.sig || r.id));
   const room = Math.max(SESSION_SIZE - review.length, 4);
@@ -134,33 +135,61 @@ export async function buildSession({ pid, skill, level, sessions, content, readi
     fresh = pickContent(content.wordProblems.filter((w) => !taken.has(w.id)), room, level, pid).map(wpItem);
   } else if (skill === 'bonus') {
     fresh = pickContent(content.bonus.filter((b) => !taken.has(b.id)), room, level, pid).map(bonusItem);
-  } else if (skill === 'reading') {
-    // One passage per session: prefer passages not read yet, near the current level.
-    const list = content.passages.slice().sort((a, b) => {
-      const ra = readingDone.includes(a.id) ? 1 : 0;
-      const rb = readingDone.includes(b.id) ? 1 : 0;
-      return ra - rb || Math.abs(a.level - level) - Math.abs(b.level - level) || Math.random() - 0.5;
-    });
-    // A passage that fails to load (a missing file, or offline before it was cached) is skipped for the next one; when
-    // none loads, the session rejects and Practice shows its load error.
-    let p = null;
-    let lastError = null;
-    for (const cand of list) {
-      try {
-        p = await loadPassage(cand.id);
-        break;
-      } catch (e) {
-        lastError = e;
-      }
-    }
-    if (!p) throw lastError || new Error('no passage');
-    fresh = p.questions.map((q) => passageQ(p, q));
-    return { items: [...fresh, ...review.filter((r) => r.passageId !== p.id)], passageId: p.id };
   }
   // Review items are spread through the session rather than bunched at the start.
   const items = fresh.slice();
   review.forEach((r, i) => items.splice(Math.min(items.length, 1 + i * 3), 0, r));
   return { items };
+}
+
+// Reading: every session shows ONE story, never a question from another story in the middle of it.
+// - A review session: the missed questions of one story read before (all of that story's due entries), with that
+//   story on screen. `reviewOnly` tells Practice not to count it toward a level-up.
+// - Otherwise a new story with all its questions.
+// Review and new stories alternate: right after a review session the next one is always a new story, so a girl who
+// keeps missing the same question still gets new stories. Due entries of other stories simply wait in the queue.
+async function buildReading({ pid, level, sessions, content, readingDone }) {
+  const lastReading = getLog(pid).filter((e) => e.skill === 'reading').pop();
+  if (!(lastReading && lastReading.review)) {
+    const due = getReview(pid).filter((e) => e.skill === 'reading' && e.due <= sessions);
+    const stale = new Set();
+    const tried = new Set();
+    let pick = null;
+    for (const e of due) {
+      if (tried.has(e.ref)) continue;
+      tried.add(e.ref);
+      const items = [];
+      for (const x of due.filter((y) => y.ref === e.ref)) {
+        const it = await resolveReview(x, content);
+        if (it === null) stale.add(x.id);
+        else if (it) items.push({ ...it, review: true });
+      }
+      if (items.length) {
+        pick = { items, passageId: e.ref, reviewOnly: true };
+        break;
+      }
+    }
+    if (stale.size) saveReview(pid, getReview(pid).filter((e) => !(e.skill === 'reading' && stale.has(e.id))));
+    if (pick) return pick;
+  }
+  // A new story: prefer stories not read yet, near the current level.
+  const list = content.passages.slice().sort((a, b) => {
+    const ra = readingDone.includes(a.id) ? 1 : 0;
+    const rb = readingDone.includes(b.id) ? 1 : 0;
+    return ra - rb || Math.abs(a.level - level) - Math.abs(b.level - level) || Math.random() - 0.5;
+  });
+  // A passage that fails to load (a missing file, or offline before it was cached) is skipped for the next one; when
+  // none loads, the session rejects and Practice shows its load error.
+  let lastError = null;
+  for (const cand of list) {
+    try {
+      const p = await loadPassage(cand.id);
+      return { items: p.questions.map((q) => passageQ(p, q)), passageId: p.id };
+    } catch (e) {
+      lastError = e;
+    }
+  }
+  throw lastError || new Error('no passage');
 }
 
 // ---- spaced repetition --------------------------------------------------------------

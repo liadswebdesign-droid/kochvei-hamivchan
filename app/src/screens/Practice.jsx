@@ -312,7 +312,7 @@ export function Practice({ profile, skill, content, onQuit, onFinish }) {
       const rating = sessionStars(mistakes);
       const p = getProgress(pid);
       const s = skillState(p, skill);
-      const levelUp = rating === 3 && s.level < 3;
+      const levelUp = rating === 3 && s.level < 3 && !session.reviewOnly; // a short review round does not level up
       const readingDone = session.passageId ? [...new Set([...(s.readingDone || []), session.passageId])] : s.readingDone;
       p.skills[skill] = { ...s, sessions: s.sessions + 1, best: Math.max(s.best, rating), level: levelUp ? s.level + 1 : s.level, ...(readingDone ? { readingDone } : {}) };
       countFinishedSession(p); // the parent's "rounds today"
