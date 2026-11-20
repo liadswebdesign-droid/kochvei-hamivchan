@@ -24,9 +24,12 @@ function browser(ua) {
   return null;
 }
 
-export function deviceKind(ua) {
+// `touch`: the app reports whether the screen is a touch screen. Chrome on a big Android tablet asks for the desktop
+// site by default and then sends a Linux desktop User-Agent; Linux + touch is that tablet.
+export function deviceKind(ua, touch = null) {
   if (typeof ua !== 'string' || !ua) return 'Unknown';
   let o = os(ua);
+  if (o === 'Linux' && touch === true) o = 'Android tablet';
   const b = browser(ua);
   if (o === 'Mac' && b === 'Safari') o = 'iPad/Mac';
   if (!o && !b) return 'Other';

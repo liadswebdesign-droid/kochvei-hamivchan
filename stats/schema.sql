@@ -1,4 +1,6 @@
--- kochvei-stats: anonymous per-device usage counts. No IP addresses, no raw User-Agent, nothing about a child.
+-- kochvei-stats: per-device usage counts. No IP addresses, no raw User-Agent, no answers or scores. Since 2026-11-20 a
+-- device also reports its profile NAMES (the owner asked for them, to match devices to real people); the app's
+-- parent screen says so and can turn the pings off.
 -- Idempotent: safe to run again on an existing database.
 
 -- One row per tablet/browser (the random id the app made on first run).
@@ -11,7 +13,10 @@ CREATE TABLE IF NOT EXISTS devices (
   country     TEXT,                      -- ISO 3166-1 alpha-2
   kind        TEXT,                      -- coarse label from the User-Agent, e.g. "Android tablet · Chrome"
   version     TEXT,                      -- app build id
-  profiles    INTEGER,                   -- number of profiles on the device (a count, no names)
+  profiles    INTEGER,                   -- number of profiles on the device
+  names       TEXT,                      -- JSON array of the profile names (app builds from 2026-11-20 on)
+  net         TEXT,                      -- internet provider (request.cf.asOrganization), the latest ping
+  bot         INTEGER NOT NULL DEFAULT 0, -- 1 = the ping came from a cloud/datacenter network: an automatic scanner
   standalone  INTEGER NOT NULL DEFAULT 0, -- 1 = installed as a PWA
   label       TEXT                       -- owner-editable name, NULL until the owner sets one
 );

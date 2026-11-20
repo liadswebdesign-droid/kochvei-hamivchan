@@ -1,11 +1,14 @@
-// Anonymous usage pings to the owner's stats Worker (stats/ in this repo). What is sent, and nothing else:
+// Usage pings to the owner's stats Worker (stats/ in this repo). What is sent, and nothing else:
 //   d           a random device id made on this device (localStorage kh:device)
 //   ev          'open' (app start, or back after 30+ minutes away) or 'beat' (every 5 minutes while visible)
 //   min         whole minutes the app was visible since the last ping (0–10)
 //   v           the app build id
-//   p           how many profiles exist on the device (a count; never names)
+//   p           how many profiles exist on the device
+//   n           the profile NAMES (since 2026-11-20: the owner asked for them, to tell which device is whose; the
+//               parent screen says so and its switch turns all of this off)
+//   t           whether the screen is a touch screen (tells a tablet in "desktop site" mode from a computer)
 //   standalone  whether the app runs installed (home screen) or in a browser tab
-// Never answers, scores, names, companions or anything else from a profile.
+// Never answers, scores, companions or anything else from a profile.
 //
 // Off when: the build has no VITE_STATS_URL, a dev server, a page served from localhost (unless the build sets
 // VITE_STATS_ALLOW_LOCAL=1 for a local check), or the parent turned it off (localStorage kh:telemetry-off = '1').
@@ -100,13 +103,24 @@ export function setTelemetryOff(off, storage = defaultStorage()) {
 // True when this build has an endpoint at all (the parent screen shows its section only then).
 export const telemetryConfigured = (url = STATS_URL) => !!pingUrl(url);
 
+// Names as the stats Worker accepts them: at most 10, each trimmed, 1–24 letters, no control or bidi-override marks.
+const BAD_NAME_CHARS = /[\u0000-\u001f\u007f-\u009f\u200e\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g;
+export function cleanNames(list) {
+  if (!Array.isArray(list)) return [];
+  return list
+    .filter((x) => typeof x === 'string')
+    .map((x) => [...x.replace(BAD_NAME_CHARS, '').trim().replace(/\s+/g, ' ')].slice(0, 24).join('').trim())
+    .filter(Boolean)
+    .slice(0, 10);
+}
+
 // ---- the pinger --------------------------------------------------------------------------------------------------------
 // Everything it touches comes in through `deps`, so tests can drive it with fakes.
 export function createTelemetry(deps) {
   const {
     url, dev = false, allowLocal = false, build = 'dev', hostname = '',
     doc, storage, fetchFn, now = () => Date.now(), setIntervalFn = setInterval,
-    rand = defaultRand, profiles = () => 0, standalone = () => false,
+    rand = defaultRand, names = () => [], touch = () => false, standalone = () => false,
   } = deps;
   const endpoint = pingUrl(url);
   const blocked = !endpoint || ((dev || LOCAL_HOST.test(hostname)) && !allowLocal);
@@ -122,13 +136,16 @@ export function createTelemetry(deps) {
     if (blocked || isTelemetryOff(storage)) return false;
     let body;
     try {
+      const n = cleanNames(names());
       body = JSON.stringify({
         d: getDeviceId({ storage, rand }),
         ev,
         min: clampInt(min, 0, MAX_MIN),
         v: String(build).replace(/[^A-Za-z0-9._-]/g, '').slice(0, 40) || 'unknown',
-        p: clampInt(profiles(), 0, 10),
+        p: n.length,
         standalone: !!standalone(),
+        n,
+        t: !!touch(),
       });
       // text/plain keeps it a CORS "simple" request: no preflight, so keepalive works everywhere.
       const p = fetchFn(endpoint, {
@@ -195,8 +212,8 @@ export function createTelemetry(deps) {
   return { start, tick, onVisibility, send, get blocked() { return blocked; } };
 }
 
-// Browser wiring, called once from main.jsx. `profiles` returns the number of profiles on the device.
-export function initTelemetry({ profiles } = {}) {
+// Browser wiring, called once from main.jsx. `names` returns the profile names on the device.
+export function initTelemetry({ names } = {}) {
   try {
     if (typeof document === 'undefined' || typeof fetch !== 'function') return null;
     const mq = (q) => {
@@ -215,7 +232,8 @@ export function initTelemetry({ profiles } = {}) {
       doc: document,
       storage: defaultStorage(),
       fetchFn: (u, o) => fetch(u, o),
-      profiles,
+      names,
+      touch: () => (navigator.maxTouchPoints || 0) > 0,
       // The manifest asks for fullscreen; iOS reports the home-screen app through navigator.standalone.
       standalone: () => mq('(display-mode: standalone)') || mq('(display-mode: fullscreen)') || navigator.standalone === true,
     });

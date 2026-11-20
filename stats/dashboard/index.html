@@ -56,7 +56,14 @@
       </div>
 
       <h2 class="sec" id="devices-h">מכשירים</h2>
+      <p class="sec-note">המיקום מגיע מספק האינטרנט, ולכן הוא רק אזור משוער: לרוב העיר שבה הספק רשם את הכתובת, לא העיר שבה המכשיר נמצא. מכשירים באותו בית מופיעים בדרך כלל עם אותו אזור ואותו ספק.</p>
       <ul class="devices" id="devices" aria-labelledby="devices-h"></ul>
+
+      <details class="bots" id="bots" hidden>
+        <summary>סורקים אוטומטיים (<span id="bots-n">0</span>): לא אנשים</summary>
+        <p class="sec-note">פתיחות מרשתות של חברות ענן, למשל Google שבודקת קישור שילדה פתחה במכשיר עם Family Link. הן לא נספרות במספרים ובגרף.</p>
+        <ul class="devices" id="bots-list"></ul>
+      </details>
 
       <h2 class="sec">מכשירים פעילים ביום, 30 ימים</h2>
       <div class="card chart-card"><div id="chart"></div></div>

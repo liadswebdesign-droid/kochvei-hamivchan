@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   createTelemetry, getDeviceId, deviceCode, newDeviceId, pingUrl, isTelemetryOff, setTelemetryOff, telemetryConfigured,
-  DEVICE_KEY, OFF_KEY, BEAT_MS, AWAY_MS,
+  DEVICE_KEY, OFF_KEY, BEAT_MS, AWAY_MS, cleanNames,
 } from './telemetry.js';
 import { statsOrigin } from './statsOrigin.js';
 
@@ -45,7 +45,8 @@ function make(over = {}) {
     now: () => clock,
     setIntervalFn: (fn, ms) => intervals.push({ fn, ms }),
     rand: (b) => b.forEach((_, i) => (b[i] = i * 7)),
-    profiles: () => 2,
+    names: () => ['נועה', 'מאיה'],
+    touch: () => true,
     standalone: () => true,
     ...over,
   });
@@ -104,15 +105,20 @@ describe('telemetry: payload', () => {
     expect(sent).toHaveLength(1);
     const { u, o, body } = sent[0];
     expect(u).toBe(URL_ + '/ping');
-    expect(Object.keys(body).sort()).toEqual(['d', 'ev', 'min', 'p', 'standalone', 'v']);
-    expect(body).toEqual({ d: getDeviceId({ storage }), ev: 'open', min: 0, v: 'f56d55d', p: 2, standalone: true });
+    expect(Object.keys(body).sort()).toEqual(['d', 'ev', 'min', 'n', 'p', 'standalone', 't', 'v']);
+    expect(body).toEqual({ d: getDeviceId({ storage }), ev: 'open', min: 0, v: 'f56d55d', p: 2, standalone: true, n: ['נועה', 'מאיה'], t: true });
     expect(body.d).toMatch(/^[A-Z2-7]{16}$/);
     expect(o).toMatchObject({ method: 'POST', keepalive: true, credentials: 'omit', mode: 'cors', referrerPolicy: 'no-referrer' });
     expect(o.headers['Content-Type']).toMatch(/^text\/plain/); // a CORS simple request: no preflight
   });
-  it('clamps the profile count and sanitises the build id', () => {
-    make({ profiles: () => 37, build: 'a b/c', standalone: () => 0 }).start();
-    expect(sent[0].body).toMatchObject({ p: 10, v: 'abc', standalone: false });
+  it('caps the names at 10 and sanitises them and the build id', () => {
+    make({ names: () => Array.from({ length: 37 }, (_, i) => 'שם ' + i), build: 'a b/c', standalone: () => 0, touch: () => 0 }).start();
+    expect(sent[0].body).toMatchObject({ p: 10, v: 'abc', standalone: false, t: false });
+    expect(sent[0].body.n).toHaveLength(10);
+  });
+  it('cleanNames: trims, drops bidi marks and empties, cuts at 24 letters', () => {
+    expect(cleanNames(['  נועה   לוי ', '\u202eמאיה', '   ', 'א'.repeat(30), 5, null])).toEqual(['נועה לוי', 'מאיה', 'א'.repeat(24)]);
+    expect(cleanNames(undefined)).toEqual([]);
   });
   it('swallows a fetch that throws or rejects', () => {
     expect(() => make({ fetchFn: () => { throw new Error('offline'); } }).start()).not.toThrow();

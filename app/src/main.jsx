@@ -19,5 +19,5 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   initServiceWorker(import.meta.env.BASE_URL + 'sw.js', import.meta.env.BASE_URL);
 }
 
-// Anonymous usage pings (device id + minutes only) when the build has VITE_STATS_URL. What is sent: lib/telemetry.js.
-initTelemetry({ profiles: () => getProfiles().length });
+// Usage pings (device id, minutes, profile names) when the build has VITE_STATS_URL. What is sent: lib/telemetry.js.
+initTelemetry({ names: () => getProfiles().map((p) => p.name) });

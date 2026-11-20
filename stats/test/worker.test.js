@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import worker, { handlePing, handleStats, LIMITS, safeEqual, CSP_PAGE } from '../src/app.js';
+import { MAX_BODY } from '../src/validate.js';
 import { parsePing, parseLabel, parseJsonBody } from '../src/validate.js';
 import { deviceKind } from '../src/ua.js';
 import { israelDay, addDays } from '../src/time.js';
@@ -35,7 +36,7 @@ const rows = (sql, ...a) => env.DB.raw.prepare(sql).all(...a);
 // ---- validation ------------------------------------------------------------------------------------------------------------
 describe('parsePing', () => {
   it('accepts exactly the documented shape', () => {
-    expect(parsePing(ping())).toEqual(ping());
+    expect(parsePing(ping())).toEqual({ ...ping(), names: null, touch: null }); // an older build: no names, no touch flag
     expect(parsePing(ping({ ev: 'beat', min: 10, p: 0, standalone: false }))).not.toBeNull();
   });
   it.each([
@@ -62,8 +63,8 @@ describe('parsePing', () => {
 describe('parseJsonBody', () => {
   const enc = (s) => new TextEncoder().encode(s).buffer;
   it('parses a small JSON object', () => expect(parseJsonBody(enc('{"a":1}'))).toEqual({ a: 1 }));
-  it('refuses > 1 KB, empty, arrays, invalid JSON and invalid UTF-8', () => {
-    expect(parseJsonBody(enc(JSON.stringify({ a: 'x'.repeat(1100) })))).toBeNull();
+  it('refuses > 2 KB, empty, arrays, invalid JSON and invalid UTF-8', () => {
+    expect(parseJsonBody(enc(JSON.stringify({ a: 'x'.repeat(2100) })))).toBeNull();
     expect(parseJsonBody(new ArrayBuffer(0))).toBeNull();
     expect(parseJsonBody(enc('[1]'))).toBeNull();
     expect(parseJsonBody(enc('{a:1}'))).toBeNull();
@@ -319,5 +320,60 @@ describe('security headers', () => {
   });
   it('API responses are never cached', async () => {
     expect((await get('/api/stats', auth)).headers.get('Cache-Control')).toBe('no-store');
+  });
+});
+
+// ---- 2026-11-20: profile names, provider, scanners, tablets in desktop mode -------------------------------------------------
+const ping2 = (over = {}) => ({ ...ping(), n: ['נועה', 'מאיה'], t: true, ...over });
+const UA_DESKTOP_LINUX = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
+
+describe('ping with names (builds from 2026-11-20)', () => {
+  it('parses names and the touch flag; trims and collapses spaces', () => {
+    expect(parsePing(ping2({ n: ['  נועה  לוי '] }))).toMatchObject({ names: ['נועה לוי'], touch: true });
+    expect(parsePing(ping2({ n: [] }))).toMatchObject({ names: [] });
+  });
+  it.each([
+    ['a name over 24 letters', ping2({ n: ['א'.repeat(25)] })],
+    ['an empty name', ping2({ n: ['  '] })],
+    ['a bidi override', ping2({ n: ['נועה\u202e'] })],
+    ['a non-string name', ping2({ n: [3] })],
+    ['11 names', ping2({ n: Array(11).fill('א') })],
+    ['touch as a string', ping2({ t: 'yes' })],
+    ['names without touch', (({ t, ...o }) => o)(ping2())],
+  ])('refuses %s', (_, body) => expect(parsePing(body)).toBeNull());
+
+  it('ten long Hebrew names fit in the body limit', () => {
+    expect(new TextEncoder().encode(JSON.stringify(ping2({ n: Array(10).fill('א'.repeat(24)) }))).length).toBeLessThan(MAX_BODY);
+  });
+
+  it('stores the names and the provider; a ping from an older build keeps the stored names', async () => {
+    await call(pingReq(ping2(), { cf: { city: 'Rehovot', country: 'IL', asn: 8551, asOrganization: 'Bezeq International' } }));
+    await call(pingReq(ping({ ev: 'beat', min: 5 })));
+    const s = await handleStats(env);
+    expect(s.devices[0]).toMatchObject({ names: ['נועה', 'מאיה'], bot: false });
+    expect(rows('SELECT net FROM devices')[0].net).toBe(null); // the last ping had no provider
+    await call(pingReq(ping2({ n: ['נועה'] }), { cf: { city: 'Rehovot', country: 'IL', asn: 8551, asOrganization: 'Bezeq International' } }));
+    expect((await handleStats(env)).devices[0]).toMatchObject({ names: ['נועה'], net: 'Bezeq International' });
+  });
+
+  it('a Linux desktop User-Agent with a touch screen is an Android tablet in desktop mode', async () => {
+    expect(deviceKind(UA_DESKTOP_LINUX, true)).toBe('Android tablet · Chrome');
+    expect(deviceKind(UA_DESKTOP_LINUX, false)).toBe('Linux · Chrome');
+    await call(pingReq(ping2(), { ua: UA_DESKTOP_LINUX }));
+    expect(rows('SELECT kind FROM devices')[0].kind).toBe('Android tablet · Chrome');
+  });
+});
+
+describe('scanners from cloud networks', () => {
+  it('are flagged and kept out of the daily summary; a person is never turned into a scanner', async () => {
+    const now = Date.UTC(2026, 10, 19, 12, 0);
+    await handlePing(pingReq(ping2({ d: DEV_B, p: 0, n: [] }), { cf: { city: 'Moncks Corner', country: 'US', asn: 15169, asOrganization: 'Google LLC' } }), env, now);
+    await handlePing(pingReq(ping2(), { cf: { city: 'Rehovot', country: 'IL', asn: 8551 } }), env, now);
+    await handlePing(pingReq(ping2({ ev: 'beat', min: 5 }), { cf: { city: 'Ashburn', country: 'US', asn: 16509 } }), env, now + 60000); // a VPN
+    const s = await handleStats(env, now + 120000);
+    const byId = Object.fromEntries(s.devices.map((d) => [d.id, d]));
+    expect(byId[DEV_B].bot).toBe(true);
+    expect(byId[DEV_A].bot).toBe(false);
+    expect(s.daily.find((d) => d.day === '2026-11-19')).toMatchObject({ devices: 1, minutes: 5 });
   });
 });

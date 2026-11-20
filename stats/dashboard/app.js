@@ -99,15 +99,22 @@
     const unnamed = !d.label;
     const max = Math.max(30, ...d.recent.map((r) => r.minutes));
     const where = [d.city, country(d.country)].filter(Boolean).join(', ') || 'מיקום לא ידוע';
-    return h('li', { class: 'card dev' },
+    const names = Array.isArray(d.names) ? d.names : null;
+    return h('li', { class: d.bot ? 'card dev bot' : 'card dev' },
       h('div', { class: 'dev-head' },
         h('h3', { class: 'dev-name', dir: 'auto' }, unnamed ? 'מכשיר חדש' : d.label),
         unnamed ? h('span', { class: 'badge new' }, 'בלי שם') : null,
         h('span', { class: d.standalone ? 'badge inst' : 'badge web' }, d.standalone ? 'מותקן' : 'בדפדפן'),
         h('span', { class: 'code', dir: 'ltr', 'aria-label': 'קוד ' + d.code.split('').join(' ') }, d.code.toUpperCase()),
       ),
+      names
+        ? h('p', { class: 'dev-names' }, names.length
+          ? names.map((n) => h('span', { class: 'chip', dir: 'auto' }, n))
+          : h('span', { class: 'muted' }, 'אין פרופילים במכשיר'))
+        : h('p', { class: 'dev-names' }, h('span', { class: 'muted' }, 'השמות יופיעו אחרי הפתיחה הבאה של האפליקציה')),
       h('p', { class: 'dev-meta' },
-        h('span', null, where),
+        h('span', null, 'אזור משוער: ', where),
+        d.net ? h('span', null, 'ספק: ', h('bdi', { dir: 'ltr' }, d.net)) : null,
         h('bdi', { dir: 'ltr' }, d.kind || ''),
       ),
       h('p', { class: 'dev-meta' },
@@ -117,7 +124,7 @@
       h('p', { class: 'dev-nums' },
         h('span', null, h('b', null, nf.format(d.days_active)), d.days_active === 1 ? ' יום פעיל' : ' ימים פעילים'),
         h('span', null, h('b', null, minutes(d.total_minutes)), ' בסך הכול'),
-        d.profiles != null ? h('span', null, h('b', null, nf.format(d.profiles)), d.profiles === 1 ? ' פרופיל' : ' פרופילים') : null,
+        !names && d.profiles != null ? h('span', null, h('b', null, nf.format(d.profiles)), d.profiles === 1 ? ' פרופיל' : ' פרופילים') : null,
       ),
       h('div', { class: 'dev-foot' },
         h('div', { class: 'spark', role: 'img', 'aria-label': `פעילות ב־14 הימים האחרונים: ${d.recent.filter((r) => r.opens || r.minutes).length} ימים פעילים` },
@@ -163,7 +170,12 @@
   function render(data) {
     const now = data.now;
     const week = now - 7 * DAY;
-    const devs = data.devices;
+    // Scanners (a page run from a cloud network, not a person) are listed apart and left out of every number.
+    const devs = data.devices.filter((d) => !d.bot);
+    const bots = data.devices.filter((d) => d.bot);
+    $('bots').hidden = bots.length === 0;
+    $('bots-n').textContent = nf.format(bots.length);
+    $('bots-list').replaceChildren(...bots.map((d) => deviceItem(d, now)));
     $('s-week').textContent = nf.format(devs.filter((d) => d.last_seen >= week).length);
     $('s-new').textContent = nf.format(devs.filter((d) => d.first_seen >= week).length);
     const today = data.daily.find((d) => d.day === data.today);
@@ -229,6 +241,7 @@
     $('name-sub').replaceChildren(
       'קוד ', h('bdi', { dir: 'ltr' }, d.code.toUpperCase()), ' · ',
       [d.city, country(d.country)].filter(Boolean).join(', ') || 'מיקום לא ידוע', ' · ', h('bdi', { dir: 'ltr' }, d.kind || ''),
+      Array.isArray(d.names) && d.names.length ? ' · ' + d.names.join(', ') : '',
     );
     $('name-input').value = d.label || '';
     $('name-err').textContent = '';

@@ -1,7 +1,7 @@
 // kochvei-stats (all logic; src/worker.js is the entry): counts which devices use the כוכבי המבחן PWA, and serves the owner's private dashboard.
 //
-//   POST /ping          from the app (CORS: ALLOWED_ORIGIN only). Device id + open/beat + active minutes. No IP is
-//                       stored, no raw User-Agent, nothing about answers, scores or names.
+//   POST /ping          from the app (CORS: ALLOWED_ORIGIN only). Device id + open/beat + active minutes + the profile
+//                       names (builds from 2026-11-20). No IP is stored, no raw User-Agent, nothing about answers or scores.
 //   GET  /api/stats     owner only (Authorization: Bearer OWNER_KEY)
 //   POST /api/label     owner only: name a device
 //   GET  /              the dashboard (public page, no data in it; it fetches /api/stats with the owner key)
@@ -111,6 +111,17 @@ async function rateLimited(limiter, request) {
 
 const str = (v, max = 80) => (typeof v === 'string' && v ? v.slice(0, max) : null);
 
+// Cloud and datacenter networks. A page that runs the app's JS from one of these is an automatic scanner (Google
+// checking a link a child opened, a preview renderer), not a person: it is kept, but apart from the real devices.
+export const CLOUD_ASNS = new Set([
+  15169, 396982, 19527, 36040, 43515, // Google, Google Cloud, YouTube
+  16509, 14618, // Amazon / AWS
+  8075, 8068, // Microsoft / Azure
+  32934, // Meta
+  14061, 24940, 16276, 63949, 20473, // DigitalOcean, Hetzner, OVH, Linode, Vultr
+]);
+export const isCloud = (cf) => CLOUD_ASNS.has(Number(cf.asn));
+
 // ---- POST /ping ----------------------------------------------------------------------------------------------------------
 export async function handlePing(request, env, now = Date.now()) {
   if (!env.ALLOWED_ORIGIN || request.headers.get('Origin') !== env.ALLOWED_ORIGIN) return fail(403, 'origin');
@@ -122,17 +133,22 @@ export async function handlePing(request, env, now = Date.now()) {
 
   const cf = request.cf || {};
   const day = israelDay(now);
-  const kind = deviceKind(request.headers.get('User-Agent'));
+  const kind = deviceKind(request.headers.get('User-Agent'), ping.touch);
+  // An older build sends no names: the stored ones stay (COALESCE). A device that once pinged from a person's network
+  // stays a person even if a later ping comes from a cloud network (a VPN, say): bot only ever goes from 1 to 0.
+  const names = ping.names ? JSON.stringify(ping.names) : null;
   await env.DB.batch([
     // New device only while under the cap; a known device always updates.
     env.DB.prepare(
-      `INSERT INTO devices (id, first_seen, last_seen, city, region, country, kind, version, profiles, standalone)
-       SELECT ?1, ?2, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9
+      `INSERT INTO devices (id, first_seen, last_seen, city, region, country, kind, version, profiles, standalone, names, net, bot)
+       SELECT ?1, ?2, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?11, ?12, ?13
        WHERE EXISTS (SELECT 1 FROM devices WHERE id = ?1) OR (SELECT COUNT(*) FROM devices) < ?10
        ON CONFLICT(id) DO UPDATE SET last_seen = excluded.last_seen, city = excluded.city, region = excluded.region,
          country = excluded.country, kind = excluded.kind, version = excluded.version, profiles = excluded.profiles,
-         standalone = excluded.standalone`,
-    ).bind(ping.d, now, str(cf.city), str(cf.region), str(cf.country, 2), kind, ping.v, ping.p, ping.standalone ? 1 : 0, LIMITS.maxDevices),
+         standalone = excluded.standalone, names = COALESCE(excluded.names, devices.names), net = excluded.net,
+         bot = MIN(devices.bot, excluded.bot)`,
+    ).bind(ping.d, now, str(cf.city), str(cf.region), str(cf.country, 2), kind, ping.v, ping.p, ping.standalone ? 1 : 0, LIMITS.maxDevices,
+      names, str(cf.asOrganization, 60), isCloud(cf) ? 1 : 0),
     // Pings past the daily cap change nothing; minutes never pass the daily cap.
     env.DB.prepare(
       `INSERT INTO daily (device, day, opens, minutes, pings)
@@ -169,18 +185,29 @@ async function authorize(request, env) {
   return m && ok ? null : fail(401, 'unauthorized', { 'WWW-Authenticate': 'Bearer' });
 }
 
+function parseNames(s) {
+  try {
+    const a = JSON.parse(s);
+    return Array.isArray(a) ? a.filter((x) => typeof x === 'string') : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function handleStats(env, now = Date.now()) {
   const today = israelDay(now);
   const from14 = addDays(today, -13);
   const from30 = addDays(today, -29);
   const [devs, totals, recent, summary] = await env.DB.batch([
     env.DB.prepare(
-      'SELECT id, first_seen, last_seen, city, region, country, kind, version, profiles, standalone, label FROM devices ORDER BY last_seen DESC',
+      'SELECT id, first_seen, last_seen, city, region, country, kind, version, profiles, standalone, label, names, net, bot FROM devices ORDER BY last_seen DESC',
     ),
     env.DB.prepare('SELECT device, COUNT(*) AS days, SUM(opens) AS opens, SUM(minutes) AS minutes FROM daily GROUP BY device'),
     env.DB.prepare('SELECT device, day, opens, minutes FROM daily WHERE day >= ?1').bind(from14),
     env.DB.prepare(
-      'SELECT day, COUNT(*) AS devices, SUM(opens) AS opens, SUM(minutes) AS minutes FROM daily WHERE day >= ?1 GROUP BY day',
+      // People only: scanners stay out of the daily chart and the "today" minutes.
+      `SELECT day, COUNT(*) AS devices, SUM(opens) AS opens, SUM(minutes) AS minutes FROM daily
+       WHERE day >= ?1 AND device IN (SELECT id FROM devices WHERE bot = 0) GROUP BY day`,
     ).bind(from30),
   ]);
   const tot = new Map(totals.results.map((r) => [r.device, r]));
@@ -211,6 +238,9 @@ export async function handleStats(env, now = Date.now()) {
         version: d.version,
         profiles: d.profiles,
         standalone: !!d.standalone,
+        names: parseNames(d.names),
+        net: d.net,
+        bot: !!d.bot,
         days_active: t.days || 0,
         total_opens: t.opens || 0,
         total_minutes: t.minutes || 0,

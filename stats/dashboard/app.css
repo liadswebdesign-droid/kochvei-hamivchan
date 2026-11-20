@@ -156,3 +156,12 @@ input:focus-visible, button:focus-visible { outline: 3px solid var(--accent); ou
   .stat .num { font-size: 24px; }
   .cards { gap: 8px; }
 }
+
+/* 2026-11-20: profile names, the location note, scanners */
+.dev-names { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0; }
+.chip { background: var(--bar-off); border-radius: 999px; padding: 2px 12px; font-size: 15px; font-weight: 700; }
+.muted { color: var(--ink-soft); font-size: 14px; }
+.sec-note { margin: -4px 0 10px; color: var(--ink-soft); font-size: 13px; line-height: 1.5; }
+.bots { margin-top: 18px; }
+.bots summary { cursor: pointer; color: var(--ink-soft); font-size: 15px; font-weight: 700; padding: 6px 0; }
+.dev.bot { opacity: 0.75; }

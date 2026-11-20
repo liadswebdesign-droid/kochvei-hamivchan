@@ -1,9 +1,13 @@
 // Strict request validation. Anything that is not exactly the expected shape is refused (the caller answers 400).
 
-export const MAX_BODY = 1024; // bytes
+export const MAX_BODY = 2048; // bytes (10 Hebrew names of 24 letters fit with room to spare)
 export const DEVICE_ID = /^[A-Z2-7]{16}$/; // RFC 4648 base32, 80 random bits
 const BUILD_ID = /^[A-Za-z0-9._-]{1,40}$/;
-const PING_KEYS = ['d', 'ev', 'min', 'v', 'p', 'standalone'];
+const PING_KEYS = ['d', 'ev', 'min', 'v', 'p', 'standalone']; // builds before 2026-11-20 (still cached on devices)
+const PING_KEYS_2 = [...PING_KEYS, 'n', 't']; // + profile names, touch screen
+export const NAME_MAX = 24;
+// Control and bidi-override characters: refused in names and labels (both are rendered as text only).
+const BAD_CHARS = /[\u0000-\u001f\u007f-\u009f‎‏‪-‮⁦-⁩﻿]/;
 export const LABEL_MAX = 40;
 
 const isObj = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -30,9 +34,12 @@ export function parseJsonBody(buf) {
   }
 }
 
-// → { d, ev, min, v, p, standalone } or null
+// → { d, ev, min, v, p, standalone, names, touch } or null. `names` (array) and `touch` (boolean) are null for a ping
+// from an older build, which does not send them.
 export function parsePing(o) {
-  if (!isObj(o) || !sameKeys(o, PING_KEYS)) return null;
+  if (!isObj(o)) return null;
+  const v2 = sameKeys(o, PING_KEYS_2);
+  if (!v2 && !sameKeys(o, PING_KEYS)) return null;
   const { d, ev, min, v, p, standalone } = o;
   if (typeof d !== 'string' || !DEVICE_ID.test(d)) return null;
   if (ev !== 'open' && ev !== 'beat') return null;
@@ -40,12 +47,20 @@ export function parsePing(o) {
   if (typeof v !== 'string' || !BUILD_ID.test(v)) return null;
   if (!intIn(p, 0, 10)) return null;
   if (typeof standalone !== 'boolean') return null;
-  return { d, ev, min, v, p, standalone };
+  if (!v2) return { d, ev, min, v, p, standalone, names: null, touch: null };
+  if (typeof o.t !== 'boolean' || !Array.isArray(o.n) || o.n.length > 10) return null;
+  const names = [];
+  for (const x of o.n) {
+    if (typeof x !== 'string' || BAD_CHARS.test(x)) return null;
+    const s = x.trim().replace(/\s+/g, ' ');
+    if (!s || [...s].length > NAME_MAX) return null;
+    names.push(s);
+  }
+  return { d, ev, min, v, p, standalone, names, touch: o.t };
 }
 
 // { d, label } → { d, label: string | null } or null. An empty label clears it. Control and bidi-override characters
 // are refused; the dashboard renders labels as text only.
-const BAD_CHARS = /[\u0000-\u001f\u007f-\u009f‎‏‪-‮⁦-⁩﻿]/;
 export function parseLabel(o) {
   if (!isObj(o) || !sameKeys(o, ['d', 'label'])) return null;
   const { d, label } = o;
